@@ -1978,3 +1978,30 @@ const EN_DOSSIER_TEMPLATE = `<div class="dossier-main-wrapper">
         </div>
     </div>
 </div>`;
+
+// Función para colapsar y expandir los detalles de las normas de manera animada
+function toggleCardDetails(id, btn) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    
+    const isOpen = el.classList.contains('open');
+    const isEn = document.documentElement.lang === 'en' || window.location.pathname.includes('en.html');
+    
+    // Cerrar todas las demás tarjetas primero para mantener orden
+    document.querySelectorAll('.expanded-details').forEach(card => {
+        card.classList.remove('open');
+        card.style.maxHeight = null;
+    });
+    
+    document.querySelectorAll('.toggle-details-btn').forEach(button => {
+        button.innerHTML = isEn ? 'More details ▾' : 'Más detalle ▾';
+    });
+    
+    if (!isOpen) {
+        el.classList.add('open');
+        // Calcular la altura real del contenido para una animación fluida
+        el.style.maxHeight = el.scrollHeight + 'px';
+        btn.innerHTML = isEn ? 'Less details ▴' : 'Menos detalle ▴';
+    }
+}
+
