@@ -1,0 +1,43 @@
+name: Normative Monitor Cron Job
+
+on:
+  schedule:
+    # Se ejecuta todos los domingos a las 00:00 UTC
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+    # Permite la ejecución manual del escaneo desde la pestaña 'Actions' de tu repositorio
+
+jobs:
+  run-monitor:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: |
+        cd normative-monitor
+        npm install
+
+    - name: Run Normative Monitor
+      env:
+        EMAILJS_SERVICE_ID: ${{ secrets.EMAILJS_SERVICE_ID }}
+        EMAILJS_TEMPLATE_ID: ${{ secrets.EMAILJS_TEMPLATE_ID }}
+        EMAILJS_PUBLIC_KEY: ${{ secrets.EMAILJS_PUBLIC_KEY }}
+        EMAILJS_PRIVATE_KEY: ${{ secrets.EMAILJS_PRIVATE_KEY }}
+        RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+      run: |
+        cd normative-monitor
+        node monitor.js
+
+    - name: Commit version updates to repository (Auto-Sync)
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "chore: auto-sync rules.json with latest scraped versions [skip ci]"
+        file_pattern: 'normative-monitor/rules.json'

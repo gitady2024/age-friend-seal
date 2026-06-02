@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age Friend Seal - Instituto Certificador Internacional</title>
+    <meta name="description" content="Certificación y soluciones de autodiagnóstico empresarial para capturar la oportunidad de la Economía Plateada (Silver Economy) a nivel global.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <!-- html2pdf SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+    <!-- Navegación -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <img src="logo_age_friend_seal.png" alt="Age Friend Seal Logo" class="logo-img">
+                <span class="logo-text"><span class="logo-accent">Age</span> Friend Seal</span>
+            </div>
+            <nav class="nav-links">
+                <a href="#oportunidad">Economía Plateada</a>
+                <a href="#escalera">Certificaciones</a>
+                <a href="#normativas">Fundamentos Globales</a>
+                <a href="#alianzas">Alianzas</a>
+                <a href="#radar-noticias">Radar de Longevidad</a>
+                <a href="#autodiagnostico" class="btn btn-primary" id="btn-nav-start">Autodiagnóstico MVP</a>
+                <a href="en.html" class="lang-switch-btn">EN</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Sección Hero -->
+    <section class="hero">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <div class="badge-silver-economy">ECONOMÍA PLATEADA GLOBAL</div>
+                <h1>Capture la Oportunidad Oculta del Mercado Senior</h1>
+                <p>Las empresas preparadas para atender y emplear al segmento de más de 50 años lideran el crecimiento económico. Certifique su negocio, elimine barreras y acceda al público con mayor poder adquisitivo.</p>
+                <div class="hero-actions">
+                    <a href="#autodiagnostico" class="btn btn-lg btn-gradient" id="btn-hero-start">Iniciar Autodiagnóstico</a>
+                    <a href="#escalera" class="btn btn-lg btn-outline">Ver Niveles de Certificación</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="glass-card hero-stats-card">
+                    <div class="card-icon">📈</div>
+                    <h3>+50%</h3>
+                    <p>Del poder adquisitivo global está en manos de la generación sénior.</p>
+                </div>
+                <div class="glass-card hero-stats-card shift-y">
+                    <div class="card-icon">🤝</div>
+                    <h3>3x</h3>
+                    <p>Mayor retención en empleados mayores a 50 años frente a jóvenes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Datos Oportunidad -->
+    <section id="oportunidad" class="stats-section">
+        <div class="container">
+            <div class="section-title text-center">
+                <h2>El Tsunami Silencioso</h2>
+                <p class="subtitle">Tres realidades clave que definen la viabilidad económica de las empresas modernas.</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-number">19%</div>
+                    <h4>Más Ingresos por Innovación</h4>
+                    <p>Equipos multigeneracionales aportan diversas perspectivas incrementando la facturación en innovación.</p>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">4%</div>
+                    <h4>Menos Rotación Global</h4>
+                    <p>Incrementar un 10% la proporción de trabajadores senior reduce significativamente la rotación general.</p>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">1.1%</div>
+                    <h4>Más Productividad Total</h4>
+                    <p>Por cada aumento del 10% de empleados mayores de 50 años (según estimaciones de la OCDE).</p>
+                </div>
+            </div>
+
+            <!-- Análisis Natalidad vs Longevidad -->
+            <div class="glass-card demographic-card">
+                <h3 class="text-center" style="color: var(--text-primary); margin-bottom: 8px;">Transición Demográfica Global</h3>
+                <p class="text-center subtitle" style="max-width: 650px; margin: 0 auto 24px auto;">El cruce de dos fuerzas macroeconómicas reconfigura la fuerza laboral activa y el mercado de consumo en todo el planeta.</p>
+                <div class="demographic-grid">
+                    <div class="demographic-col">
+                        <h4>📉 Invierno Demográfico Mundial</h4>
+                        <p>La tasa global de fecundidad ha caído de 3.3 hijos por mujer en 1990 a solo 2.3 en la actualidad. Con el nivel de reemplazo en 2.1, casi dos tercios de la población mundial vive hoy en países con tasas decrecientes. En el este de Asia (Corea del Sur en 0.72) y en América Latina (1.8), la escasez futura de mano de obra activa ejerce una fuerte presión fiscal en los sistemas de jubilaciones y salud.</p>
+                    </div>
+                    <div class="demographic-col">
+                        <h4>👵 Preponderancia Sénior y Longevidad</h4>
+                        <p>Los grandes avances sanitarios incrementan drásticamente la vida útil activa, haciendo que el segmento de más de 50 años sea el de mayor crecimiento. Esta generación concentra más del 50% del gasto global. La Economía Plateada (Silver Economy) deja de ser un riesgo fiscal y pasa a ser un motor obligatorio de innovación, empleo flexible adaptado y consumo especializado.</p>
+                    </div>
+                </div>
+                <p class="demographic-footer-note">Datos fundamentados y estudiados por organismos globales líderes como el Banco Mundial, BID Lab, OMS y CEPAL.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Escalera de Valor -->
+    <section id="escalera" class="escalera-section">
+        <div class="container">
+            <div class="section-title text-center">
+                <h2>La Escalera de Valor</h2>
+                <p class="subtitle">Una ruta de crecimiento accesible para escalar su compromiso y captar el ROI sénior.</p>
+            </div>
+            <div class="escalera-grid">
+                <!-- Nivel Básico -->
+                <div class="escalera-card level-bronze">
+                    <div class="level-badge">Básico</div>
+                    <h3>Sello de Compromiso Inicial</h3>
+                    <a href="#autodiagnostico" class="price" style="text-decoration: none; display: inline-block;">Obténgalo ahora</a>
+                    <p class="card-desc">Autodiagnóstico automático online. Significa que la empresa ha iniciado formalmente su camino hacia la certificación total. Válido por 1 año.</p>
+                    <ul class="features-list">
+                        <li>Formulario automatizado de parámetros básicos</li>
+                        <li>Informe de "Quick Wins" descargable</li>
+                        <li>Distintivo digital "Compromiso Inicial"</li>
+                        <li>Renovación obligatoria anual</li>
+                    </ul>
+                    <a href="#autodiagnostico" class="btn btn-outline btn-block">Iniciar Cuestionario</a>
+                </div>
+                <!-- Nivel Medio -->
+                <div class="escalera-card level-silver popular">
+                    <div class="level-badge">Medio</div>
+                    <h3>Certificación Condicional</h3>
+                    <div class="price">Consultar Tarifa</div>
+                    <p class="card-desc">Para empresas que han logrado avances significativos en la normativa de inclusión, pero aún no la completan en su totalidad. Válido por 1 año.</p>
+                    <ul class="features-list">
+                        <li>Auditoría virtual y revisión de avances</li>
+                        <li>Taller de sensibilización para personal</li>
+                        <li>Sello de "Certificación Previa"</li>
+                        <li>Plan de acción para la certificación total</li>
+                    </ul>
+                    <a href="#contacto-modal" class="btn btn-primary btn-block" id="btn-request-silver">Solicitar Información</a>
+                </div>
+                <!-- Nivel Premium -->
+                <div class="escalera-card level-gold">
+                    <div class="level-badge">Premium</div>
+                    <h3>Empresa Certificada</h3>
+                    <div class="price">Consultar Tarifa</div>
+                    <p class="card-desc">Certificación total para organizaciones que cumplen el 100% de la normativa exigida. Validez de 1 año con recertificación.</p>
+                    <ul class="features-list">
+                        <li>Auditoría física completa y auditoría de procesos</li>
+                        <li>Programa "Mystery Shopper Senior" integrado</li>
+                        <li>Ingreso a la red exclusiva de Líderes Age-Friendly</li>
+                        <li>Sello oficial "Empresa Certificada"</li>
+                    </ul>
+                    <a href="#contacto-modal" class="btn btn-outline btn-block" id="btn-request-gold">Solicitar Información</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fundamentos Técnicos y Normativa Internacional -->
+    <section id="normativas" class="normativas-section">
+        <div class="container">
+            <div class="section-title text-center">
+                <h2>Fundamentos y Normativa Internacional</h2>
+                <p class="subtitle">Nuestros estándares de evaluación están plenamente respaldados por los marcos y normas técnicas de los organismos globales líderes en longevidad y desarrollo.</p>
+            </div>
+            <div class="normativas-grid">
+                <!-- ISO 25550 -->
+                <div class="glass-card normativa-card">
+                    <div class="normativa-badge badge-iso">ESTÁNDAR LABORAL</div>
+                    <div class="normativa-header">
+                        <div class="card-icon">🌐</div>
+                        <h3>Norma ISO 25550:2022</h3>
+                    </div>
+                    <p class="normativa-org">Organización Internacional de Normalización</p>
+                    <p class="normativa-text">El estándar global de gestión para sociedades envejecidas. Define los requisitos para una fuerza laboral inclusiva, combatiendo el edadismo, adaptando puestos y promoviendo la diversidad generacional en RR.HH.</p>
+                    <ul class="normativa-bullet">
+                        <li>Diseño de trabajo flexible y ergonómico</li>
+                        <li>Procesos de selección y contratación sin sesgos</li>
+                        <li>Mentorías cruzadas e intergeneracionales</li>
+                    </ul>
+                    <a href="https://www.iso.org/standard/76420.html" target="_blank" class="normativa-link">Ver norma oficial ISO ↗</a>
+                </div>
+                <!-- ISO 25551 -->
+                <div class="glass-card normativa-card">
+                    <div class="normativa-badge badge-iso">SOPORTE AL EMPLEADO</div>
+                    <div class="normativa-header">
+                        <div class="card-icon">🤝</div>
+                        <h3>Norma ISO 25551:2021</h3>
+                    </div>
+                    <p class="normativa-org">Organización Internacional de Normalización</p>
+                    <p class="normativa-text">Ofrece directrices operativas a las empresas para retener y apoyar al personal de la "generación sándwich" que cuida de familiares mayores dependientes.</p>
+                    <ul class="normativa-bullet">
+                        <li>Políticas de flexibilidad horaria y jornadas asincrónicas</li>
+                        <li>Programas para mitigar el burnout del cuidador</li>
+                        <li>Cultura corporativa libre de estigmas y penalizaciones</li>
+                    </ul>
+                    <a href="https://www.iso.org/standard/76421.html" target="_blank" class="normativa-link">Ver norma oficial ISO ↗</a>
+                </div>
+                <!-- ISO 25556 -->
+                <div class="glass-card normativa-card">
+                    <div class="normativa-badge badge-iso">INCLUSIÓN DIGITAL</div>
+                    <div class="normativa-header">
+                        <div class="card-icon">💻</div>
+                        <h3>Norma ISO 25556:2025</h3>
+                    </div>
+                    <p class="normativa-org">Organización Internacional de Normalización</p>
+                    <p class="normativa-text">Regula el diseño y desarrollo tecnológico para asegurar que la digitalización masiva de servicios no excluya a la población mayor de 50 años.</p>
+                    <ul class="normativa-bullet">
+                        <li>Capa de accesibilidad extendida para interfaces táctiles</li>
+                        <li>Auditoría de algoritmos para evitar sesgos de edad en IA</li>
+                        <li>Protocolo de soporte humano directo obligatorio</li>
+                    </ul>
+                    <a href="https://www.iso.org/standard/84224.html" target="_blank" class="normativa-link">Ver norma oficial ISO ↗</a>
+                </div>
+                <!-- OMS -->
+                <div class="glass-card normativa-card">
+                    <div class="normativa-badge badge-oms">SALUD Y ENTORNO</div>
+                    <div class="normativa-header">
+                        <div class="card-icon">🏥</div>
+                        <h3>Marcos OMS (Age-Friendly & ICOPE)</h3>
+                    </div>
+                    <p class="normativa-org">Organización Mundial de la Salud</p>
+                    <p class="normativa-text">Estándares para la adaptación de entornos físicos, la accesibilidad de canales analógicos conviviendo con los digitales y el tamizaje de capacidad intrínseca.</p>
+                    <ul class="normativa-bullet">
+                        <li>Entornos físicos y edificios libres de barreras de acceso</li>
+                        <li>Canales presenciales/telefónicos de comunicación alternativa</li>
+                        <li>Tamizaje clínico-comunitario de capacidades funcionales</li>
+                    </ul>
+                    <a href="https://extranet.who.int/agefriendlyworld/" target="_blank" class="normativa-link">Ver programas de la OMS ↗</a>
+                </div>
+                <!-- OIT -->
+                <div class="glass-card normativa-card">
+                    <div class="normativa-badge badge-bid">TRATADO INTERNACIONAL</div>
+                    <div class="normativa-header">
+                        <div class="card-icon">🏛️</div>
+                        <h3>OIT Recomendación 162</h3>
+                    </div>
+                    <p class="normativa-org">Organización Internacional del Trabajo</p>
+                    <p class="normativa-text">Tratado político-jurídico global en materia laboral. Protege la igualdad de trato, prohíbe el despido edadista y promueve esquemas de jubilación flexible.</p>
+                    <ul class="normativa-bullet">
+                        <li>Igualdad de oportunidades sin discriminación cronológica</li>
+                        <li>Programas corporativos de transición y jubilación gradual</li>
+                        <li>Protección laboral en reestructuraciones corporativas</li>
+                    </ul>
+                    <a href="https://www.ilo.org/dyn/normlex/es/f?p=NORMLEXPUB:12100:0::NO::P12100_ILO_CODE:R162" target="_blank" class="normativa-link">Ver Recomendación en NORMLEX ↗</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Matriz de Rigor Técnico Comparativo -->
+    <section id="comparativa" class="comparativa-section">
+        <div class="container">
+            <div class="section-title text-center">
+                <h2>¿Por qué Age Friend Seal?</h2>
+                <p class="subtitle">Una comparativa clara sobre cómo nuestro enfoque híbrido integral supera a las alternativas tradicionales.</p>
+            </div>
+            
+            <div class="glass-card comparativa-container">
+                <div class="table-responsive">
+                    <table class="comparativa-table">
+                        <thead>
+                            <tr>
+                                <th>Dimensión Evaluada</th>
+                                <th>Sello de Empleo Senior <br><small>(Ej. CAFE EE.UU. / México)</small></th>
+                                <th>Acreditación Local <br><small>(Ej. Irlanda / Euskadi)</small></th>
+                                <th class="highlight-column">Age Friend Seal <br><small>(Nuestra Acreditación)</small></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="td-label"><strong>Eje de Talento Interno</strong><br><small>Políticas de contratación inclusiva, mentorías cruzadas y soporte a cuidadores (ISO 25550 / 25551).</small></td>
+                                <td class="text-center success-check">✓ <br><span class="table-text">Completo</span></td>
+                                <td class="text-center danger-cross">✗ <br><span class="table-text">No evaluado</span></td>
+                                <td class="text-center success-check highlight-column">✓ <br><span class="table-text">Completo (Integrado)</span></td>
+                            </tr>
+                            <tr>
+                                <td class="td-label"><strong>Eje de Cliente y Canal Digital</strong><br><small>Accesibilidad en locales, capacitación de cajeros e interfaces web/aplicaciones sin edadismo (ISO 25556 / OMS).</small></td>
+                                <td class="text-center danger-cross">✗ <br><span class="table-text">No evaluado</span></td>
+                                <td class="text-center success-check">✓ <br><span class="table-text">Completo</span></td>
+                                <td class="text-center success-check highlight-column">✓ <br><span class="table-text">Completo (Integrado)</span></td>
+                            </tr>
+                            <tr>
+                                <td class="td-label"><strong>Modelo de Autoevaluación</strong><br><small>Disponibilidad de herramientas automáticas y ágiles para un diagnóstico de brechas inmediato.</small></td>
+                                <td class="text-center danger-cross">✗ <br><span class="table-text">Manual / Lento</span></td>
+                                <td class="text-center warning-circle">⚠ <br><span class="table-text">Talleres locales</span></td>
+                                <td class="text-center success-check highlight-column">✓ <br><span class="table-text">Instantáneo (Autodiagnóstico)</span></td>
+                            </tr>
+                            <tr>
+                                <td class="td-label"><strong>Escalera de Certificación</strong><br><small>Niveles progresivos (Básico, Medio, Premium) para adaptarse al presupuesto y madurez de cada negocio.</small></td>
+                                <td class="text-center danger-cross">✗ <br><span class="table-text">Nivel único</span></td>
+                                <td class="text-center danger-cross">✗ <br><span class="table-text">Nivel único</span></td>
+                                <td class="text-center success-check highlight-column">✓ <br><span class="table-text">3 Niveles Flexibles</span></td>
+                            </tr>
+                            <tr>
+                                <td class="td-label"><strong>Valor Físico y Digital</strong><br><small>Entrega de credenciales digitales verificables junto a calcomanías físicas listas para imprimir en vitrinas.</small></td>
+                                <td class="text-center warning-circle">⚠ <br><span class="table-text">Solo digital</span></td>
+                                <td class="text-center success-check">✓ <br><span class="table-text">Físico en tienda</span></td>
+                                <td class="text-center success-check highlight-column">✓ <br><span class="table-text">Híbrido (Sello + Calcomanía)</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Radar de Noticias RSS -->
+    <section id="radar-noticias" class="news-section">
+        <div class="container">
+            <div class="section-title text-center">
+                <h2>Radar de Longevidad & Economía Plateada</h2>
+                <p class="subtitle">Últimas tendencias, estudios y normativas globales recopiladas en tiempo real de fuentes internacionales seleccionables.</p>
+            </div>
+            
+            <div class="news-grid-container">
+                <div class="news-loading" id="news-loading">
+                    <div class="spinner"></div>
+                    <p>Obteniendo últimas noticias de las fuentes seleccionadas...</p>
+                </div>
+                <div class="news-error hidden" id="news-error">
+                    <p>⚠️ No se pudieron cargar las noticias en este momento. Por favor, verifica tu conexión o las URLs de los feeds.</p>
+                </div>
+                <div class="news-grid hidden" id="news-grid">
+                    <!-- Las tarjetas se inyectarán dinámicamente desde JavaScript -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Autodiagnóstico MVP -->
+    <section id="autodiagnostico" class="diagnostico-section">
+        <div class="container container-narrow">
+            <div class="section-title text-center">
+                <h2>Autodiagnóstico Age-Friendly</h2>
+                <p class="subtitle">Evalúe el compromiso de su empresa bajo los 3 pilares del Sello de Compromiso en solo 5 minutos.</p>
+            </div>
+
+            <!-- Contenedor del Cuestionario -->
+            <div class="glass-card quiz-container" id="quiz-card">
+                <!-- Barra de Progreso -->
+                <div class="quiz-progress-bar" id="quiz-progress-bar">
+                    <div class="progress-info">
+                        <span id="quiz-pilar-name">Pilar 1: Accesibilidad Física</span>
+                        <span id="quiz-step-text">Pregunta 1 de 15</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="quiz-progress-fill" style="width: 6.66%;"></div>
+                    </div>
+                </div>
+
+                <!-- Pregunta Activa -->
+                <div class="quiz-question-box" id="question-box">
+                    <h3 id="question-title">¿El establecimiento dispone de accesos sin escalones o con rampas antideslizantes adecuadas para personas con movilidad reducida?</h3>
+                    
+                    <div class="quiz-options" id="quiz-options">
+                        <!-- Opciones dinámicas en JS -->
+                    </div>
+                </div>
+
+                <!-- VISTA REGISTRO (Oculta al inicio) -->
+                <div class="quiz-register-container hidden" id="quiz-register-view">
+                    <div class="register-header text-center">
+                        <span class="register-badge">REGISTRO CORPORATIVO</span>
+                        <h3>Cree su cuenta profesional</h3>
+                        <p>Complete sus datos corporativos para guardar su progreso y desbloquear las preguntas restantes del cuestionario.</p>
+                    </div>
+                    <form id="quiz-register-form" class="register-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reg-company">Nombre de la Empresa</label>
+                                <input type="text" id="reg-company" required placeholder="Ej. Silver Travel Agency">
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-sector">Sector de la Empresa</label>
+                                <select id="reg-sector" required>
+                                    <option value="" disabled selected>Seleccione un sector...</option>
+                                    <option value="Turismo y Hospitalidad">Turismo y Hospitalidad</option>
+                                    <option value="Consumo masivo">Consumo masivo</option>
+                                    <option value="Bebidas">Bebidas</option>
+                                    <option value="Sector publico">Sector público</option>
+                                    <option value="Servicios financieros">Servicios financieros</option>
+                                    <option value="Tecnología y software">Tecnología y software</option>
+                                    <option value="Salud y bienestar">Salud y bienestar</option>
+                                    <option value="Retail">Retail</option>
+                                    <option value="Energía y recursos naturales">Energía y recursos naturales</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reg-name">Responsable (Nombre y Apellido)</label>
+                                <input type="text" id="reg-name" required placeholder="Ej. Ana Martínez">
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-role">Cargo del Responsable</label>
+                                <input type="text" id="reg-role" required placeholder="Ej. Directora de Operaciones">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-email">Email Corporativo</label>
+                            <input type="email" id="reg-email" required placeholder="nombre@empresa.com">
+                        </div>
+                        <button type="submit" class="btn btn-gradient btn-block">Crear Cuenta y Enviar Código</button>
+                    </form>
+                </div>
+
+                <!-- VISTA VERIFICACIÓN OTP (Oculta al inicio) -->
+                <div class="quiz-confirm-container hidden" id="quiz-confirm-view">
+                    <div class="register-header text-center">
+                        <span class="register-badge">VERIFICACIÓN</span>
+                        <h3>Confirme su dirección de correo</h3>
+                        <p>Hemos enviado un código de verificación de 6 dígitos a <strong id="sent-email-display">su correo</strong>. Ingréselo para continuar.</p>
+                    </div>
+                    <div class="otp-inputs-wrapper">
+                        <div class="otp-inputs">
+                            <input type="text" maxlength="1" class="otp-digit" data-index="0" inputmode="numeric">
+                            <input type="text" maxlength="1" class="otp-digit" data-index="1" inputmode="numeric">
+                            <input type="text" maxlength="1" class="otp-digit" data-index="2" inputmode="numeric">
+                            <input type="text" maxlength="1" class="otp-digit" data-index="3" inputmode="numeric">
+                            <input type="text" maxlength="1" class="otp-digit" data-index="4" inputmode="numeric">
+                            <input type="text" maxlength="1" class="otp-digit" data-index="5" inputmode="numeric">
+                        </div>
+                    </div>
+                    <div id="otp-error-msg" class="otp-error hidden">⚠️ El código ingresado es incorrecto. Intente nuevamente.</div>
+                    <button class="btn btn-primary btn-block" id="btn-confirm-otp">Verificar Cuenta y Continuar</button>
+                    <p class="otp-resend">¿No recibió el código? <a href="#" id="btn-otp-resend">Reenviar correo</a></p>
+                </div>
+
+                <!-- Controles -->
+                <div class="quiz-controls" id="quiz-controls">
+                    <button class="btn btn-outline" id="btn-quiz-prev" disabled>Anterior</button>
+                    <button class="btn btn-primary" id="btn-quiz-next">Siguiente</button>
+                </div>
+            </div>
+
+            <!-- Contenedor de Resultados (Oculto Inicialmente) -->
+            <div class="glass-card results-container hidden" id="results-card">
+                <div class="results-header text-center">
+                    <div class="results-badge">RESULTADO DE AUTODIAGNÓSTICO</div>
+                    <h2>Análisis de Amigabilidad Digital y Operativa</h2>
+                    
+                    <!-- Círculo de Puntuación -->
+                    <div class="score-circle-container">
+                        <svg class="score-ring" width="160" height="160">
+                            <circle class="score-ring-bg" stroke="#1e293b" stroke-width="12" fill="transparent" r="70" cx="80" cy="80"/>
+                            <circle class="score-ring-fill" id="score-fill" stroke="url(#silver-gold-gradient)" stroke-width="12" stroke-linecap="round" fill="transparent" r="70" cx="80" cy="80" stroke-dasharray="440" stroke-dashoffset="440"/>
+                            <defs>
+                                <linearGradient id="silver-gold-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#94a3b8" />
+                                    <stop offset="100%" stop-color="#fbbf24" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div class="score-text">
+                            <span id="score-percentage">0%</span>
+                            <span class="score-label">Puntaje</span>
+                        </div>
+                    </div>
+                    
+                    <h3 id="results-status-title" class="results-status">Su empresa está en camino</h3>
+                    <p id="results-status-desc" class="results-desc">Tiene un compromiso inicial sólido, pero existen áreas clave por mejorar para consolidar el público senior.</p>
+                </div>
+
+                <!-- Gráfico de Pilares -->
+                <div class="pillar-charts">
+                    <h4>Puntuación por Pilares Críticos</h4>
+                    
+                    <div class="pillar-row">
+                        <div class="pillar-label">
+                            <span>Accesibilidad Física</span>
+                            <span id="pillar-score-1">0%</span>
+                        </div>
+                        <div class="pillar-bar-track">
+                            <div class="pillar-bar-fill fill-p1" id="pillar-fill-1" style="width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="pillar-row">
+                        <div class="pillar-label">
+                            <span>Atención y Servicio</span>
+                            <span id="pillar-score-2">0%</span>
+                        </div>
+                        <div class="pillar-bar-track">
+                            <div class="pillar-bar-fill fill-p2" id="pillar-fill-2" style="width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="pillar-row">
+                        <div class="pillar-label">
+                            <span>Inclusión y Comunicación</span>
+                            <span id="pillar-score-3">0%</span>
+                        </div>
+                        <div class="pillar-bar-track">
+                            <div class="pillar-bar-fill fill-p3" id="pillar-fill-3" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recomendaciones (Quick Wins) -->
+                <div class="recommendations-box">
+                    <h4>📋 Recomendaciones Inmediatas (Quick Wins)</h4>
+                    <ul class="rec-list" id="recommendations-list">
+                        <!-- Recomendaciones generadas dinámicamente -->
+                    </ul>
+                </div>
+
+                <!-- Acciones del Reporte -->
+                <div class="results-actions">
+                    <button class="btn btn-gradient btn-lg btn-block" id="btn-claim-sello">Obtener Sello "Compromiso Inicial" ($99 USD)</button>
+                    <div class="results-sub-actions">
+                        <button class="btn btn-outline" id="btn-download-pdf">Descargar Reporte Completo (PDF)</button>
+                        <button class="btn btn-outline" id="btn-restart-quiz">Repetir Autodiagnóstico</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Alianzas y Descarga del Pitch -->
+    <section id="alianzas" class="alianzas-section">
+        <div class="container alianzas-container">
+            <div class="section-title text-center">
+                <h2>Alianzas Estratégicas y Pitch Corporativo</h2>
+                <p class="subtitle">Colaboramos con corporaciones, comercios, proveedores e instituciones públicas para liderar la Gran Adaptación de la fuerza laboral y el consumo sénior.</p>
+            </div>
+            
+            <div class="alianzas-grid">
+                <div class="glass-card alianzas-card">
+                    <h4>💼 Clientes B2B & Empleadores</h4>
+                    <p>Diseñe un plan de acción para capturar el capital intelectual sénior, estructurar mentorías intergeneracionales y certificar su marca empleadora bajo el estándar ISO 25550.</p>
+                </div>
+                <div class="glass-card alianzas-card">
+                    <h4>🛍️ Consumo B2C & Canales</h4>
+                    <p>Adapte sus sucursales físicas y plataformas digitales a la accesibilidad cognitiva y visual de la generación plateada bajo los lineamientos ISO 25556 y OMS.</p>
+                </div>
+                <div class="glass-card alianzas-card">
+                    <h4>🤝 Proveedores & AgeTech</h4>
+                    <p>Conecte con nuestro ecosistema de soluciones tecnológicas aplicadas al monitoreo, la telemedicina y la autonomía de las personas mayores de 50 años.</p>
+                </div>
+                <div class="glass-card alianzas-card">
+                    <h4>🏛️ Instituciones Públicas y Privadas</h4>
+                    <p>Desarrolle alianzas estratégicas para fomentar subsidios de contratación activa, ciudades amigables y planes de longevidad urbana.</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 40px;">
+                <button class="btn btn-gradient btn-lg" id="btn-open-pitch">Descargar Pitch Corporativo</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Descarga de Pitch Lead Capture -->
+    <div class="modal-overlay hidden" id="pitch-modal">
+        <div class="glass-card modal-content text-center" style="max-width: 500px;">
+            <button class="modal-close" id="btn-pitch-modal-close">&times;</button>
+            <div style="font-size: 3rem; margin-bottom: 16px;">📄</div>
+            <h3>Descargar Pitch Corporativo</h3>
+            <p>Complete sus datos profesionales para descargar de forma inmediata el dossier corporativo con la propuesta de alianzas para B2B, B2C, proveedores e instituciones.</p>
+            <form id="pitch-form" class="modal-form" style="text-align: left; margin-top: 24px;">
+                <div class="form-group">
+                    <label for="pitch-name">Nombre y Apellido</label>
+                    <input type="text" id="pitch-name" required placeholder="Ej. Carlos Mendoza">
+                </div>
+                <div class="form-group">
+                    <label for="pitch-phone">Teléfono de Contacto</label>
+                    <input type="tel" id="pitch-phone" required placeholder="Ej. +56 9 8765 4321">
+                </div>
+                <div class="form-group">
+                    <label for="pitch-corp-email">Correo Electrónico Corporativo</label>
+                    <input type="email" id="pitch-corp-email" required placeholder="carlos@empresa.com">
+                </div>
+                <div class="form-group">
+                    <label for="pitch-format">Formato de Descarga</label>
+                    <select id="pitch-format" style="width: 100%; padding: 10px; border-radius: 8px; background: rgba(15, 23, 42, 0.8); color: var(--text-primary); border: 1px solid var(--border-color); font-family: var(--font-body); font-size: 0.95rem;">
+                        <option value="pdf">Documento PDF (.pdf) - Recomendado</option>
+                        <option value="html">Folleto Interactivo HTML (.html)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-gradient btn-block" style="margin-top: 12px;">Verificar Datos y Descargar Dossier</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Formulario de Contacto / Pasarela Simulado -->
+    <div class="modal-overlay hidden" id="contact-modal">
+        <div class="glass-card modal-content">
+            <button class="modal-close" id="btn-modal-close">&times;</button>
+            <div class="modal-header">
+                <h3 id="modal-title">Solicitar Auditoría Virtual (Nivel Medio)</h3>
+                <p id="modal-subtitle">Deje sus datos y un asesor se contactará para coordinar la auditoría virtual.</p>
+            </div>
+            <form id="contact-form" class="modal-form">
+                <div class="form-group">
+                    <label for="comp-name">Nombre de la Empresa</label>
+                    <input type="text" id="comp-name" required placeholder="Ej. Hotel del Valle">
+                </div>
+                <div class="form-group">
+                    <label for="contact-email">Correo Electrónico Corporativo</label>
+                    <input type="email" id="contact-email" required placeholder="correo@empresa.com">
+                </div>
+                <div class="form-group">
+                    <label for="contact-phone">Número de Teléfono</label>
+                    <input type="tel" id="contact-phone" required placeholder="+56 9 1234 5678">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Enviar Solicitud</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Pago Sello Simulado -->
+    <div class="modal-overlay hidden" id="payment-modal">
+        <div class="glass-card modal-content text-center">
+            <button class="modal-close" id="btn-pay-modal-close">&times;</button>
+            <div class="payment-icon">💳</div>
+            <h3>Sello de Compromiso Inicial</h3>
+            <p>Acceda al distintivo de "Compromiso Inicial" que certifica el inicio del camino hacia la certificación total. Válido por 1 año.</p>
+            <div class="payment-badge-display">
+                <div id="decal-preview-container" class="decal-preview-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+                      <defs>
+                        <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#0f172a" />
+                          <stop offset="100%" stop-color="#020617" />
+                        </linearGradient>
+                        <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#fbbf24" />
+                          <stop offset="50%" stop-color="#f59e0b" />
+                          <stop offset="100%" stop-color="#b45309" />
+                        </linearGradient>
+                        <linearGradient id="glassReflect" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.15" />
+                          <stop offset="40%" stop-color="#ffffff" stop-opacity="0.05" />
+                          <stop offset="40.1%" stop-color="#ffffff" stop-opacity="0" />
+                          <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+                        </linearGradient>
+                      </defs>
+                      <rect x="10" y="10" width="380" height="380" rx="30" ry="30" fill="url(#bgGrad)" stroke="url(#goldGrad)" stroke-width="8" />
+                      <rect x="25" y="25" width="350" height="350" rx="20" ry="20" fill="none" stroke="#fbbf24" stroke-width="2" stroke-dasharray="8,6" />
+                      <text x="200" y="75" fill="#fbbf24" font-family="'Outfit', 'Inter', sans-serif" font-weight="800" font-size="16" letter-spacing="3" text-anchor="middle">SOMOS AMIGABLES</text>
+                      <text x="200" y="100" fill="#94a3b8" font-family="'Inter', sans-serif" font-weight="600" font-size="10" letter-spacing="4" text-anchor="middle">CON LA GENERACIÓN PLATEADA</text>
+                      <line x1="120" y1="120" x2="280" y2="120" stroke="url(#goldGrad)" stroke-width="2" />
+                      <text x="200" y="165" fill="#f8fafc" font-family="'Outfit', 'Inter', sans-serif" font-weight="700" font-size="22" text-anchor="middle">Su Empresa</text>
+                      <rect x="90" y="190" width="220" height="35" rx="8" ry="8" fill="rgba(251, 191, 36, 0.1)" stroke="url(#goldGrad)" stroke-width="1.5" />
+                      <text x="200" y="213" fill="#fbbf24" font-family="'Outfit', 'Inter', sans-serif" font-weight="800" font-size="13" letter-spacing="2" text-anchor="middle">COMPROMISO INICIAL</text>
+                      <circle cx="200" cy="275" r="30" fill="#1e293b" stroke="#fbbf24" stroke-width="2" />
+                      <path d="M 200 257 L 205 268 L 217 268 L 208 276 L 211 288 L 200 280 L 189 288 L 192 276 L 183 268 L 195 268 Z" fill="#fbbf24" />
+                      <text x="200" y="335" fill="#ffffff" font-family="'Outfit', 'Inter', sans-serif" font-weight="800" font-size="18" letter-spacing="1" text-anchor="middle">Age Friend Seal</text>
+                      <text x="200" y="360" fill="#94a3b8" font-family="'Inter', sans-serif" font-weight="500" font-size="10" text-anchor="middle">Norma ISO 25550 / ISO 25551 / ISO 25556</text>
+                      <text x="200" y="375" fill="#fbbf24" font-family="'Inter', sans-serif" font-weight="700" font-size="9" letter-spacing="1" text-anchor="middle">VALIDADO REGIONALMENTE • 2026</text>
+                      <path d="M 10 10 L 390 10 L 390 180 L 10 260 Z" fill="url(#glassReflect)" pointer-events="none" />
+                    </svg>
+                </div>
+            </div>
+            <div class="payment-amount">Monto a pagar: <strong>$99.00 USD</strong></div>
+            <button class="btn btn-gradient btn-block" id="btn-pay-submit">Simular Pago y Descargar Distintivo</button>
+            <p class="payment-security-text">🔒 Pago seguro simulado para propósitos de demostración MVP.</p>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    <footer class="footer">
+        <div class="container footer-container text-center">
+            <div class="logo" style="justify-content: center; margin-bottom: 16px;">
+                <img src="logo_age_friend_seal.png" alt="Age Friend Seal Logo" class="logo-img">
+                <span class="logo-text"><span class="logo-accent">Age</span> Friend Seal</span>
+            </div>
+            <p class="footer-links" style="margin-bottom: 16px;">
+                <a href="#oportunidad" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Economía Plateada</a> |
+                <a href="#alianzas" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Alianzas</a> |
+                <a href="privacidad.html" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Política de Privacidad</a> | 
+                <a href="terminos.html" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Términos y Condiciones</a> |
+                <a href="en.html" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth); font-weight: bold;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">English (EN)</a>
+            </p>
+            <p>&copy; 2026 Instituto Certificador Age-Friendly Internacional. Todos los derechos reservados.</p>
+            <p class="footer-note">Desarrollado bajo el marco de la Norma ISO 25550 y mejores prácticas intergeneracionales.</p>
+        </div>
+    </footer>
+
+    <!-- Script de Lógica -->
+    <script src="app.js"></script>
+</body>
+</html>

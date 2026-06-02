@@ -1,0 +1,14 @@
+{
+  "name": "normative-monitor-agent",
+  "version": "1.0.0",
+  "description": "Agent to monitor and alert on international normative updates for Age Friend Seal.",
+  "main": "monitor.js",
+  "scripts": {
+    "start": "node monitor.js"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "dotenv": "^16.3.1"
+  },
+  "private": true
+}

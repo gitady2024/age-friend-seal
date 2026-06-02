@@ -1,0 +1,42 @@
+[
+  {
+    "id": "iso-25550",
+    "name": "ISO 25550:2022 (Inclusión laboral activa)",
+    "institution": "iso",
+    "url": "https://www.iso.org/standard/76420.html",
+    "current_version": "2022",
+    "status_registered": "Published"
+  },
+  {
+    "id": "iso-25551",
+    "name": "ISO 25551:2021 (Apoyo a empleados cuidadores)",
+    "institution": "iso",
+    "url": "https://www.iso.org/standard/77288.html",
+    "current_version": "2021",
+    "status_registered": "Published"
+  },
+  {
+    "id": "iso-25556",
+    "name": "ISO 25556 (Amigabilidad para clientes seniors)",
+    "institution": "iso",
+    "url": "https://www.iso.org/standard/76426.html",
+    "current_version": "2021",
+    "status_registered": "Published"
+  },
+  {
+    "id": "oit-162",
+    "name": "OIT Recomendación 162 (Trabajadores de edad)",
+    "institution": "oit",
+    "url": "https://www.ilo.org/dyn/normlex/es/f?p=NORMLEXPUB:12100:0::NO::P12100_ILO_CODE:R162",
+    "current_version": "1980",
+    "status_registered": "Active"
+  },
+  {
+    "id": "oms-icope",
+    "name": "OMS Directrices ICOPE (Cuidado integrado)",
+    "institution": "oms",
+    "url": "https://www.who.int/publications/i/item/9789241550109",
+    "current_version": "2017",
+    "status_registered": "Published"
+  }
+]
