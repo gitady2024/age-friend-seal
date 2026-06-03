@@ -1641,30 +1641,30 @@ const ES_DOSSIER_TEMPLATE = `<div class="dossier-main-wrapper">
             <div class="dossier-highlight-box">
                 <div class="dossier-highlight-box-p">"La Economía Plateada (Silver Economy) deja de ser un riesgo fiscal o una política de beneficencia, y se consolida como el motor definitivo de consumo e innovación empresarial."</div>
             </div>
-            <div class="dossier-p">Frente a este escenario, <strong>Age Friend Seal</strong> provee el marco técnico para que empresas e instituciones se adapten a esta nueva realidad, certificando sus procesos y espacios bajo estrictas directrices internacionales.</div>
+            <div class="dossier-p">Frente a este escenario, <strong>Age Friend Seal</strong> provee una normativa técnica propia estructurada en tres ejes de certificación, que integra los mejores estándares y directrices globales de organizaciones como la ISO, OMS, OPS, BID Lab, OIT, ONU y Banco Mundial.</div>
         </div>
 
         <div class="dossier-page-break"></div>
 
         <div class="dossier-section">
-            <div class="dossier-section-title"><span>💼</span> 2. Clientes B2B & Gestión de Talento</div>
-            <div class="dossier-p">La escasez futura de fuerza laboral activa exige a las organizaciones retener y potenciar su capital intelectual senior. La mentoría cruzada intergeneracional es la clave para sincronizar la frescura digital de los jóvenes y la resiliencia y experiencia estratégica de los profesionales senior.</div>
-            <div class="dossier-p"><strong>Beneficios Clave:</strong></div>
+            <div class="dossier-section-title"><span>💼</span> 2. Clientes B2B & Gestión de Talento (Ejes Laboral y Conciliación)</div>
+            <div class="dossier-p">La escasez futura de fuerza laboral activa exige a las organizaciones retener y potenciar su capital intelectual senior, erradicar el edadismo y apoyar a los empleados cuidadores. La mentoría cruzada intergeneracional es la clave para sincronizar la frescura digital de los jóvenes y la experiencia estratégica de los profesionales senior.</div>
+            <div class="dossier-p"><strong>Ejes Fundamentales e Impacto:</strong></div>
             <div class="dossier-ul">
-                <div class="dossier-li"><strong>Retención del Talento:</strong> Menos rotación en equipos multigeneracionales.</div>
-                <div class="dossier-li"><strong>Cumplimiento de Estándares:</strong> Adaptación conforme a las normas técnicas internacionales <strong>ISO 25550</strong> (Inclusión laboral activa) e <strong>ISO 25551</strong> (Apoyo a empleados cuidadores).</div>
-                <div class="dossier-li"><strong>Productividad Incrementada:</strong> Aumento en un 1.1% de la productividad general por cada 10% adicional de trabajadores de más de 50 años (Datos OCDE).</div>
+                <div class="dossier-li"><strong>Eje Laboral (Talento y Empleabilidad):</strong> Procesos de reclutamiento sin sesgos, fomento de la empleabilidad senior y mentoría inversa. Integra directrices de <strong>ISO 25550</strong>, convenios de la <strong>OIT</strong> y políticas pro-edad de la <strong>ONU</strong>.</div>
+                <div class="dossier-li"><strong>Eje Conciliación (Bienestar Familiar):</strong> Apoyo a empleados de la "Generación Sándwich" que cuidan a familiares dependientes mayores, mediante flexibilidad asincrónica y licencias especiales. Basado en <strong>ISO 25551</strong> y guías de cuidado integrado de la <strong>OPS/OMS</strong>.</div>
+                <div class="dossier-li"><strong>Productividad e Innovación:</strong> Equipos multigeneracionales incrementan un 19% los ingresos por innovación y elevan la productividad total en un 1.1% por cada 10% de aumento en la proporción senior (OCDE).</div>
             </div>
         </div>
 
         <div class="dossier-section">
-            <div class="dossier-section-title"><span>🛍️</span> 3. Clientes B2C & Inclusión en Canales de Venta</div>
-            <div class="dossier-p">Las personas mayores de 50 años concentran más del 50% del gasto global. Sin embargo, muchos de los canales físicos y digitales actuales los excluyen involuntariamente debido a barreras de accesibilidad y edadismo.</div>
-            <div class="dossier-p"><strong>Beneficios Clave:</strong></div>
+            <div class="dossier-section-title"><span>🛍️</span> 3. Clientes B2C & Eje Mercado Digital (Consumo e Inclusión)</div>
+            <div class="dossier-p">Las personas mayores de 50 años concentran más del 50% del gasto global. Sin embargo, muchos de los canales de venta físicos y digitales los excluyen involuntariamente por barreras de accesibilidad y edadismo.</div>
+            <div class="dossier-p"><strong>Eje de Certificación e Inclusión:</strong></div>
             <div class="dossier-ul">
-                <div class="dossier-li"><strong>Accesibilidad Física y Digital:</strong> Certificación de sucursales e interfaces web accesibles bajo los estándares <strong>ISO 25556</strong> y las directrices WCAG/OMS.</div>
-                <div class="dossier-li"><strong>Servicio y Atención:</strong> Protocolos de atención prioritarios y canales asistidos que incrementan la lealtad de marca del segmento silver.</div>
-                <div class="dossier-li"><strong>Certificación de Vitrina:</strong> Despliegue de un sello visible que atrae activamente al público senior con mayor poder adquisitivo.</div>
+                <div class="dossier-li"><strong>Eje Mercado Digital (Diseño e interfaces):</strong> Certificación de accesibilidad digital en interfaces táctiles (AgeTech), mitigación de sesgos de edad en IA y botones de asistencia humana obligatorios. Basado en <strong>ISO 25556</strong>, la red de ciudades amigables de la <strong>OMS</strong> y principios del <strong>BID Lab</strong>.</div>
+                <div class="dossier-li"><strong>Servicio Silver y Lealtad:</strong> Protocolos de atención prioritarios y canales asistidos que incrementan la lealtad y el ticket de compra del segmento plateado.</div>
+                <div class="dossier-li"><strong>Certificación y Confianza:</strong> El sello visible valida el compromiso y atrae activamente al público senior con mayor poder adquisitivo.</div>
             </div>
         </div>
 
@@ -1915,30 +1915,30 @@ const EN_DOSSIER_TEMPLATE = `<div class="dossier-main-wrapper">
             <div class="dossier-highlight-box">
                 <div class="dossier-highlight-box-p">"The Silver Economy is no longer a fiscal risk or a welfare policy, but the definitive engine for consumer spending and business innovation."</div>
             </div>
-            <div class="dossier-p">Given this scenario, <strong>Age Friend Seal</strong> provides the technical framework for companies and institutions to adapt to this new reality, certifying their environments under strict international guidelines.</div>
+            <div class="dossier-p">Given this scenario, <strong>Age Friend Seal</strong> provides its own proprietary technical framework structured in three certification pillars, integrating global standards and guidelines from organizations such as ISO, WHO, PAHO, IDB Lab, ILO, UN, and the World Bank.</div>
         </div>
 
         <div class="dossier-page-break"></div>
 
         <div class="dossier-section">
-            <div class="dossier-section-title"><span>💼</span> 2. B2B Clients & Talent Management</div>
-            <div class="dossier-p">The future shortage of an active workforce requires organizations to retain and empower their senior intellectual capital. Intergenerational cross-mentorship is the key to synchronizing the digital freshness of younger workers with the resilience and strategic experience of senior professionals.</div>
-            <div class="dossier-p"><strong>Key Benefits:</strong></div>
+            <div class="dossier-section-title"><span>💼</span> 2. B2B Clients & Talent Management (Workplace & Conciliation Pillars)</div>
+            <div class="dossier-p">The future shortage of an active workforce requires organizations to retain and empower their senior intellectual capital, eradicate ageism, and support caregiving employees. Intergenerational cross-mentorship is the key to synchronizing the digital freshness of younger workers with the strategic experience of senior professionals.</div>
+            <div class="dossier-p"><strong>Core Pillars & Impact:</strong></div>
             <div class="dossier-ul">
-                <div class="dossier-li"><strong>Talent Retention:</strong> Lower turnover rates in multigenerational teams.</div>
-                <div class="dossier-li"><strong>Standard Compliance:</strong> Adaptation according to international technical standards <strong>ISO 25550</strong> (Active work inclusion) and <strong>ISO 25551</strong> (Support for caregiving employees).</div>
-                <div class="dossier-li"><strong>Increased Productivity:</strong> A 1.1% increase in total productivity for every additional 10% of employees over 50 years old (OECD data).</div>
+                <div class="dossier-li"><strong>Workplace Pillar (Talent & Employability):</strong> Unbiased recruitment, active senior retention, and reverse mentoring. Integrates guidelines from <strong>ISO 25550</strong>, <strong>ILO</strong> conventions, and <strong>UN</strong> pro-age policies.</div>
+                <div class="dossier-li"><strong>Conciliation Pillar (Family Support):</strong> Support for "sandwich generation" employees caring for elder relatives, through asynchronous schedules and caregiving leaves. Based on <strong>ISO 25551</strong> and <strong>PAHO/WHO</strong> integrated care guidelines.</div>
+                <div class="dossier-li"><strong>Productivity & Innovation:</strong> Multigenerational teams boost innovation revenue by 19% and increase total productivity by 1.1% for every 10% increase in the proportion of senior employees (OECD data).</div>
             </div>
         </div>
 
         <div class="dossier-section">
-            <div class="dossier-section-title"><span>🛍️</span> 3. B2C Clients & Sales Channel Inclusion</div>
-            <div class="dossier-p">People over 50 years old command over 50% of global spending. However, many current physical and digital channels unintentionally exclude them due to accessibility barriers and ageism.</div>
-            <div class="dossier-p"><strong>Key Benefits:</strong></div>
+            <div class="dossier-section-title"><span>🛍️</span> 3. B2C Clients & Digital Market Pillar (Consumer & Inclusion)</div>
+            <div class="dossier-p">People over 50 command over 50% of global consumer spending. However, many current physical and digital channels unintentionally exclude them due to accessibility barriers.</div>
+            <div class="dossier-p"><strong>Certification Pillar & Inclusion:</strong></div>
             <div class="dossier-ul">
-                <div class="dossier-li"><strong>Physical & Digital Accessibility:</strong> Certification of physical branches and digital interfaces under <strong>ISO 25556</strong> and WCAG/WHO guidelines.</div>
-                <div class="dossier-li"><strong>Customer Service:</strong> Priority care protocols and assisted channels that increase senior brand loyalty.</div>
-                <div class="dossier-li"><strong>Storefront Decal:</strong> Visual seal displaying certification status, actively attracting high-purchasing-power seniors.</div>
+                <div class="dossier-li"><strong>Digital Market Pillar (Design & Channels):</strong> Certified accessibility for touchscreens (AgeTech), age bias audits in AI algorithms, and mandatory human assistance buttons. Based on <strong>ISO 25556</strong>, the <strong>WHO</strong> age-friendly cities network, and <strong>IDB Lab</strong> principles.</div>
+                <div class="dossier-li"><strong>Silver Service & Loyalty:</strong> Priority care protocols and assisted channels that increase brand loyalty and transaction size in the silver segment.</div>
+                <div class="dossier-li"><strong>Certification & Trust:</strong> A visible, trusted seal that validates your commitment and actively attracts high-purchasing-power seniors.</div>
             </div>
         </div>
 
