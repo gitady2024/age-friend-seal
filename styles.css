@@ -252,21 +252,40 @@ p {
     margin-right: 2px;
 }
 
+/* 1. Evitar que el texto del logo se rompa en varias líneas */
+.logo-text {
+    white-space: nowrap;
+    font-size: 1.4rem; /* Lo reducimos ligeramente para ganar espacio (antes 1.6rem) */
+}
+
+/* 2. Hacer que el espacio entre enlaces sea fluido y no fijo */
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 32px;
+    /* Usamos clamp() para que el gap sea de 24px en pantallas grandes, pero se reduzca hasta 12px en pantallas chicas */
+    gap: clamp(12px, 1.5vw, 24px); 
 }
 
+/* 3. Evitar que los enlaces se rompan y ajustar su tamaño */
 .nav-links a {
     color: var(--text-secondary);
     text-decoration: none;
     font-weight: 500;
+    font-size: 0.95rem; /* Un poco más pequeño y elegante */
+    white-space: nowrap; /* ESTO ES CLAVE: evita que "Economía Plateada" quede en dos líneas */
     transition: var(--transition-smooth);
 }
 
 .nav-links a:not(.btn):hover {
     color: var(--text-primary);
+}
+
+/* 4. Armonizar los botones en la barra de navegación */
+.nav-links .btn {
+    padding: 8px 16px; /* Reducimos el padding vertical y horizontal para que no se vean tan toscos */
+    font-size: 0.9rem; /* Texto del botón más sutil */
+    height: 40px; /* Forzamos una altura consistente */
+    white-space: nowrap;
 }
 
 /* ==========================================================================
@@ -1727,12 +1746,13 @@ a.price:hover {
     text-transform: uppercase;
 }
 
+/* 5. Asegurar que el selector de idioma (EN) mantenga su forma */
 .lang-switch-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 6px 12px;
+    padding: 0 12px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.15);
     color: var(--text-primary);
@@ -1743,6 +1763,8 @@ a.price:hover {
     border-radius: 6px;
     transition: var(--transition-smooth);
     cursor: pointer;
+    white-space: nowrap;
+    height: 40px;
 }
 
 .flag-icon {
@@ -1952,4 +1974,1073 @@ a.price:hover {
     color: var(--text-primary);
     box-shadow: var(--shadow-glow);
 }
+
+/* ==========================================================================
+   User Auth & Account Modals Styling
+   ========================================================================== */
+
+.hidden-field {
+    display: none !important;
+}
+
+.auth-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+}
+
+.auth-tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.05rem;
+    padding: 6px 16px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    position: relative;
+    outline: none;
+}
+
+.auth-tab-btn:hover {
+    color: var(--text-primary);
+}
+
+.auth-tab-btn.active {
+    color: var(--accent-blue);
+}
+
+.auth-tab-btn.active::after {
+    content: "";
+    position: absolute;
+    bottom: -13px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--accent-blue);
+    box-shadow: var(--shadow-glow);
+}
+
+.user-badge-type {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+.user-badge-type.personal {
+    background: rgba(59, 130, 246, 0.1);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.user-badge-type.empresa {
+    background: rgba(245, 158, 11, 0.1);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.account-details-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.account-detail-item {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.account-detail-item strong {
+    color: var(--text-primary);
+}
+
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.8);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    outline: none;
+    transition: var(--transition-smooth);
+}
+
+.form-group select:focus {
+    border-color: var(--accent-blue);
+    box-shadow: var(--shadow-glow);
+}
+
+/* ==========================================================================
+   Widget de Accesibilidad (A11Y) y Modos Especiales
+   ========================================================================== */
+
+/* Escalamiento de Texto Base */
+html {
+    transition: font-size 0.3s ease;
+}
+html.text-large { font-size: 18px; }
+html.text-xlarge { font-size: 20px; }
+
+/* Variables de Alto Contraste */
+body.high-contrast {
+    --bg-main: #000000;
+    --bg-card: #111111;
+    --text-primary: #ffffff;
+    --text-secondary: #e5e5e5;
+    --text-muted: #cccccc;
+    --border-color: #ffffff;
+    --accent-blue: #ffff00; /* Amarillo sobre negro para alto contraste */
+    --accent-blue-hover: #e6e600;
+    --gradient-corporate: #ffff00;
+}
+
+body.high-contrast .glass-card,
+body.high-contrast .navbar,
+body.high-contrast .footer {
+    background: #000000;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 2px solid #ffffff;
+    box-shadow: none;
+}
+
+body.high-contrast .btn-gradient,
+body.high-contrast .btn-primary {
+    background: var(--accent-blue);
+    color: #000000;
+    border: 2px solid #000000;
+    font-weight: 800;
+}
+
+/* Estilos del Widget */
+.a11y-widget {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 9999;
+}
+
+.a11y-toggle {
+    background: var(--accent-blue);
+    color: #fff;
+    border: none;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+}
+
+.a11y-toggle:hover {
+    transform: scale(1.05);
+}
+
+body.high-contrast .a11y-toggle {
+    background: #ffff00;
+    color: #000;
+    border: 2px solid #fff;
+}
+
+.a11y-panel {
+    position: absolute;
+    bottom: 70px;
+    left: 0;
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    width: 280px;
+    padding: 20px;
+    box-shadow: var(--shadow-premium);
+    transform-origin: bottom left;
+    transition: all 0.3s ease;
+}
+
+.a11y-panel.hidden {
+    opacity: 0;
+    transform: scale(0.9);
+    pointer-events: none;
+}
+
+.a11y-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+}
+
+.a11y-header h4 { margin: 0; font-size: 1.1rem; }
+.a11y-header button {
+    background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer;
+}
+
+.a11y-option {
+    margin-bottom: 16px;
+}
+.a11y-option span {
+    display: block; font-size: 0.9rem; margin-bottom: 8px; color: var(--text-secondary);
+}
+
+.a11y-controls {
+    display: flex; gap: 8px;
+}
+.a11y-controls button {
+    flex: 1; padding: 8px; background: rgba(255,255,255,0.1); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px; cursor: pointer; font-weight: bold;
+}
+.a11y-controls button:hover { background: rgba(255,255,255,0.2); }
+
+/* Toggle Switch para Alto Contraste */
+.a11y-switch {
+    position: relative; display: inline-block; width: 50px; height: 26px;
+}
+.a11y-switch input { opacity: 0; width: 0; height: 0; }
+.a11y-slider {
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.2); transition: .4s; border-radius: 34px; border: 1px solid var(--border-color);
+}
+.a11y-slider:before {
+    position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: var(--text-primary); transition: .4s; border-radius: 50%;
+}
+input:checked + .a11y-slider { background-color: var(--accent-blue); }
+input:checked + .a11y-slider:before { transform: translateX(24px); background-color: #000; }
+
+/* ==========================================================================
+   Simulador de ROI B2B
+   ========================================================================== */
+
+.roi-simulator-card {
+    border-color: rgba(59, 130, 246, 0.3);
+    background: linear-gradient(180deg, rgba(17, 24, 39, 0.7) 0%, rgba(30, 41, 59, 0.8) 100%);
+}
+
+.roi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 24px;
+}
+
+@media (max-width: 768px) {
+    .roi-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+}
+
+.roi-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-right: 20px;
+}
+
+@media (min-width: 769px) {
+    .roi-controls {
+        border-right: 1px solid var(--border-color);
+    }
+}
+
+.roi-slider-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.roi-slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.roi-slider-header label {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+.roi-value-display {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--accent-blue);
+    background: rgba(59, 130, 246, 0.1);
+    padding: 4px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* Custom Range Slider */
+.custom-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    outline: none;
+}
+
+.custom-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    transition: var(--transition-smooth);
+}
+
+.custom-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+body.high-contrast .custom-slider::-webkit-slider-thumb {
+    background: var(--accent-blue);
+}
+
+/* Tablero de Resultados */
+.roi-results-board {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.roi-result-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.roi-result-item.total {
+    background: rgba(59, 130, 246, 0.05);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    padding: 20px 16px;
+}
+
+.roi-result-icon {
+    font-size: 1.8rem;
+    background: rgba(255, 255, 255, 0.05);
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+}
+
+.roi-result-text {
+    flex-grow: 1;
+}
+
+.roi-result-text h5 {
+    font-size: 1rem;
+    margin-bottom: 2px;
+    color: var(--text-primary);
+}
+
+.roi-result-text p {
+    font-size: 0.8rem;
+    margin-bottom: 0;
+    color: var(--text-muted);
+}
+
+.roi-result-number {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 1.25rem;
+}
+
+.text-success {
+    color: #34d399; /* Verde esmeralda */
+}
+
+.roi-total-divider {
+    height: 1px;
+    background: dashed 1px var(--border-color);
+    margin: 8px 0;
+}
+
+.total-glow {
+    font-size: 1.75rem;
+    background: var(--gradient-corporate);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+/* ==========================================================================
+   Menú Hamburguesa y Diseño Responsivo (Navbar)
+   ========================================================================== */
+
+/* Botón Hamburguesa (oculto por defecto en escritorio) */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 28px;
+    height: 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 101; /* Asegura que quede por encima del menú desplegado */
+}
+
+/* Las tres líneas del menú */
+.menu-toggle span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: var(--text-primary);
+    border-radius: 2px;
+    transition: var(--transition-smooth);
+}
+
+/* Animación a "X" cuando está activo */
+.menu-toggle.active span:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+}
+.menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+.menu-toggle.active span:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+}
+
+/* Ocultar menú normal y mostrar hamburguesa en pantallas menores a 992px */
+@media (max-width: 992px) {
+    .menu-toggle {
+        display: flex;
+    }
+
+    .nav-links {
+        position: absolute;
+        top: 100%; /* Justo debajo del navbar */
+        left: 0;
+        width: 100%;
+        background: rgba(11, 15, 25, 0.95);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        flex-direction: column;
+        align-items: center;
+        padding: 32px 24px;
+        gap: 20px;
+        border-bottom: 1px solid var(--border-color);
+        box-shadow: var(--shadow-premium);
+        
+        /* Oculto inicialmente con animación */
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-20px);
+        transition: var(--transition-smooth);
+    }
+
+    /* Clase que se activa con JS para mostrar el menú */
+    .nav-links.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    
+    /* Adaptar botones y enlaces para que ocupen todo el ancho en el móvil */
+    .nav-links a {
+        font-size: 1.1rem; /* Texto un poco más grande en móvil para facilitar el tap */
+        width: 100%;
+        text-align: center;
+    }
+
+    .nav-links .btn, 
+    .nav-links .lang-switch-btn {
+        width: 100%;
+        justify-content: center;
+        height: 48px; /* Botones más altos (área táctil) */
+    }
+}
+
+/* ==========================================================================
+   Mejoras de Limpieza Visual en Navbar
+   ========================================================================== */
+
+/* Estilo limpio para el acceso de usuarios (sin botón pesado) */
+.nav-auth-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: var(--transition-smooth);
+    padding: 8px 4px;
+}
+
+.nav-auth-link:hover {
+    color: var(--accent-blue);
+    transform: translateY(-2px);
+}
+
+.nav-auth-link.logged-in {
+    color: var(--accent-gold, #fbbf24);
+}
+
+/* Ocultar elementos no críticos en pantallas menores a 1200px (Laptops) */
+@media (max-width: 1250px) {
+    .hide-on-laptop {
+        display: none !important;
+    }
+}
+
+/* ==========================================================================
+   CORRECCIONES MÓVILES (Menú Hamburguesa y Hero Section)
+   ========================================================================== */
+
+/* 1. Reparación del Menú Desplegable */
+@media (max-width: 992px) {
+    /* Forzar la aparición del menú móvil (Anula el display:none antiguo) */
+    .nav-links {
+        display: flex !important; 
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: rgba(11, 15, 25, 0.98); /* Más opaco para mejor lectura */
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        flex-direction: column;
+        align-items: center;
+        padding: 24px;
+        gap: 16px;
+        border-bottom: 1px solid var(--border-color);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        
+        /* Oculto inicialmente */
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-20px);
+        transition: var(--transition-smooth);
+    }
+
+    .nav-links.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    /* Recuperar los enlaces que ocultamos en la vista laptop */
+    .hide-on-laptop {
+        display: inline-block !important;
+    }
+
+    /* Estilizar los enlaces para que sean botones fáciles de tocar (A11Y) */
+    .nav-links a:not(.btn) {
+        width: 100%;
+        text-align: center;
+        padding: 12px 0;
+        font-size: 1.15rem;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .nav-links a:last-child {
+        border-bottom: none;
+    }
+
+    /* Igualar el ancho de los botones dentro del menú */
+    .nav-links .btn, 
+    .nav-links .lang-switch-btn {
+        width: 100%;
+        justify-content: center;
+        height: 50px;
+        margin-top: 8px;
+    }
+}
+
+/* 2. Reparación del Hero y los Botones */
+@media (max-width: 768px) {
+    .hero-content {
+        text-align: center;
+    }
+
+    /* Apilar botones verticalmente para que respiren */
+    .hero-actions {
+        flex-direction: column !important; 
+        width: 100%;
+        gap: 16px;
+    }
+
+    .hero-actions .btn {
+        width: 100%; /* Botones de ancho completo */
+        margin: 0;
+        padding: 16px 20px; /* Recuperar área táctil cómoda */
+    }
+
+    /* Ajustes tipográficos para que no se vea tan aglomerado en celulares */
+    h1 {
+        font-size: 2.2rem;
+        line-height: 1.25;
+        margin-bottom: 16px;
+    }
+    
+    .hero-content p {
+        font-size: 1.05rem;
+        padding: 0 8px;
+        margin-bottom: 28px;
+    }
+}
+
+/* ==========================================================================
+   CORRECCIONES MÓVILES (Formularios, Cuestionario y Modales)
+   ========================================================================== */
+
+@media (max-width: 600px) {
+    /* 1. Arreglar los campos apilados (separarlos correctamente) */
+    .register-form .form-row {
+        grid-template-columns: 1fr;
+        gap: 16px !important; /* Reemplaza el gap:0 anterior para que respiren */
+    }
+
+    /* 2. Optimizar el espacio interno (padding) en pantallas chicas */
+    .modal-content {
+        padding: 24px 20px;
+    }
+    
+    .quiz-container, .results-container {
+        padding: 24px 16px;
+    }
+
+    /* 3. Asegurar que los 6 cuadritos del código OTP no se desborden de la pantalla */
+    .otp-inputs {
+        gap: 6px;
+        justify-content: center;
+    }
+    
+    .otp-digit {
+        width: 40px; /* Un poco más estrechos */
+        height: 50px;
+        font-size: 1.25rem;
+    }
+
+    /* 4. Mejorar la UX de los botones de navegación del cuestionario */
+    .quiz-controls {
+        flex-direction: column-reverse; /* Pone el botón "Siguiente" arriba, más a la mano */
+        gap: 12px;
+    }
+
+    .quiz-controls .btn {
+        width: 100%;
+        margin: 0;
+    }
+
+    /* 5. Ajustar el tamaño del gráfico circular de resultados */
+    .score-circle-container {
+        transform: scale(0.85); /* Lo reduce un 15% para que no ocupe toda la pantalla */
+        margin: 16px auto;
+    }
+}
+
+/* ==========================================================================
+   Acordeón de Fundamentos Globales
+   ========================================================================== */
+
+.accordion-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.accordion-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+}
+
+.accordion-item:hover {
+    border-color: var(--accent-blue);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.accordion-item.active {
+    border-color: var(--accent-blue);
+}
+
+.accordion-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    text-align: left;
+    outline: none;
+}
+
+.accordion-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.accordion-title-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.accordion-title-text h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    line-height: 1.2;
+}
+
+.accordion-icon {
+    width: 24px;
+    height: 24px;
+    position: relative;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+    margin-left: 16px;
+}
+
+.accordion-icon::before, 
+.accordion-icon::after {
+    content: '';
+    position: absolute;
+    background: var(--text-primary);
+    border-radius: 2px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.accordion-icon::before { width: 16px; height: 2px; }
+.accordion-icon::after { width: 2px; height: 16px; transition: transform 0.3s ease, opacity 0.3s ease; }
+
+/* Rotar a "Menos (-)" cuando está activo */
+.accordion-item.active .accordion-icon::after { 
+    transform: translate(-50%, -50%) rotate(90deg); 
+    opacity: 0; 
+}
+
+/* Magia de CSS Grid para animar height: auto */
+.accordion-content {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.accordion-item.active .accordion-content {
+    grid-template-rows: 1fr;
+}
+
+.accordion-inner-content {
+    overflow: hidden;
+    padding: 0 24px 24px 88px; /* El 88px alinea el texto con el título (omitiendo el icono) */
+}
+
+.accordion-item.active .accordion-inner-content {
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+    margin-top: 4px;
+}
+
+@media (max-width: 600px) {
+    .accordion-title-wrap {
+        gap: 12px;
+    }
+    .accordion-header {
+        padding: 16px;
+    }
+    .accordion-title-text h3 {
+        font-size: 1.1rem;
+    }
+    .accordion-inner-content {
+        padding: 0 16px 20px 16px; /* En móvil, no indentamos para ganar espacio */
+    }
+}
+
+/* ==========================================================================
+   Radar de Noticias (Diseño Minimalista / Peso Pluma)
+   ========================================================================== */
+
+.news-grid {
+    display: flex !important;
+    flex-direction: column;
+    max-width: 800px; /* Un poco más estrecho para facilitar la lectura */
+    margin: 0 auto;
+}
+
+/* Eliminar el aspecto de tarjeta pesada */
+.news-minimal-item {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 0 !important;
+    transition: background 0.3s ease;
+}
+
+.news-minimal-item:last-child {
+    border-bottom: none !important;
+}
+
+.news-minimal-item:hover {
+    box-shadow: none !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* Cabecera limpia (Solo Título) */
+.minimal-header {
+    padding: 20px 16px !important;
+}
+
+.minimal-title {
+    font-family: var(--font-body) !important; /* Usar fuente de cuerpo para no ser tan pesado */
+    font-size: 1.1rem !important;
+    font-weight: 500 !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+    color: var(--text-primary);
+    text-align: left;
+    padding-right: 24px;
+}
+
+.news-minimal-item.active .minimal-title {
+    color: var(--accent-blue);
+}
+
+/* Icono sutil */
+.minimal-icon {
+    opacity: 0.6;
+}
+
+.news-minimal-item.active .minimal-icon {
+    opacity: 1;
+}
+
+/* Contenido interno desplegable */
+.minimal-content {
+    padding: 0 16px 24px 16px !important; /* Alineado con el título */
+}
+
+.news-meta-inline {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.news-date-inline {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.minimal-desc {
+    font-size: 0.95rem !important;
+    color: var(--text-secondary) !important;
+    margin-bottom: 16px !important;
+}
+
+.minimal-footer {
+    border-top: none !important;
+    padding-top: 0 !important;
+    justify-content: flex-start !important;
+    gap: 20px;
+}
+
+.minimal-footer .normativa-link {
+    margin-top: 0 !important;
+    font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   Menú Desplegable (Dropdown) en Navbar
+   ========================================================================== */
+
+.nav-dropdown {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.nav-dropdown-toggle {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* Contenedor del submenú */
+.nav-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: rgba(11, 15, 25, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px 0;
+    min-width: 160px;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: var(--transition-smooth);
+    box-shadow: var(--shadow-premium);
+    z-index: 100;
+}
+
+/* Pseudo-elemento "zona segura" para que el mouse no pierda el menú al bajar */
+.nav-dropdown::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 0;
+    width: 100%;
+    height: 15px;
+}
+
+/* Activar en hover (Escritorio) */
+.nav-dropdown:hover .nav-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Estilo de los enlaces dentro del dropdown */
+.nav-dropdown-menu a {
+    padding: 10px 20px !important;
+    font-size: 0.9rem !important;
+    color: var(--text-secondary) !important;
+    text-align: left;
+    width: 100%;
+    transition: background 0.2s, color 0.2s;
+    border-bottom: none !important;
+}
+
+.nav-dropdown-menu a:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary) !important;
+}
+
+/* Adaptación para la versión móvil */
+@media (max-width: 992px) {
+    .nav-dropdown {
+        width: 100%;
+        flex-direction: column;
+    }
+    
+    .nav-dropdown-toggle span {
+        display: none; /* Ocultamos la flecha ▼ en móvil */
+    }
+    
+    /* En móvil se muestra siempre visible pero como un subnivel (sangría) */
+    .nav-dropdown-menu {
+        position: static;
+        transform: none !important;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        background: rgba(255, 255, 255, 0.02);
+        border: none;
+        border-radius: 8px;
+        box-shadow: none;
+        padding: 8px 0;
+        margin-top: 8px;
+        width: 100%;
+    }
+
+    .nav-dropdown-menu a {
+        text-align: center !important;
+        font-size: 1rem !important;
+        padding: 8px 0 !important;
+        color: var(--text-muted) !important;
+    }
+}
+
+/* ==========================================================================
+   Limpieza y Orden de Tarjetas Hero (Estadísticas)
+   ========================================================================== */
+
+.hero-visual {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: stretch; /* Asegura que ambas tarjetas tengan exactamente el mismo ancho */
+}
+
+.hero-stats-card {
+    display: flex;
+    align-items: center; /* Centra el icono verticalmente respecto al texto */
+    gap: 24px;
+    padding: 28px 32px; /* Espaciado más amplio y limpio */
+}
+
+/* Anulamos cualquier desfase horizontal previo para mantener el orden */
+.hero-stats-card.shift-y {
+    transform: none;
+}
+
+/* Contenedor interno para agrupar el número y el texto en columna */
+.stats-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.hero-stats-card h3 {
+    font-size: 2.2rem;
+    line-height: 1;
+    margin-bottom: 6px; /* Separación sutil entre el número y el párrafo */
+}
+
+.hero-stats-card p {
+    font-size: 1rem;
+    line-height: 1.4;
+    margin-bottom: 0;
+}
+
+/* Adaptación elegante para móviles */
+@media (max-width: 768px) {
+    .hero-stats-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 28px 24px;
+    }
+    
+    .stats-info {
+        align-items: center;
+    }
+}
+
+
 

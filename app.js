@@ -104,7 +104,17 @@ const TRANSLATIONS = {
         newsReadMore: "Leer más ↗",
         pitchSuccessAlert: "¡Formulario enviado con éxito! Se ha notificado a qdoblea@gmail.com y se iniciará la descarga del dossier corporativo de inmediato.",
         pitchToastTitle: "🎯 Nuevo Lead de Alianza",
-        pitchToastDesc: "Se ha simulado el envío de un correo a qdoblea@gmail.com con la información del prospecto:"
+                pitchToastDesc: "Se ha simulado el envío de un correo a qdoblea@gmail.com con la información del prospecto:",
+        authBtnNav: "Acceso / Registro",
+        authBtnNavLoggedIn: "Mi Cuenta 👤",
+        authAlertTitle: "Acceso Exclusivo Corporativo",
+        authAlertText: "Esta función (descargar el dossier corporativo o agendar reuniones de consultoría) está reservada para cuentas de tipo **Empresa**.",
+        authUpgradeSuccess: "¡Tu cuenta ha sido actualizada a Cuenta de Empresa con éxito! Ya puedes acceder a todas las funciones corporativas.",
+        authEmailExists: "Este correo electrónico ya está registrado. Por favor, inicia sesión.",
+        authEmailNotExists: "Este correo electrónico no está registrado. Por favor, crea una cuenta.",
+        authLoginSuccess: "¡Inicio de sesión exitoso!",
+        authRegisterSuccess: "¡Registro exitoso!",
+        authLogoutSuccess: "¡Sesión cerrada con éxito!"
     },
     en: {
         pilar1Name: "Pillar 1: Physical Accessibility",
@@ -143,7 +153,17 @@ const TRANSLATIONS = {
         newsReadMore: "Read more ↗",
         pitchSuccessAlert: "Form submitted successfully! A notification was sent to qdoblea@gmail.com and the corporate dossier download will start immediately.",
         pitchToastTitle: "🎯 New Alliance Lead",
-        pitchToastDesc: "A notification email to qdoblea@gmail.com has been simulated with the lead's contact information:"
+                pitchToastDesc: "A notification email to qdoblea@gmail.com has been simulated with the lead's contact information:",
+        authBtnNav: "Login / Register",
+        authBtnNavLoggedIn: "My Account 👤",
+        authAlertTitle: "Exclusive Corporate Access",
+        authAlertText: "This feature (downloading the corporate dossier or scheduling consultancy meetings) is reserved for **Company** accounts.",
+        authUpgradeSuccess: "Your account has been successfully upgraded to a Company Account! You can now access all corporate features.",
+        authEmailExists: "This email is already registered. Please log in.",
+        authEmailNotExists: "This email is not registered. Please create an account.",
+        authLoginSuccess: "Login successful!",
+        authRegisterSuccess: "Registration successful!",
+        authLogoutSuccess: "Logged out successfully!"
     }
 };
 
@@ -449,6 +469,11 @@ let isConfirmed = false;
 let userRegistrationData = null;
 let currentVerificationCode = "123456";
 
+// Estado de Autenticación y Cuentas
+let currentUser = null;
+let ageFriendAccounts = [];
+let tempAuthData = null;
+
 // Elementos del DOM
 const quizCard = document.getElementById('quiz-card');
 const resultsCard = document.getElementById('results-card');
@@ -483,6 +508,7 @@ const paymentModal = document.getElementById('payment-modal');
 
 // Inicializar Aplicación
 function init() {
+    initAuthSession();
     loadQuestion(currentQuestionIndex);
     setupEventListeners();
     loadRadarNews(); // Cargar noticias del radar RSS
@@ -632,108 +658,166 @@ function selectOption(qIndex, option) {
 
 // Event Listeners del Cuestionario
 function setupEventListeners() {
-    btnNext.addEventListener('click', () => {
-        // Interceptar después de la pregunta 3 (índice 2) para requerir registro
-        if (currentQuestionIndex === 2 && !isConfirmed) {
-            showRegistrationView();
-            return;
-        }
-
-        if (currentQuestionIndex < QUESTIONS.length - 1) {
-            currentQuestionIndex++;
-            loadQuestion(currentQuestionIndex);
-        } else {
-            calculateResults();
-        }
-    });
+    if (btnNext) {
+        btnNext.addEventListener('click', () => {
+            // Verificamos si estamos en la última pregunta
+            if (currentQuestionIndex === QUESTIONS.length - 1) {
+                // Si llega al final y no está registrado, forzamos la vista de registro
+                if (!isConfirmed) {
+                    showRegistrationView();
+                } else {
+                    // Si ya está registrado, calculamos y mostramos resultados
+                    calculateResults();
+                }
+            } else {
+                // Flujo normal: avanza a la siguiente pregunta sin interrupciones
+                currentQuestionIndex++;
+                loadQuestion(currentQuestionIndex);
+            }
+        });
+    }
     
-    btnPrev.addEventListener('click', () => {
-        if (currentQuestionIndex > 0) {
-            currentQuestionIndex--;
-            loadQuestion(currentQuestionIndex);
-        }
-    });
+    if (btnPrev) {
+        btnPrev.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion(currentQuestionIndex);
+            }
+        });
+    }
     
     // Botón repetir autodiagnóstico
-    document.getElementById('btn-restart-quiz').addEventListener('click', () => {
-        currentQuestionIndex = 0;
-        userAnswers.fill(null);
-        resultsCard.classList.add('hidden');
-        quizCard.classList.remove('hidden');
-        loadQuestion(currentQuestionIndex);
-        
-        // Hacer scroll suave al inicio del cuestionario
-        document.getElementById('autodiagnostico').scrollIntoView({ behavior: 'smooth' });
-    });
+    const btnRestartQuiz = document.getElementById('btn-restart-quiz');
+    if (btnRestartQuiz) {
+        btnRestartQuiz.addEventListener('click', () => {
+            currentQuestionIndex = 0;
+            userAnswers.fill(null);
+            resultsCard.classList.add('hidden');
+            quizCard.classList.remove('hidden');
+            loadQuestion(currentQuestionIndex);
+            
+            // Hacer scroll suave al inicio del cuestionario
+            document.getElementById('autodiagnostico').scrollIntoView({ behavior: 'smooth' });
+        });
+    }
     
     // Botón para simular compra del Sello
-    document.getElementById('btn-claim-sello').addEventListener('click', () => {
-        const defaultCompany = currentLang === 'es' ? 'Su Empresa' : 'Your Company';
-        const companyName = userRegistrationData ? userRegistrationData.company : defaultCompany;
-        const decalContainer = document.getElementById('decal-preview-container');
-        if (decalContainer) {
-            decalContainer.innerHTML = generateDecalSVG(companyName);
-        }
-        openModal(paymentModal);
-    });
+    const btnClaimSello = document.getElementById('btn-claim-sello');
+    if (btnClaimSello) {
+        btnClaimSello.addEventListener('click', () => {
+            const defaultCompany = currentLang === 'es' ? 'Su Empresa' : 'Your Company';
+            const companyName = userRegistrationData ? userRegistrationData.company : defaultCompany;
+            const decalContainer = document.getElementById('decal-preview-container');
+            if (decalContainer) {
+                decalContainer.innerHTML = generateDecalSVG(companyName);
+            }
+            openModal(paymentModal);
+        });
+    }
     
     // Cierres de Modales
-    document.getElementById('btn-modal-close').addEventListener('click', () => closeModal(contactModal));
-    document.getElementById('btn-pay-modal-close').addEventListener('click', () => closeModal(paymentModal));
+    const btnModalClose = document.getElementById('btn-modal-close');
+    if (btnModalClose) {
+        btnModalClose.addEventListener('click', () => closeModal(contactModal));
+    }
+    const btnPayModalClose = document.getElementById('btn-pay-modal-close');
+    if (btnPayModalClose) {
+        btnPayModalClose.addEventListener('click', () => closeModal(paymentModal));
+    }
     
-    // Pitch Modal Logic
+    // Pitch Modal & Download Logic (B2B Adaptable)
     const pitchModal = document.getElementById('pitch-modal');
     const btnOpenPitch = document.getElementById('btn-open-pitch');
     const btnPitchModalClose = document.getElementById('btn-pitch-modal-close');
     const pitchForm = document.getElementById('pitch-form');
 
-    if (btnOpenPitch && pitchModal) {
-        btnOpenPitch.addEventListener('click', () => openModal(pitchModal));
-    }
-    if (btnPitchModalClose && pitchModal) {
-        btnPitchModalClose.addEventListener('click', () => closeModal(pitchModal));
-    }
-    if (pitchForm && pitchModal) {
-        pitchForm.addEventListener('submit', (e) => {
+    if (btnOpenPitch) {
+        btnOpenPitch.addEventListener('click', (e) => {
             e.preventDefault();
             
-            const name = document.getElementById('pitch-name').value;
-            const phone = document.getElementById('pitch-phone').value;
-            const corpEmail = document.getElementById('pitch-corp-email').value;
-            const format = document.getElementById('pitch-format').value;
-            
-            const leadData = { name, phone, corpEmail };
-            const PITCH_RECIPIENT_EMAIL = "qdoblea@gmail.com";
-            
-            // Envío vía EmailJS si está configurado
-            if (typeof emailjs !== 'undefined' && EMAILJS_CONFIG.publicKey && EMAILJS_CONFIG.publicKey !== "TU_PUBLIC_KEY") {
-                const leadParams = {
-                    lead_name: name,
-                    lead_email: corpEmail, // Usamos el correo corporativo como principal
-                    lead_phone: phone,
-                    lead_corp_email: corpEmail,
-                    lead_lang: currentLang,
-                    to_email: PITCH_RECIPIENT_EMAIL
-                };
-                
-                emailjs.send(EMAILJS_CONFIG.serviceId, "template_pitch_lead", leadParams)
-                    .then((response) => {
-                        console.log("Lead de Pitch enviado con éxito vía EmailJS!", response.status, response.text);
-                        alert(TRANSLATIONS[currentLang].pitchSuccessAlert);
-                    }, (error) => {
-                        console.error("Fallo al enviar lead vía EmailJS:", error);
-                        triggerFallbackPitchLead(leadData, PITCH_RECIPIENT_EMAIL);
-                    });
-            } else {
-                triggerFallbackPitchLead(leadData, PITCH_RECIPIENT_EMAIL);
+            // 1. Si no hay usuario o no es cuenta Empresa -> Bloqueo
+            if (!currentUser || currentUser.type !== 'empresa') {
+                showAuthAlert();
+                return;
             }
             
-            // Descargar el dossier de inmediato
-            downloadPitchDossier(currentLang, format);
+            // 2. Es empresa: Preparamos el modal para que SOLO elija el formato
+            // Ocultamos los campos y ELIMINAMOS el 'required' para que no bloqueen el submit
+            const inputName = document.getElementById('pitch-name');
+            const inputPhone = document.getElementById('pitch-phone');
+            const inputEmail = document.getElementById('pitch-corp-email');
+
+            if (inputName) {
+                inputName.parentElement.style.display = 'none';
+                inputName.required = false;
+            }
+            if (inputPhone) {
+                inputPhone.parentElement.style.display = 'none';
+                inputPhone.required = false;
+            }
+            if (inputEmail) {
+                inputEmail.parentElement.style.display = 'none';
+                inputEmail.required = false;
+            }
             
-            // Limpiar y cerrar modal
+            // Adaptamos los textos del modal
+            const modalTitle = pitchModal.querySelector('h3');
+            const modalDesc = pitchModal.querySelector('p');
+            if (modalTitle) modalTitle.textContent = currentLang === 'es' ? 'Formato de Descarga' : 'Download Format';
+            if (modalDesc) modalDesc.textContent = currentLang === 'es' ? 
+                'Como usuario corporativo validado, simplemente elija el formato en el que desea descargar su Dossier.' : 
+                'As a validated corporate user, please select your preferred download format.';
+            
+            // Cambiamos el texto del botón
+            const submitBtn = pitchForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.textContent = currentLang === 'es' ? 'Descargar' : 'Download';
+            }
+
+            openModal(pitchModal);
+        });
+    }
+
+    if (btnPitchModalClose) {
+        btnPitchModalClose.addEventListener('click', () => {
             closeModal(pitchModal);
-            pitchForm.reset();
+        });
+    }
+
+    if (pitchForm) {
+        pitchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const format = document.getElementById('pitch-format').value;
+            const PITCH_RECIPIENT_EMAIL = "qdoblea@gmail.com";
+
+            // Iniciar la descarga del PDF o HTML inmediatamente
+            downloadPitchDossier(currentLang, format);
+
+            // Enviar notificación al administrador usando LA MISMA plantilla que ya funciona
+            if (typeof emailjs !== 'undefined' && EMAILJS_CONFIG.publicKey && EMAILJS_CONFIG.publicKey !== "TU_PUBLIC_KEY") {
+                const nameStr = currentUser ? currentUser.name : "Invitado B2B";
+                const emailStr = currentUser ? currentUser.email : "N/A";
+                const leadParams = {
+                    to_email: PITCH_RECIPIENT_EMAIL, // Va a qdoblea@gmail.com
+                    to_name: "Equipo Age Friend Seal",
+                    company_name: "NUEVO LEAD: " + nameStr + " (" + emailStr + ")",
+                    verification_code: "N/A" // Llenamos la variable para que la plantilla no falle
+                };
+                
+                emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, leadParams)
+                    .then(() => console.log("Aviso de descarga enviado a tu correo."))
+                    .catch((err) => console.error("Error enviando aviso:", err));
+            } else {
+                // Simulación local si no hay EmailJS
+                const leadData = {
+                    name: currentUser ? currentUser.name : "Invitado B2B",
+                    phone: "N/A (Usuario Corporativo)",
+                    corpEmail: currentUser ? currentUser.email : "N/A"
+                };
+                triggerFallbackPitchLead(leadData, PITCH_RECIPIENT_EMAIL);
+            }
+
+            closeModal(pitchModal);
         });
     }
     
@@ -742,6 +826,10 @@ function setupEventListeners() {
     if (reqSilverBtn) {
         reqSilverBtn.addEventListener('click', (e) => {
             e.preventDefault();
+            if (!currentUser || currentUser.type !== 'empresa') {
+                showAuthAlert();
+                return;
+            }
             document.getElementById('modal-title').textContent = currentLang === 'es' ? 
                 "Solicitar Certificación Condicional (Nivel Medio)" : "Request Conditional Certification (Medium Level)";
             document.getElementById('modal-subtitle').textContent = currentLang === 'es' ? 
@@ -755,6 +843,10 @@ function setupEventListeners() {
     if (reqGoldBtn) {
         reqGoldBtn.addEventListener('click', (e) => {
             e.preventDefault();
+            if (!currentUser || currentUser.type !== 'empresa') {
+                showAuthAlert();
+                return;
+            }
             document.getElementById('modal-title').textContent = currentLang === 'es' ? 
                 "Solicitar Certificación Total (Nivel Premium)" : "Request Full Certification (Premium Level)";
             document.getElementById('modal-subtitle').textContent = currentLang === 'es' ? 
@@ -765,34 +857,43 @@ function setupEventListeners() {
     }
     
     // Envío de Formulario de Contacto
-    document.getElementById('contact-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        alert(TRANSLATIONS[currentLang].contactSuccessAlert);
-        closeModal(contactModal);
-        document.getElementById('contact-form').reset();
-    });
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert(TRANSLATIONS[currentLang].contactSuccessAlert);
+            closeModal(contactModal);
+            contactForm.reset();
+        });
+    }
     
     // Simulación de Pago y Descarga
-    document.getElementById('btn-pay-submit').addEventListener('click', () => {
-        const defaultCompany = currentLang === 'es' ? 'Su Empresa' : 'Your Company';
-        const companyName = userRegistrationData ? userRegistrationData.company : defaultCompany;
-        alert(TRANSLATIONS[currentLang].paymentSuccessAlert.replace('{companyName}', companyName));
-        closeModal(paymentModal);
-        
-        // Simular descarga de archivo creando un link temporal
-        const link = document.createElement('a');
-        link.href = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(generateDecalSVG(companyName));
-        link.download = `Calcomania_Vitrina_AgeFriendSeal_${companyName.replace(/[^a-z0-9]/gi, '_')}.svg`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    });
+    const btnPaySubmit = document.getElementById('btn-pay-submit');
+    if (btnPaySubmit) {
+        btnPaySubmit.addEventListener('click', () => {
+            const defaultCompany = currentLang === 'es' ? 'Su Empresa' : 'Your Company';
+            const companyName = userRegistrationData ? userRegistrationData.company : defaultCompany;
+            alert(TRANSLATIONS[currentLang].paymentSuccessAlert.replace('{companyName}', companyName));
+            closeModal(paymentModal);
+            
+            // Simular descarga de archivo creando un link temporal
+            const link = document.createElement('a');
+            link.href = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(generateDecalSVG(companyName));
+            link.download = `Calcomania_Vitrina_AgeFriendSeal_${companyName.replace(/[^a-z0-9]/gi, '_')}.svg`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    }
     
-    // Descarga de PDF de Reporte
-    document.getElementById('btn-download-pdf').addEventListener('click', () => {
-        alert(TRANSLATIONS[currentLang].pdfAlert);
-        window.print(); // Solución elegante y nativa que permite guardar como PDF en cualquier navegador
-    });
+    // Descarga de PDF de Reporte / Plan de Acción
+    const btnDownloadPdf = document.getElementById('btn-download-pdf') || document.getElementById('btn-download-excel');
+    if (btnDownloadPdf) {
+        btnDownloadPdf.addEventListener('click', () => {
+            alert(TRANSLATIONS[currentLang].pdfAlert);
+            window.print(); // Solución elegante y nativa que permite guardar como PDF en cualquier navegador
+        });
+    }
     
     // Botones de inicio de navegación
     const navStartBtn = document.getElementById('btn-nav-start');
@@ -811,96 +912,694 @@ function setupEventListeners() {
         });
     }
     
-    // Formulario de Registro en el Cuestionario
-    const registerForm = document.getElementById('quiz-register-form');
-    if (registerForm) {
-        registerForm.addEventListener('submit', (e) => {
+    // ==========================================================================
+    // Gestión de Eventos de Autenticación y Perfil
+    // ==========================================================================
+    
+    // 1. Botón Navbar Acceso/Registro
+    const btnNavAuth = document.getElementById('btn-nav-auth');
+    if (btnNavAuth) {
+        btnNavAuth.addEventListener('click', (e) => {
             e.preventDefault();
-            
-            const company = document.getElementById('reg-company').value;
-            const sector = document.getElementById('reg-sector').value;
-            const name = document.getElementById('reg-name').value;
-            const role = document.getElementById('reg-role').value;
-            const email = document.getElementById('reg-email').value;
-            
-            userRegistrationData = { company, sector, name, role, email };
-            isRegistered = true;
-            
-            hideRegistrationView();
-            showVerificationView(email);
-            sendVerificationEmail(name, company, email);
+            if (currentUser) {
+                updateAuthUI();
+                openModal(document.getElementById('account-modal'));
+            } else {
+                const authModal = document.getElementById('auth-modal');
+                const viewLogin = document.getElementById('view-login');
+                const viewRegister = document.getElementById('view-register');
+                const viewOtp = document.getElementById('view-otp');
+                const tabLogin = document.getElementById('tab-login');
+                const tabRegister = document.getElementById('tab-register');
+
+                if (viewLogin) viewLogin.classList.remove('hidden');
+                if (viewRegister) viewRegister.classList.add('hidden');
+                if (viewOtp) viewOtp.classList.add('hidden');
+                if (tabLogin) tabLogin.classList.add('active');
+                if (tabRegister) tabRegister.classList.remove('active');
+
+                openModal(authModal);
+            }
         });
     }
-    
-    // Comportamiento del teclado en casilleros OTP (auto focus secuencial)
-    const otpInputs = document.querySelectorAll('.otp-digit');
-    otpInputs.forEach((input, index) => {
-        input.addEventListener('keyup', (e) => {
-            const val = input.value;
-            
-            // Si escribe un dígito, salta al siguiente
-            if (val.length === 1 && index < otpInputs.length - 1) {
-                otpInputs[index + 1].focus();
+
+    // 2. Cierre de Modales Auth
+    const btnAuthModalClose = document.getElementById('btn-auth-modal-close');
+    if (btnAuthModalClose) {
+        btnAuthModalClose.addEventListener('click', () => {
+            closeModal(document.getElementById('auth-modal'));
+        });
+    }
+    const btnAccountModalClose = document.getElementById('btn-account-modal-close');
+    if (btnAccountModalClose) {
+        btnAccountModalClose.addEventListener('click', () => {
+            closeModal(document.getElementById('account-modal'));
+        });
+    }
+    const btnAuthAlertClose = document.getElementById('btn-auth-alert-close');
+    if (btnAuthAlertClose) {
+        btnAuthAlertClose.addEventListener('click', () => {
+            closeModal(document.getElementById('auth-alert-modal'));
+        });
+    }
+
+    // 3. Conmutación de Pestañas Iniciar Sesión / Registrarse
+    const tabLogin = document.getElementById('tab-login');
+    const tabRegister = document.getElementById('tab-register');
+    const viewLogin = document.getElementById('view-login');
+    const viewRegister = document.getElementById('view-register');
+    const viewOtp = document.getElementById('view-otp');
+
+    if (tabLogin && tabRegister) {
+        tabLogin.addEventListener('click', () => {
+            tabLogin.classList.add('active');
+            tabRegister.classList.remove('active');
+            if (viewLogin) viewLogin.classList.remove('hidden');
+            if (viewRegister) viewRegister.classList.add('hidden');
+            if (viewOtp) viewOtp.classList.add('hidden');
+        });
+
+        tabRegister.addEventListener('click', () => {
+            tabRegister.classList.add('active');
+            tabLogin.classList.remove('active');
+            if (viewLogin) viewLogin.classList.add('hidden');
+            if (viewRegister) viewRegister.classList.remove('hidden');
+            if (viewOtp) viewOtp.classList.add('hidden');
+            handleUserTypeChange(document.getElementById('auth-reg-user-type').value, 'auth-reg-');
+        });
+    }
+
+    // 4. Listeners para Selects de Registro (Tipo de cuenta y sector)
+    const authRegUserType = document.getElementById('auth-reg-user-type');
+    if (authRegUserType) {
+        authRegUserType.addEventListener('change', (e) => {
+            handleUserTypeChange(e.target.value, 'auth-reg-');
+        });
+    }
+    const authRegSectorType = document.getElementById('auth-reg-sector-type');
+    if (authRegSectorType) {
+        authRegSectorType.addEventListener('change', (e) => {
+            handleSectorTypeChange(e.target.value, 'auth-reg-');
+        });
+    }
+
+    const quizRegUserType = document.getElementById('quiz-reg-user-type');
+    if (quizRegUserType) {
+        quizRegUserType.addEventListener('change', (e) => {
+            handleUserTypeChange(e.target.value, 'quiz-reg-');
+        });
+    }
+    const quizRegSectorType = document.getElementById('quiz-reg-sector-type');
+    if (quizRegSectorType) {
+        quizRegSectorType.addEventListener('change', (e) => {
+            handleSectorTypeChange(e.target.value, 'quiz-reg-');
+        });
+    }
+
+    // 5. Envío de Formulario Login
+    const formLogin = document.getElementById('form-login');
+    if (formLogin) {
+        formLogin.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const account = ageFriendAccounts.find(acc => acc.email.toLowerCase() === email.toLowerCase());
+
+            if (account) {
+                tempAuthData = {
+                    user: account,
+                    isNew: false
+                };
+                // Mostrar vista OTP en el modal
+                if (viewLogin) viewLogin.classList.add('hidden');
+                if (viewOtp) {
+                    viewOtp.classList.remove('hidden');
+                    const emailDisp = document.getElementById('auth-otp-email-display');
+                    if (emailDisp) emailDisp.textContent = email;
+                }
+                // Limpiar inputs OTP
+                document.querySelectorAll('#view-otp .otp-digit').forEach(input => input.value = '');
+                // Enviar correo
+                sendAuthVerificationEmail(account.name, account.company || '', email, 'modal');
+            } else {
+                alert(TRANSLATIONS[currentLang].authEmailNotExists);
             }
         });
-        
-        input.addEventListener('keydown', (e) => {
-            // Si borra con Backspace y está vacío, vuelve al anterior
-            if (e.key === 'Backspace' && input.value.length === 0 && index > 0) {
-                otpInputs[index - 1].focus();
+    }
+
+    // 6. Envío de Formulario Registro
+    const formRegister = document.getElementById('form-register');
+    if (formRegister) {
+        formRegister.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('auth-reg-email').value.trim();
+            const name = document.getElementById('auth-reg-name').value.trim();
+            const type = document.getElementById('auth-reg-user-type').value;
+
+            const exists = ageFriendAccounts.some(acc => acc.email.toLowerCase() === email.toLowerCase());
+            if (exists) {
+                alert(TRANSLATIONS[currentLang].authEmailExists);
+                return;
             }
+
+            let user = { name, email, type };
+            if (type === 'personal') {
+                user.country = document.getElementById('auth-reg-country').value.trim();
+            } else {
+                const sector = document.getElementById('auth-reg-sector-type').value;
+                user.sector = sector;
+                user.role = document.getElementById('auth-reg-role').value.trim();
+                if (sector === 'publico') {
+                    user.subsector = document.getElementById('auth-reg-public-level').value;
+                    user.company = document.getElementById('auth-reg-public-level').options[document.getElementById('auth-reg-public-level').selectedIndex].text;
+                } else {
+                    user.subsector = document.getElementById('auth-reg-private-vertical').value;
+                    user.company = document.getElementById('auth-reg-private-vertical').options[document.getElementById('auth-reg-private-vertical').selectedIndex].text;
+                }
+            }
+
+            tempAuthData = {
+                user,
+                isNew: true
+            };
+
+            // Mostrar vista OTP
+            if (viewRegister) viewRegister.classList.add('hidden');
+            if (viewOtp) {
+                viewOtp.classList.remove('hidden');
+                const emailDisp = document.getElementById('auth-otp-email-display');
+                if (emailDisp) emailDisp.textContent = email;
+            }
+            // Limpiar inputs OTP
+            document.querySelectorAll('#view-otp .otp-digit').forEach(input => input.value = '');
+            // Enviar correo
+            sendAuthVerificationEmail(name, user.company || '', email, 'modal');
         });
-    });
-    
-    // Botón Confirmar OTP
-    const btnConfirmOtp = document.getElementById('btn-confirm-otp');
-    if (btnConfirmOtp) {
-        btnConfirmOtp.addEventListener('click', () => {
+    }
+
+    // 7. Configuración de Entrada de OTP con salto automático
+    setupOtpInputsAutoJump('view-otp');
+    setupOtpInputsAutoJump('quiz-confirm-view');
+
+    // 8. Botón Confirmar OTP en Modal
+    const btnAuthConfirmOtp = document.getElementById('btn-auth-confirm-otp');
+    if (btnAuthConfirmOtp) {
+        btnAuthConfirmOtp.addEventListener('click', () => {
             let code = "";
-            otpInputs.forEach(input => code += input.value);
-            
-            const errorMsg = document.getElementById('otp-error-msg');
-            
+            document.querySelectorAll('#view-otp .otp-digit').forEach(input => code += input.value);
+            const errorMsg = document.getElementById('auth-otp-error-msg');
             if (code === currentVerificationCode) {
-                isConfirmed = true;
-                if (errorMsg) errorMsg.classList.add('hidden');
-                
-                // Quitar toast si sigue visible
-                const toast = document.querySelector('.toast-notification');
-                if (toast) toast.remove();
-                
-                // Ocultar verificación y volver al cuestionario
-                hideVerificationView();
-                alert(TRANSLATIONS[currentLang].otpSuccessAlert);
-                resumeQuestionnaire();
+                confirmAuthSuccess();
             } else {
                 if (errorMsg) {
                     errorMsg.textContent = TRANSLATIONS[currentLang].otpErrorMsg;
                     errorMsg.classList.remove('hidden');
                 }
-                // Limpiar casilleros y enfocar el primero
-                otpInputs.forEach(input => input.value = "");
-                otpInputs[0].focus();
             }
         });
     }
-    
-    // Botón Reenviar OTP
+
+    // 9. Botón Confirmar OTP en Cuestionario
+    const btnConfirmOtp = document.getElementById('btn-confirm-otp');
+    if (btnConfirmOtp) {
+        btnConfirmOtp.addEventListener('click', () => {
+            let code = "";
+            document.querySelectorAll('#quiz-confirm-view .otp-digit').forEach(input => code += input.value);
+            const errorMsg = document.getElementById('otp-error-msg');
+            if (code === currentVerificationCode) {
+                confirmAuthSuccess();
+            } else {
+                if (errorMsg) {
+                    errorMsg.textContent = TRANSLATIONS[currentLang].otpErrorMsg;
+                    errorMsg.classList.remove('hidden');
+                }
+            }
+        });
+    }
+
+    // 10. Reenvío de OTP
+    const btnAuthOtpResend = document.getElementById('btn-auth-otp-resend');
+    if (btnAuthOtpResend) {
+        btnAuthOtpResend.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (tempAuthData && tempAuthData.user) {
+                sendAuthVerificationEmail(tempAuthData.user.name, tempAuthData.user.company || '', tempAuthData.user.email, 'modal');
+            }
+        });
+    }
     const btnOtpResend = document.getElementById('btn-otp-resend');
     if (btnOtpResend) {
         btnOtpResend.addEventListener('click', (e) => {
             e.preventDefault();
-            const defaultCompany = currentLang === 'es' ? 'Su Empresa' : 'Your Company';
-            if (userRegistrationData) {
-                sendVerificationEmail(userRegistrationData.name, userRegistrationData.company, userRegistrationData.email);
-            } else {
-                sendVerificationEmail("Guest", defaultCompany, "user@company.com");
+            if (tempAuthData && tempAuthData.user) {
+                sendAuthVerificationEmail(tempAuthData.user.name, tempAuthData.user.company || '', tempAuthData.user.email, 'quiz');
             }
+        });
+    }
+
+    // 11. Cerrar Sesión
+    const btnAuthLogout = document.getElementById('btn-auth-logout');
+    if (btnAuthLogout) {
+        btnAuthLogout.addEventListener('click', () => {
+            currentUser = null;
+            localStorage.removeItem('age_friend_user');
+            isConfirmed = false;
+            userRegistrationData = null;
+            updateAuthUI();
+            closeModal(document.getElementById('account-modal'));
+            alert(TRANSLATIONS[currentLang].authLogoutSuccess);
+        });
+    }
+
+    // 12. Envío de Formulario Upgrade
+    const formUpgrade = document.getElementById('form-upgrade');
+    if (formUpgrade) {
+        formUpgrade.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const sector = document.getElementById('upg-sector-type').value;
+            const role = document.getElementById('upg-role').value.trim();
+            
+            currentUser.type = 'empresa';
+            currentUser.sector = sector;
+            currentUser.role = role;
+
+            if (sector === 'publico') {
+                currentUser.subsector = document.getElementById('upg-public-level').value;
+                currentUser.company = document.getElementById('upg-public-level').options[document.getElementById('upg-public-level').selectedIndex].text;
+            } else {
+                currentUser.subsector = document.getElementById('upg-private-vertical').value;
+                currentUser.company = document.getElementById('upg-private-vertical').options[document.getElementById('upg-private-vertical').selectedIndex].text;
+            }
+
+            const idx = ageFriendAccounts.findIndex(acc => acc.email.toLowerCase() === currentUser.email.toLowerCase());
+            if (idx !== -1) {
+                ageFriendAccounts[idx] = currentUser;
+            } else {
+                ageFriendAccounts.push(currentUser);
+            }
+            localStorage.setItem('age_friend_accounts', JSON.stringify(ageFriendAccounts));
+            localStorage.setItem('age_friend_user', JSON.stringify(currentUser));
+            
+            isConfirmed = true;
+            userRegistrationData = currentUser;
+
+            updateAuthUI();
+            
+            closeModal(document.getElementById('account-modal'));
+            alert(TRANSLATIONS[currentLang].authUpgradeSuccess);
+        });
+    }
+
+    // 13. Conmutador de sector en formulario de upgrade
+    const upgSectorType = document.getElementById('upg-sector-type');
+    if (upgSectorType) {
+        upgSectorType.addEventListener('change', (e) => {
+            const sector = e.target.value;
+            const publicField = document.getElementById('field-upg-public-level');
+            const privateField = document.getElementById('field-upg-private-vertical');
+            if (sector === 'publico') {
+                if (publicField) publicField.classList.remove('hidden-field');
+                if (privateField) privateField.classList.add('hidden-field');
+                toggleRequiredFields(true, 'upg-public-level');
+                toggleRequiredFields(false, 'upg-private-vertical');
+            } else if (sector === 'privado') {
+                if (publicField) publicField.classList.add('hidden-field');
+                if (privateField) privateField.classList.remove('hidden-field');
+                toggleRequiredFields(false, 'upg-public-level');
+                toggleRequiredFields(true, 'upg-private-vertical');
+            } else {
+                if (publicField) publicField.classList.add('hidden-field');
+                if (privateField) privateField.classList.add('hidden-field');
+                toggleRequiredFields(false, 'upg-public-level', 'upg-private-vertical');
+            }
+        });
+    }
+
+    // 14. Botones de Modal de Alerta
+    const btnAuthAlertUpgrade = document.getElementById('btn-auth-alert-upgrade');
+    if (btnAuthAlertUpgrade) {
+        btnAuthAlertUpgrade.addEventListener('click', () => {
+            closeModal(document.getElementById('auth-alert-modal'));
+            openModal(document.getElementById('account-modal'));
+        });
+    }
+    const btnAuthAlertLogin = document.getElementById('btn-auth-alert-login');
+    if (btnAuthAlertLogin) {
+        btnAuthAlertLogin.addEventListener('click', () => {
+            closeModal(document.getElementById('auth-alert-modal'));
+            const authModal = document.getElementById('auth-modal');
+            const viewLogin = document.getElementById('view-login');
+            const viewRegister = document.getElementById('view-register');
+            const viewOtp = document.getElementById('view-otp');
+            const tabLogin = document.getElementById('tab-login');
+            const tabRegister = document.getElementById('tab-register');
+
+            if (viewLogin) viewLogin.classList.remove('hidden');
+            if (viewRegister) viewRegister.classList.add('hidden');
+            if (viewOtp) viewOtp.classList.add('hidden');
+            if (tabLogin) tabLogin.classList.add('active');
+            if (tabRegister) tabRegister.classList.remove('active');
+
+            openModal(authModal);
+        });
+    }
+
+    // 15. Formulario de Registro en el Cuestionario
+    const quizRegisterForm = document.getElementById('quiz-register-form');
+    if (quizRegisterForm) {
+        quizRegisterForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('quiz-reg-email').value.trim();
+            const name = document.getElementById('quiz-reg-name').value.trim();
+            const type = document.getElementById('quiz-reg-user-type').value;
+
+            const exists = ageFriendAccounts.some(acc => acc.email.toLowerCase() === email.toLowerCase());
+            if (exists) {
+                alert(TRANSLATIONS[currentLang].authEmailExists);
+                return;
+            }
+
+            let user = { name, email, type };
+            if (type === 'personal') {
+                user.country = document.getElementById('quiz-reg-country').value.trim();
+            } else {
+                const sector = document.getElementById('quiz-reg-sector-type').value;
+                user.sector = sector;
+                user.role = document.getElementById('quiz-reg-role').value.trim();
+                if (sector === 'publico') {
+                    user.subsector = document.getElementById('quiz-reg-public-level').value;
+                    user.company = document.getElementById('quiz-reg-public-level').options[document.getElementById('quiz-reg-public-level').selectedIndex].text;
+                } else {
+                    user.subsector = document.getElementById('quiz-reg-private-vertical').value;
+                    user.company = document.getElementById('quiz-reg-private-vertical').options[document.getElementById('quiz-reg-private-vertical').selectedIndex].text;
+                }
+            }
+
+            tempAuthData = {
+                user,
+                isNew: true
+            };
+
+            hideRegistrationView();
+            showVerificationView(email);
+            sendAuthVerificationEmail(name, user.company || '', email, 'quiz');
         });
     }
 }
 
-// Calcular y Renderizar Resultados
+function setupOtpInputsAutoJump(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const inputs = container.querySelectorAll('.otp-digit');
+    inputs.forEach((input, index) => {
+        input.addEventListener('keyup', (e) => {
+            const val = input.value;
+            if (val.length === 1 && index < inputs.length - 1) {
+                inputs[index + 1].focus();
+            }
+        });
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && input.value.length === 0 && index > 0) {
+                inputs[index - 1].focus();
+            }
+        });
+    });
+}// ==========================================================================
+// Vistas y Lógica de Autenticación, OTP y Upgrade (Restaurado e Implementado)
+// ==========================================================================
+
+function initAuthSession() {
+    try {
+        const savedAccounts = localStorage.getItem('age_friend_accounts');
+        ageFriendAccounts = savedAccounts ? JSON.parse(savedAccounts) : [];
+    } catch (e) {
+        console.error("Error al cargar cuentas:", e);
+        ageFriendAccounts = [];
+    }
+
+    try {
+        const savedUser = localStorage.getItem('age_friend_user');
+        currentUser = savedUser ? JSON.parse(savedUser) : null;
+    } catch (e) {
+        console.error("Error al cargar usuario activo:", e);
+        currentUser = null;
+    }
+
+    if (currentUser) {
+        isConfirmed = true;
+        userRegistrationData = currentUser;
+    } else {
+        isConfirmed = false;
+        userRegistrationData = null;
+    }
+
+    updateAuthUI();
+}
+
+function updateAuthUI() {
+    const t = TRANSLATIONS[currentLang];
+    const btnNavAuth = document.getElementById('btn-nav-auth');
+
+    if (btnNavAuth) {
+        if (currentUser) {
+            btnNavAuth.textContent = t.authBtnNavLoggedIn;
+            btnNavAuth.classList.add('logged-in');
+        } else {
+            btnNavAuth.textContent = t.authBtnNav;
+            btnNavAuth.classList.remove('logged-in');
+        }
+    }
+
+    if (currentUser) {
+        const accountTitleName = document.getElementById('account-title-name');
+        const accountUserBadge = document.getElementById('account-user-badge');
+        const accountDetailEmail = document.getElementById('account-detail-email');
+        const accountDetailCountry = document.getElementById('account-detail-country');
+        const accountDetailSector = document.getElementById('account-detail-sector');
+        const accountDetailSubsector = document.getElementById('account-detail-subsector');
+        const accountDetailRole = document.getElementById('account-detail-role');
+        const upgradeSection = document.getElementById('upgrade-section');
+
+        const detailItemCountry = document.getElementById('detail-item-country');
+        const detailItemSector = document.getElementById('detail-item-sector');
+        const detailItemSubsector = document.getElementById('detail-item-subsector');
+        const detailItemRole = document.getElementById('detail-item-role');
+
+        if (accountTitleName) accountTitleName.textContent = currentUser.name;
+        if (accountDetailEmail) accountDetailEmail.textContent = currentUser.email;
+
+        if (accountUserBadge) {
+            accountUserBadge.textContent = currentUser.type === 'empresa' ? (currentLang === 'es' ? 'Empresa' : 'Company') : (currentLang === 'es' ? 'Personal' : 'Personal');
+            accountUserBadge.className = 'user-badge-type ' + currentUser.type;
+        }
+
+        if (currentUser.type === 'personal') {
+            if (detailItemCountry) detailItemCountry.classList.remove('hidden-field');
+            if (accountDetailCountry) accountDetailCountry.textContent = currentUser.country || '';
+            if (detailItemSector) detailItemSector.classList.add('hidden-field');
+            if (detailItemSubsector) detailItemSubsector.classList.add('hidden-field');
+            if (detailItemRole) detailItemRole.classList.add('hidden-field');
+            if (upgradeSection) upgradeSection.classList.remove('hidden-field');
+        } else {
+            if (detailItemCountry) detailItemCountry.classList.add('hidden-field');
+            if (detailItemSector) detailItemSector.classList.remove('hidden-field');
+            if (accountDetailSector) accountDetailSector.textContent = currentUser.sector === 'privado' ? (currentLang === 'es' ? 'Privado' : 'Private') : (currentLang === 'es' ? 'Público' : 'Public');
+            if (detailItemSubsector) detailItemSubsector.classList.remove('hidden-field');
+            if (accountDetailSubsector) accountDetailSubsector.textContent = currentUser.subsector || '';
+            if (detailItemRole) detailItemRole.classList.remove('hidden-field');
+            if (accountDetailRole) accountDetailRole.textContent = currentUser.role || '';
+            if (upgradeSection) upgradeSection.classList.add('hidden-field');
+        }
+    }
+}
+
+function showAuthAlert() {
+    const modal = document.getElementById('auth-alert-modal');
+    if (modal) {
+        const alertTitle = modal.querySelector('h3');
+        const alertText = document.getElementById('auth-alert-text');
+        const upgradeBtn = document.getElementById('btn-auth-alert-upgrade');
+        const loginBtn = document.getElementById('btn-auth-alert-login');
+        const t = TRANSLATIONS[currentLang];
+
+        if (alertTitle) alertTitle.textContent = t.authAlertTitle;
+        if (alertText) alertText.innerHTML = t.authAlertText;
+
+        if (currentUser) {
+            if (upgradeBtn) upgradeBtn.classList.remove('hidden-field');
+            if (loginBtn) loginBtn.classList.add('hidden-field');
+        } else {
+            if (upgradeBtn) upgradeBtn.classList.add('hidden-field');
+            if (loginBtn) loginBtn.classList.remove('hidden-field');
+        }
+
+        openModal(modal);
+    }
+}
+
+function toggleRequiredFields(required, ...ids) {
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            if (required) {
+                el.setAttribute('required', 'true');
+            } else {
+                el.removeAttribute('required');
+            }
+        }
+    });
+}
+
+function handleUserTypeChange(type, prefix = 'auth-reg-') {
+    const countryField = document.getElementById(prefix === 'auth-reg-' ? 'field-personal-country' : 'quiz-field-personal-country');
+    const sectorField = document.getElementById(prefix === 'auth-reg-' ? 'field-company-sector' : 'quiz-field-company-sector');
+    const roleField = document.getElementById(prefix === 'auth-reg-' ? 'field-company-role' : 'quiz-field-company-role');
+    
+    const publicField = document.getElementById(prefix === 'auth-reg-' ? 'field-public-level' : 'quiz-field-public-level');
+    const privateField = document.getElementById(prefix === 'auth-reg-' ? 'field-private-vertical' : 'quiz-field-private-vertical');
+
+    if (type === 'personal') {
+        if (countryField) countryField.classList.remove('hidden-field');
+        if (sectorField) sectorField.classList.add('hidden-field');
+        if (roleField) roleField.classList.add('hidden-field');
+        if (publicField) publicField.classList.add('hidden-field');
+        if (privateField) privateField.classList.add('hidden-field');
+
+        toggleRequiredFields(true, prefix + 'country');
+        toggleRequiredFields(false, prefix + 'sector-type', prefix + 'public-level', prefix + 'private-vertical', prefix + 'role');
+    } else {
+        if (countryField) countryField.classList.add('hidden-field');
+        if (sectorField) sectorField.classList.remove('hidden-field');
+        if (roleField) roleField.classList.remove('hidden-field');
+
+        toggleRequiredFields(false, prefix + 'country');
+        toggleRequiredFields(true, prefix + 'sector-type', prefix + 'role');
+        
+        const sectorVal = document.getElementById(prefix + 'sector-type').value;
+        handleSectorTypeChange(sectorVal, prefix);
+    }
+}
+
+function handleSectorTypeChange(sector, prefix = 'auth-reg-') {
+    const publicField = document.getElementById(prefix === 'auth-reg-' ? 'field-public-level' : 'quiz-field-public-level');
+    const privateField = document.getElementById(prefix === 'auth-reg-' ? 'field-private-vertical' : 'quiz-field-private-vertical');
+
+    if (sector === 'publico') {
+        if (publicField) publicField.classList.remove('hidden-field');
+        if (privateField) privateField.classList.add('hidden-field');
+        toggleRequiredFields(true, prefix + 'public-level');
+        toggleRequiredFields(false, prefix + 'private-vertical');
+    } else if (sector === 'privado') {
+        if (publicField) publicField.classList.add('hidden-field');
+        if (privateField) privateField.classList.remove('hidden-field');
+        toggleRequiredFields(false, prefix + 'public-level');
+        toggleRequiredFields(true, prefix + 'private-vertical');
+    } else {
+        if (publicField) publicField.classList.add('hidden-field');
+        if (privateField) privateField.classList.add('hidden-field');
+        toggleRequiredFields(false, prefix + 'public-level', prefix + 'private-vertical');
+    }
+}
+
+function sendAuthVerificationEmail(name, company, email, target) {
+    const randomPIN = Math.floor(100000 + Math.random() * 900000).toString();
+    tempAuthData = tempAuthData || {};
+    tempAuthData.verificationCode = randomPIN;
+    tempAuthData.target = target;
+    
+    if (typeof emailjs !== 'undefined' && EMAILJS_CONFIG.publicKey && EMAILJS_CONFIG.publicKey !== "TU_PUBLIC_KEY") {
+        console.log(TRANSLATIONS[currentLang].otpSentRealConsole);
+        
+        const templateParams = {
+            to_name: name,
+            to_email: email,
+            company_name: company,
+            verification_code: randomPIN
+        };
+        
+        emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, templateParams)
+            .then((response) => {
+                console.log("Correo enviado con éxito!", response.status, response.text);
+                currentVerificationCode = randomPIN;
+                alert(TRANSLATIONS[currentLang].otpSentReal.replace('{email}', email));
+            }, (error) => {
+                console.error("Fallo al enviar correo vía EmailJS:", error);
+                triggerAuthFallbackVerification(randomPIN, email, target, "Fallo al enviar el correo real (límite superado o claves incorrectas).");
+            });
+    } else {
+        triggerAuthFallbackVerification("123456", email, target);
+    }
+}
+
+function triggerAuthFallbackVerification(pin, email, target, reason = "") {
+    currentVerificationCode = pin;
+    tempAuthData = tempAuthData || {};
+    tempAuthData.verificationCode = pin;
+    tempAuthData.target = target;
+    if (reason) {
+        console.warn(`${reason} Activando simulación local de contingencia.`);
+    }
+    showToastOTP(pin);
+}
+
+function confirmAuthSuccess() {
+    currentUser = tempAuthData.user;
+    
+    if (tempAuthData.isNew) {
+        ageFriendAccounts.push(currentUser);
+        localStorage.setItem('age_friend_accounts', JSON.stringify(ageFriendAccounts));
+    } else {
+        const idx = ageFriendAccounts.findIndex(acc => acc.email.toLowerCase() === currentUser.email.toLowerCase());
+        if (idx !== -1) {
+            ageFriendAccounts[idx] = currentUser;
+            localStorage.setItem('age_friend_accounts', JSON.stringify(ageFriendAccounts));
+        }
+    }
+    localStorage.setItem('age_friend_user', JSON.stringify(currentUser));
+    isConfirmed = true;
+    userRegistrationData = currentUser;
+
+    updateAuthUI();
+
+    const errorMsg = document.getElementById('auth-otp-error-msg');
+    if (errorMsg) errorMsg.classList.add('hidden');
+    
+    const errorMsgQuiz = document.getElementById('otp-error-msg');
+    if (errorMsgQuiz) errorMsgQuiz.classList.add('hidden');
+
+    const toast = document.querySelector('.toast-notification');
+    if (toast) toast.remove();
+
+    if (tempAuthData.target === 'quiz') {
+        hideVerificationView();
+        calculateResults();
+    } else {
+        const authModal = document.getElementById('auth-modal');
+        if (authModal) closeModal(authModal);
+        
+        const formLogin = document.getElementById('form-login');
+        if (formLogin) formLogin.reset();
+        const formRegister = document.getElementById('form-register');
+        if (formRegister) formRegister.reset();
+        
+        const viewLogin = document.getElementById('view-login');
+        const viewRegister = document.getElementById('view-register');
+        const viewOtp = document.getElementById('view-otp');
+        
+        if (viewLogin) viewLogin.classList.remove('hidden');
+        if (viewRegister) viewRegister.classList.add('hidden');
+        if (viewOtp) viewOtp.classList.add('hidden');
+        
+        const tabLogin = document.getElementById('tab-login');
+        const tabRegister = document.getElementById('tab-register');
+        if (tabLogin) tabLogin.classList.add('active');
+        if (tabRegister) tabRegister.classList.remove('active');
+
+        alert(tempAuthData.isNew ? TRANSLATIONS[currentLang].authRegisterSuccess : TRANSLATIONS[currentLang].authLoginSuccess);
+    }
+}
+
 function calculateResults() {
     const t = TRANSLATIONS[currentLang];
     
@@ -1185,22 +1884,22 @@ function triggerFallbackPitchLead(leadData, recipientEmail) {
 }
 
 function downloadPitchDossier(lang, format = 'pdf') {
-    const htmlContent = lang === 'es' ? ES_DOSSIER_TEMPLATE : EN_DOSSIER_TEMPLATE;
+    const rawContent = lang === 'es' ? ES_DOSSIER_TEMPLATE : EN_DOSSIER_TEMPLATE;
+    
+    // TRUCO VITAL: Reemplazamos la imagen local por un elemento de texto/emoji 
+    // Esto evita que las políticas de seguridad (CORS) bloqueen el PDF y lo dejen en blanco.
+    const safeContent = rawContent.replace(/<img[^>]*>/g, '<span style="font-size: 3rem; margin-right: 10px;">🏅</span>');
     
     if (format === 'pdf' && typeof html2pdf !== 'undefined') {
-        // Crear un div temporal en el DOM visible para asegurar la correcta interpretación de estilos
         const tempDiv = document.createElement('div');
-        tempDiv.id = 'dossier-temp-container';
-        tempDiv.innerHTML = htmlContent;
+        tempDiv.innerHTML = safeContent;
         
-        // Posicionamiento invisible para el usuario pero detectable para html2canvas
-        tempDiv.style.position = 'fixed';
+        // Posicionamiento oculto pero renderizable
+        tempDiv.style.position = 'absolute';
         tempDiv.style.top = '0';
         tempDiv.style.left = '0';
         tempDiv.style.width = '800px';
-        tempDiv.style.zIndex = '-9999';
-        tempDiv.style.opacity = '1';
-        tempDiv.style.pointerEvents = 'none';
+        tempDiv.style.zIndex = '-1'; 
         tempDiv.style.backgroundColor = '#ffffff';
         
         document.body.appendChild(tempDiv);
@@ -1209,19 +1908,15 @@ function downloadPitchDossier(lang, format = 'pdf') {
             margin:       15,
             filename:     lang === 'es' ? 'Dossier_AgeFriendSeal.pdf' : 'Dossier_AgeFriendSeal_EN.pdf',
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' },
+            html2canvas:  { scale: 2, useCORS: true, logging: false },
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
         
-        // Renderizar el PDF a partir del elemento DOM activo
-        html2pdf().from(tempDiv).set(opt).save().then(() => {
-            document.body.removeChild(tempDiv);
-        }).catch(err => {
-            console.error("Error al generar PDF:", err);
+        html2pdf().set(opt).from(tempDiv).save().then(() => {
             document.body.removeChild(tempDiv);
         });
     } else {
-        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        const blob = new Blob([safeContent], { type: 'text/html;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
@@ -1232,13 +1927,6 @@ function downloadPitchDossier(lang, format = 'pdf') {
         URL.revokeObjectURL(url);
     }
 }
-
-// Iniciar aplicación al cargar
-window.addEventListener('DOMContentLoaded', init);
-
-// ==========================================================================
-// Lógica de Radar de Longevidad (Feeds RSS)
-// ==========================================================================
 
 async function loadRadarNews() {
     const loadingEl = document.getElementById('news-loading');
@@ -1465,8 +2153,12 @@ const ES_DOSSIER_TEMPLATE = `<div class="dossier-main-wrapper">
             gap: 12px !important;
             margin-bottom: 20px !important;
         }
-        .dossier-logo-icon {
-            font-size: 2.5rem !important;
+        .dossier-logo-img {
+            width: 48px !important;
+            height: 48px !important;
+            border-radius: 50% !important;
+            border: 2px solid #2563eb !important;
+            object-fit: cover !important;
         }
         .dossier-logo-text {
             font-family: system-ui, sans-serif !important;
@@ -1474,19 +2166,18 @@ const ES_DOSSIER_TEMPLATE = `<div class="dossier-main-wrapper">
             font-size: 2.2rem !important;
             color: #0f172a !important;
         }
-        .dossier-logo-accent {
-            color: #d97706 !important;
-        }
+        .dossier-logo-accent { color: #2563eb !important; }
         .dossier-h1 {
             font-family: system-ui, sans-serif !important;
             font-size: 2.5rem !important;
             font-weight: 800 !important;
             margin-bottom: 12px !important;
             color: #0f172a !important;
+            letter-spacing: -0.02em !important;
         }
         .dossier-subtitle {
             font-size: 1.1rem !important;
-            color: #d97706 !important;
+            color: #2563eb !important;
             font-weight: 700 !important;
             margin-bottom: 24px !important;
             letter-spacing: 1px !important;
@@ -1501,14 +2192,12 @@ const ES_DOSSIER_TEMPLATE = `<div class="dossier-main-wrapper">
         }
         .dossier-meta-item strong { color: #334155 !important; }
         
-        .dossier-section {
-            margin-bottom: 48px !important;
-        }
+        .dossier-section { margin-bottom: 48px !important; }
         .dossier-section-title {
             font-family: system-ui, sans-serif !important;
-            font-size: 1.6rem !important;
+            font-size: 1.5rem !important;
             font-weight: 700 !important;
-            color: #d97706 !important;
+            color: #1e293b !important;
             margin-bottom: 20px !important;
             border-bottom: 2px solid #e2e8f0 !important;
             padding-bottom: 8px !important;
@@ -1529,54 +2218,137 @@ const ES_DOSSIER_TEMPLATE = `<div class="dossier-main-wrapper">
         }
         .dossier-li {
             color: #334155 !important;
-            margin-bottom: 8px !important;
+            margin-bottom: 12px !important;
             font-size: 1rem !important;
             display: list-item !important;
-            list-style-type: disc !important;
+            list-style-type: none !important;
+            position: relative !important;
+        }
+        .dossier-li::before {
+            content: "▪" !important;
+            color: #2563eb !important;
+            position: absolute !important;
+            left: -16px !important;
+            font-weight: bold !important;
         }
         .dossier-highlight-box {
-            background: #fffbeb !important;
-            border-left: 4px solid #d97706 !important;
-            padding: 20px !important;
+            background: #eff6ff !important;
+            border-left: 4px solid #2563eb !important;
+            padding: 24px !important;
             border-radius: 0 12px 12px 0 !important;
-            margin-top: 24px !important;
-            margin-bottom: 24px !important;
+            margin: 24px 0 !important;
         }
         .dossier-highlight-box-p {
             margin-bottom: 0 !important;
-            font-style: italic !important;
-            color: #b45309 !important;
+            font-weight: 600 !important;
+            color: #1e3a8a !important;
             display: block !important;
+            font-size: 1.1rem !important;
         }
+        
+        /* Grid de Ejes */
+        .ejes-grid {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 20px !important;
+            margin-top: 24px !important;
+        }
+        .eje-card {
+            background: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+            padding: 20px !important;
+            border-radius: 12px !important;
+        }
+        .eje-card h4 {
+            margin-top: 0 !important;
+            margin-bottom: 8px !important;
+            color: #0f172a !important;
+            font-size: 1.1rem !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+        }
+        .eje-card p {
+            margin: 0 !important;
+            font-size: 0.9rem !important;
+            color: #475569 !important;
+        }
+        .eje-norma {
+            display: inline-block !important;
+            font-size: 0.75rem !important;
+            background: #e2e8f0 !important;
+            padding: 2px 8px !important;
+            border-radius: 4px !important;
+            margin-top: 12px !important;
+            font-weight: 600 !important;
+            color: #475569 !important;
+        }
+
+        /* Grid de Certificaciones */
+        .cert-grid {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr 1fr !important;
+            gap: 16px !important;
+            margin-top: 24px !important;
+        }
+        .cert-card {
+            background: #ffffff !important;
+            border: 1px solid #cbd5e1 !important;
+            padding: 24px 16px !important;
+            border-radius: 12px !important;
+            text-align: center !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02) !important;
+        }
+        .cert-badge {
+            display: inline-block !important;
+            font-size: 0.75rem !important;
+            font-weight: 800 !important;
+            padding: 4px 12px !important;
+            border-radius: 50px !important;
+            margin-bottom: 16px !important;
+            letter-spacing: 0.05em !important;
+        }
+        .badge-basic { background: #fef3c7 !important; color: #b45309 !important; }
+        .badge-medium { background: #f1f5f9 !important; color: #475569 !important; }
+        .badge-premium { background: #fef08a !important; color: #854d0e !important; }
+
         .dossier-cta-box {
             text-align: center !important;
-            background: #f0fdf4 !important;
-            border: 1px solid #bbf7d0 !important;
+            background: #0f172a !important;
             border-radius: 20px !important;
-            padding: 32px !important;
+            padding: 40px 32px !important;
             margin-top: 48px !important;
         }
         .dossier-cta-box-h3 {
             font-family: system-ui, sans-serif !important;
             font-size: 1.5rem !important;
             margin-bottom: 12px !important;
-            color: #166534 !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
         }
         .dossier-cta-box-p {
-            color: #1e293b !important;
-            margin-bottom: 0 !important;
+            color: #94a3b8 !important;
+            margin-bottom: 24px !important;
             display: block !important;
+        }
+        .dossier-contact-info {
+            background: rgba(255,255,255,0.05) !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
+            border-radius: 12px !important;
+            padding: 20px !important;
+            max-width: 400px !important;
+            margin: 0 auto 24px auto !important;
+            text-align: left !important;
         }
         .dossier-cta-btn {
             display: inline-block !important;
-            background: #166534 !important;
+            background: #2563eb !important;
             color: #ffffff !important;
             font-family: system-ui, sans-serif !important;
             font-weight: 700 !important;
             text-decoration: none !important;
-            padding: 12px 32px !important;
+            padding: 14px 36px !important;
             border-radius: 8px !important;
-            margin-top: 16px !important;
         }
         .dossier-footer {
             text-align: center !important;
@@ -1587,25 +2359,19 @@ const ES_DOSSIER_TEMPLATE = `<div class="dossier-main-wrapper">
         }
         .dossier-print-btn {
             display: inline-block !important;
-            background: #d97706 !important;
-            color: #ffffff !important;
-            font-family: system-ui, sans-serif !important;
-            font-weight: 700 !important;
+            background: #f1f5f9 !important;
+            color: #475569 !important;
+            font-weight: 600 !important;
             text-decoration: none !important;
-            padding: 10px 24px !important;
-            border-radius: 8px !important;
-            border: none !important;
+            padding: 8px 20px !important;
+            border-radius: 6px !important;
+            border: 1px solid #cbd5e1 !important;
             cursor: pointer !important;
             margin-bottom: 16px !important;
-            font-size: 0.95rem !important;
-            transition: background 0.2s !important;
+            font-size: 0.9rem !important;
         }
-        .dossier-print-btn:hover {
-            background: #b45309 !important;
-        }
-        .dossier-page-break {
-            page-break-before: always !important;
-        }
+        .dossier-page-break { page-break-before: always !important; }
+        
         @media print {
             .dossier-container {
                 max-width: 100% !important;
@@ -1614,93 +2380,127 @@ const ES_DOSSIER_TEMPLATE = `<div class="dossier-main-wrapper">
                 border: none !important;
                 box-shadow: none !important;
             }
-            .dossier-cta-btn, .dossier-print-btn {
-                display: none !important;
-            }
+            .dossier-cta-btn, .dossier-print-btn { display: none !important; }
+            .ejes-grid { grid-template-columns: 1fr !important; }
+            .cert-grid { grid-template-columns: 1fr !important; }
         }
     </style>
 
     <div class="dossier-container">
         <div class="dossier-header">
             <div class="dossier-logo-container">
-                <span class="dossier-logo-icon">🏅</span>
+                <img src="logo_age_friend_seal.png" alt="Age Friend Seal Logo" class="dossier-logo-img">
                 <span class="dossier-logo-text"><span class="dossier-logo-accent">Age</span> Friend Seal</span>
             </div>
-            <div class="dossier-h1">DOSSIER DE ALIANZAS CORPORATIVAS</div>
-            <div class="dossier-subtitle">Propuesta Estratégica B2B, B2C, Proveedores e Instituciones</div>
+            <div class="dossier-h1">DOSSIER DE ALIANZAS Y CERTIFICACIÓN</div>
+            <div class="dossier-subtitle">Propuesta Estratégica Corporativa e Institucional</div>
             <div class="dossier-meta-info">
-                <div class="dossier-meta-item">Documento: <strong>Pitch de Alianzas</strong></div>
-                <div class="dossier-meta-item">Año: <strong>2026</strong></div>
-                <div class="dossier-meta-item">Instituto: <strong>Certificador Internacional</strong></div>
+                <div class="dossier-meta-item">Documento: <strong>Resumen Ejecutivo B2B</strong></div>
+                <div class="dossier-meta-item">Fecha de emisión: <strong>Junio de 2026</strong></div>
+                <div class="dossier-meta-item">Emisor: <strong>Age Friend Seal</strong></div>
             </div>
         </div>
 
         <div class="dossier-section">
-            <div class="dossier-section-title"><span>📉</span> 1. El Invierno Demográfico y la Oportunidad Plateada</div>
-            <div class="dossier-p">El mundo enfrenta un cambio demográfico sin precedentes históricos. El ritmo al que nacen las personas se desacelera rápidamente a nivel mundial: en 1990 la tasa global de fecundidad era de 3.3 hijos por mujer, mientras que hoy promedia apenas los 2.3. Con el nivel de reemplazo en 2.1, casi dos tercios de la población mundial vive hoy en países con tasas decrecientes. Esto se suma a los avances en longevidad, haciendo que el segmento de más de 50 años sea el de mayor crecimiento global.</div>
+            <div class="dossier-section-title"><span>📉</span> 1. El Tsunami Silencioso y el Retorno de Inversión</div>
+            <div class="dossier-p">El mundo enfrenta un cambio demográfico sin precedentes históricos. Con la tasa global de fecundidad cayendo a 2.3 y el drástico aumento de la esperanza de vida, la Generación Plateada (mayores de 50 años) concentra hoy más del <strong>50% del poder adquisitivo global</strong>.</div>
+            
             <div class="dossier-highlight-box">
-                <div class="dossier-highlight-box-p">"La Economía Plateada (Silver Economy) deja de ser un riesgo fiscal o una política de beneficencia, y se consolida como el motor definitivo de consumo e innovación empresarial."</div>
+                <div class="dossier-highlight-box-p">"La Economía Plateada ha dejado de ser una política de beneficencia para consolidarse como el motor definitivo de rentabilidad corporativa, reducción de costos y lealtad de mercado."</div>
             </div>
-            <div class="dossier-p">Frente a este escenario, <strong>Age Friend Seal</strong> provee una normativa técnica propia estructurada en tres ejes de certificación, que integra los mejores estándares y directrices globales de organizaciones como la ISO, OMS, OPS, BID Lab, OIT, ONU y Banco Mundial.</div>
+            
+            <div class="dossier-p"><strong>Impacto Financiero Comprobado (ROI):</strong></div>
+            <ul class="dossier-ul">
+                <li class="dossier-li"><strong>Ahorro en Rotación (4%):</strong> Los empleados mayores de 50 años presentan una retención 3 veces superior frente a generaciones jóvenes, reduciendo drásticamente los costos de contratación y curva de aprendizaje.</li>
+                <li class="dossier-li"><strong>Aumento de Productividad (1.1%):</strong> Estimaciones de la OCDE demuestran que por cada aumento del 10% en la plantilla senior, la productividad total de la empresa se eleva sostenidamente.</li>
+                <li class="dossier-li"><strong>Ganancia en Innovación (19%):</strong> Los equipos intergeneracionales integran la frescura digital con la resiliencia y el pensamiento crítico, elevando la facturación derivada de la innovación.</li>
+            </ul>
+        </div>
+
+        <div class="dossier-section">
+            <div class="dossier-section-title"><span>🏛️</span> 2. Los 5 Fundamentos Globales del Sello</div>
+            <div class="dossier-p">Age Friend Seal provee una normativa técnica propia y unificada que integra los mejores estándares mundiales para erradicar el edadismo y capitalizar la Economía Plateada.</div>
+            
+            <div class="ejes-grid">
+                <div class="eje-card">
+                    <h4><span>🌐</span> Eje Laboral y Talento</h4>
+                    <p>Fomento de la empleabilidad sénior, currículum ciego y estructuración de mentorías inversas para retener el capital intelectual.</p>
+                    <span class="eje-norma">ISO 25550 / OIT</span>
+                </div>
+                <div class="eje-card">
+                    <h4><span>🤝</span> Eje Conciliación</h4>
+                    <p>Soporte integral y flexibilidad asincrónica para empleados cuidadores de familiares dependientes (Generación Sándwich).</p>
+                    <span class="eje-norma">ISO 25551 / OPS</span>
+                </div>
+                <div class="eje-card">
+                    <h4><span>💻</span> Eje Mercado Digital</h4>
+                    <p>Accesibilidad AgeTech, auditoría de sesgos en algoritmos (IA) y protocolos de rescate humano directo en plataformas.</p>
+                    <span class="eje-norma">ISO 25556</span>
+                </div>
+                <div class="eje-card">
+                    <h4><span>🏥</span> Salud y Entorno</h4>
+                    <p>Adaptación de infraestructuras libres de barreras físicas y tamizaje de capacidades funcionales en el servicio al cliente.</p>
+                    <span class="eje-norma">OMS (Age-Friendly)</span>
+                </div>
+                <div class="eje-card" style="grid-column: 1 / -1;">
+                    <h4><span>⚖️</span> Tratado Internacional</h4>
+                    <p>Políticas organizacionales que protegen la igualdad de trato, prohíben el despido por edadismo y fomentan esquemas de transición gradual.</p>
+                    <span class="eje-norma">OIT Recomendación 162</span>
+                </div>
+            </div>
         </div>
 
         <div class="dossier-page-break"></div>
 
         <div class="dossier-section">
-            <div class="dossier-section-title"><span>💼</span> 2. Clientes B2B & Gestión de Talento (Ejes Laboral y Conciliación)</div>
-            <div class="dossier-p">La escasez futura de fuerza laboral activa exige a las organizaciones retener y potenciar su capital intelectual senior, erradicar el edadismo y apoyar a los empleados cuidadores. La mentoría cruzada intergeneracional es la clave para sincronizar la frescura digital de los jóvenes y la experiencia estratégica de los profesionales senior.</div>
-            <div class="dossier-p"><strong>Ejes Fundamentales e Impacto:</strong></div>
-            <div class="dossier-ul">
-                <div class="dossier-li"><strong>Eje Laboral (Talento y Empleabilidad):</strong> Procesos de reclutamiento sin sesgos, fomento de la empleabilidad senior y mentoría inversa. Integra directrices de <strong>ISO 25550</strong>, convenios de la <strong>OIT</strong> y políticas pro-edad de la <strong>ONU</strong>.</div>
-                <div class="dossier-li"><strong>Eje Conciliación (Bienestar Familiar):</strong> Apoyo a empleados de la "Generación Sándwich" que cuidan a familiares dependientes mayores, mediante flexibilidad asincrónica y licencias especiales. Basado en <strong>ISO 25551</strong> y guías de cuidado integrado de la <strong>OPS/OMS</strong>.</div>
-                <div class="dossier-li"><strong>Productividad e Innovación:</strong> Equipos multigeneracionales incrementan un 19% los ingresos por innovación y elevan la productividad total en un 1.1% por cada 10% de aumento en la proporción senior (OCDE).</div>
+            <div class="dossier-section-title"><span>📈</span> 3. La Escalera de Certificación</div>
+            <div class="dossier-p">Adaptamos el proceso a la madurez y presupuesto de cada organización mediante tres niveles progresivos:</div>
+            
+            <div class="cert-grid">
+                <div class="cert-card">
+                    <span class="cert-badge badge-basic">BÁSICO</span>
+                    <h4 style="margin:0 0 8px 0; color:#0f172a; font-size:1.15rem;">Compromiso Inicial</h4>
+                    <p style="margin:0; font-size:0.9rem; color:#475569;">Autodiagnóstico online con informe analítico de Quick Wins y distintivo de entrada.</p>
+                </div>
+                <div class="cert-card">
+                    <span class="cert-badge badge-medium">MEDIO</span>
+                    <h4 style="margin:0 0 8px 0; color:#0f172a; font-size:1.15rem;">Certificación Previa</h4>
+                    <p style="margin:0; font-size:0.9rem; color:#475569;">Auditoría virtual, revisión de avances normativos y estructuración del plan de acción formal.</p>
+                </div>
+                <div class="cert-card">
+                    <span class="cert-badge badge-premium">PREMIUM</span>
+                    <h4 style="margin:0 0 8px 0; color:#0f172a; font-size:1.15rem;">Empresa Certificada</h4>
+                    <p style="margin:0; font-size:0.9rem; color:#475569;">Auditoría física exhaustiva, Mystery Shopper Senior y validación total del Sello.</p>
+                </div>
             </div>
         </div>
 
         <div class="dossier-section">
-            <div class="dossier-section-title"><span>🛍️</span> 3. Clientes B2C & Eje Mercado Digital (Consumo e Inclusión)</div>
-            <div class="dossier-p">Las personas mayores de 50 años concentran más del 50% del gasto global. Sin embargo, muchos de los canales de venta físicos y digitales los excluyen involuntariamente por barreras de accesibilidad y edadismo.</div>
-            <div class="dossier-p"><strong>Eje de Certificación e Inclusión:</strong></div>
-            <div class="dossier-ul">
-                <div class="dossier-li"><strong>Eje Mercado Digital (Diseño e interfaces):</strong> Certificación de accesibilidad digital en interfaces táctiles (AgeTech), mitigación de sesgos de edad en IA y botones de asistencia humana obligatorios. Basado en <strong>ISO 25556</strong>, la red de ciudades amigables de la <strong>OMS</strong> y principios del <strong>BID Lab</strong>.</div>
-                <div class="dossier-li"><strong>Servicio Silver y Lealtad:</strong> Protocolos de atención prioritarios y canales asistidos que incrementan la lealtad y el ticket de compra del segmento plateado.</div>
-                <div class="dossier-li"><strong>Certificación y Confianza:</strong> El sello visible valida el compromiso y atrae activamente al público senior con mayor poder adquisitivo.</div>
-            </div>
-        </div>
-
-        <div class="dossier-page-break"></div>
-
-        <div class="dossier-section">
-            <div class="dossier-section-title"><span>🤝</span> 4. Proveedores & Innovación AgeTech</div>
-            <div class="dossier-p">La tecnología es el gran habilitador de la longevidad activa. Buscamos integrar y certificar soluciones tecnológicas y servicios que fomenten la autonomía e inclusión de los adultos mayores.</div>
-            <div class="dossier-p"><strong>Ejes de Integración:</strong></div>
-            <div class="dossier-ul">
-                <div class="dossier-li"><strong>Dispositivos de Asistencia:</strong> IoT y sensores en el hogar respaldados por Inteligencia Artificial.</div>
-                <div class="dossier-li"><strong>Telemedicina:</strong> Plataformas de monitoreo y cuidado preventivo especializadas.</div>
-                <div class="dossier-li"><strong>Finanzas Plateadas:</strong> Soluciones crediticias y de seguros diseñadas sin barreras de edad.</div>
-            </div>
-        </div>
-
-        <div class="dossier-section">
-            <div class="dossier-section-title"><span>🏛️</span> 5. Instituciones & Alianzas del Ecosistema</div>
-            <div class="dossier-p">Impulsamos alianzas públicas y privadas con el objetivo de fomentar subsidios de contratación activa, entornos urbanos amigables con el envejecimiento y redes de capacitación formal para la economía del cuidado.</div>
-            <div class="dossier-p"><strong>Mapeo de Alianzas:</strong></div>
-            <div class="dossier-ul">
-                <div class="dossier-li"><strong>Municipios y Ciudades Amigables:</strong> Programas de adaptación de espacios públicos con base en lineamientos de la OMS.</div>
-                <div class="dossier-li"><strong>Fomento Laboral:</strong> Redes de mentoría cruzada que conectan pymes locales con consultores seniors.</div>
-                <div class="dossier-li"><strong>Formación en Cuidados:</strong> Alianzas formativas para profesionalizar el ecosistema del cuidado senior.</div>
-            </div>
+            <div class="dossier-section-title"><span>🚀</span> 4. Alianzas Estratégicas Disponibles</div>
+            <ul class="dossier-ul">
+                <li class="dossier-li"><strong>B2B & Empleadores:</strong> Certifique su marca empleadora, estructure equipos multigeneracionales y asegure su competitividad.</li>
+                <li class="dossier-li"><strong>B2C & Retail:</strong> Adapte la usabilidad de sus canales de venta para eliminar fricciones y capturar la lealtad del público sénior.</li>
+                <li class="dossier-li"><strong>Proveedores AgeTech:</strong> Integre sus soluciones de software o telemedicina a nuestro ecosistema de recommendations.</li>
+                <li class="dossier-li"><strong>Sector Público:</strong> Colaboremos en el diseño de ciudades amigables y validación para subsidios de contratación.</li>
+            </ul>
         </div>
 
         <div class="dossier-cta-box">
-            <div class="dossier-cta-box-h3">¿Listo para certificar su negocio o iniciar una alianza?</div>
-            <div class="dossier-cta-box-p">Contacte directamente a nuestro equipo de alianzas para agendar una sesión estratégica personalizada.</div>
-            <a href="mailto:qdoblea@gmail.com" class="dossier-cta-btn">Contactar a Alianzas</a>
+            <div class="dossier-cta-box-h3">Inicie el Camino Hacia la Certificación</div>
+            <div class="dossier-cta-box-p">El autodiagnóstico es el primer paso. Agende una auditoría virtual y convierta la diversidad generacional en su mayor ventaja competitiva.</div>
+            
+            <div class="dossier-contact-info">
+                <div style="color: #ffffff !important; font-weight: 700 !important; margin-bottom: 12px !important; font-size: 1.1rem !important;">📞 Contacto Directo:</div>
+                <div style="color: #cbd5e1 !important; font-size: 1rem !important; margin-bottom: 8px !important;">✉️ <strong>Email:</strong> qdoblea@gmail.com</div>
+                <div style="color: #cbd5e1 !important; font-size: 1rem !important;">🌐 <strong>Web:</strong> www.agefriendseal.com</div>
+            </div>
+
+            <a href="mailto:qdoblea@gmail.com" target="_blank" rel="noopener noreferrer" class="dossier-cta-btn">Escríbanos Ahora</a>
         </div>
 
         <div class="dossier-footer">
-            <button onclick="window.print()" class="dossier-print-btn">Imprimir / Guardar como PDF</button>
-            <div class="dossier-p" style="margin-top: 12px;">&copy; 2026 Instituto Certificador Age-Friendly Internacional. Todos los derechos reservados.</div>
+            <button onclick="window.print()" class="dossier-print-btn">🖨️ Imprimir / Guardar como PDF</button>
+            <div class="dossier-p" style="margin-top: 12px; font-size: 0.85rem !important;">&copy; 2026 Instituto Certificador Age-Friendly Internacional. Todos los derechos reservados.</div>
         </div>
     </div>
 </div>`;
@@ -1739,8 +2539,12 @@ const EN_DOSSIER_TEMPLATE = `<div class="dossier-main-wrapper">
             gap: 12px !important;
             margin-bottom: 20px !important;
         }
-        .dossier-logo-icon {
-            font-size: 2.5rem !important;
+        .dossier-logo-img {
+            width: 48px !important;
+            height: 48px !important;
+            border-radius: 50% !important;
+            border: 2px solid #2563eb !important;
+            object-fit: cover !important;
         }
         .dossier-logo-text {
             font-family: system-ui, sans-serif !important;
@@ -1748,19 +2552,18 @@ const EN_DOSSIER_TEMPLATE = `<div class="dossier-main-wrapper">
             font-size: 2.2rem !important;
             color: #0f172a !important;
         }
-        .dossier-logo-accent {
-            color: #d97706 !important;
-        }
+        .dossier-logo-accent { color: #2563eb !important; }
         .dossier-h1 {
             font-family: system-ui, sans-serif !important;
             font-size: 2.5rem !important;
             font-weight: 800 !important;
             margin-bottom: 12px !important;
             color: #0f172a !important;
+            letter-spacing: -0.02em !important;
         }
         .dossier-subtitle {
             font-size: 1.1rem !important;
-            color: #d97706 !important;
+            color: #2563eb !important;
             font-weight: 700 !important;
             margin-bottom: 24px !important;
             letter-spacing: 1px !important;
@@ -1775,14 +2578,12 @@ const EN_DOSSIER_TEMPLATE = `<div class="dossier-main-wrapper">
         }
         .dossier-meta-item strong { color: #334155 !important; }
         
-        .dossier-section {
-            margin-bottom: 48px !important;
-        }
+        .dossier-section { margin-bottom: 48px !important; }
         .dossier-section-title {
             font-family: system-ui, sans-serif !important;
-            font-size: 1.6rem !important;
+            font-size: 1.5rem !important;
             font-weight: 700 !important;
-            color: #d97706 !important;
+            color: #1e293b !important;
             margin-bottom: 20px !important;
             border-bottom: 2px solid #e2e8f0 !important;
             padding-bottom: 8px !important;
@@ -1803,54 +2604,135 @@ const EN_DOSSIER_TEMPLATE = `<div class="dossier-main-wrapper">
         }
         .dossier-li {
             color: #334155 !important;
-            margin-bottom: 8px !important;
+            margin-bottom: 12px !important;
             font-size: 1rem !important;
             display: list-item !important;
-            list-style-type: disc !important;
+            list-style-type: none !important;
+            position: relative !important;
+        }
+        .dossier-li::before {
+            content: "▪" !important;
+            color: #2563eb !important;
+            position: absolute !important;
+            left: -16px !important;
+            font-weight: bold !important;
         }
         .dossier-highlight-box {
-            background: #fffbeb !important;
-            border-left: 4px solid #d97706 !important;
-            padding: 20px !important;
+            background: #eff6ff !important;
+            border-left: 4px solid #2563eb !important;
+            padding: 24px !important;
             border-radius: 0 12px 12px 0 !important;
-            margin-top: 24px !important;
-            margin-bottom: 24px !important;
+            margin: 24px 0 !important;
         }
         .dossier-highlight-box-p {
             margin-bottom: 0 !important;
-            font-style: italic !important;
-            color: #b45309 !important;
+            font-weight: 600 !important;
+            color: #1e3a8a !important;
             display: block !important;
+            font-size: 1.1rem !important;
         }
+        
+        .ejes-grid {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 20px !important;
+            margin-top: 24px !important;
+        }
+        .eje-card {
+            background: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+            padding: 20px !important;
+            border-radius: 12px !important;
+        }
+        .eje-card h4 {
+            margin-top: 0 !important;
+            margin-bottom: 8px !important;
+            color: #0f172a !important;
+            font-size: 1.1rem !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+        }
+        .eje-card p {
+            margin: 0 !important;
+            font-size: 0.9rem !important;
+            color: #475569 !important;
+        }
+        .eje-norma {
+            display: inline-block !important;
+            font-size: 0.75rem !important;
+            background: #e2e8f0 !important;
+            padding: 2px 8px !important;
+            border-radius: 4px !important;
+            margin-top: 12px !important;
+            font-weight: 600 !important;
+            color: #475569 !important;
+        }
+
+        .cert-grid {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr 1fr !important;
+            gap: 16px !important;
+            margin-top: 24px !important;
+        }
+        .cert-card {
+            background: #ffffff !important;
+            border: 1px solid #cbd5e1 !important;
+            padding: 24px 16px !important;
+            border-radius: 12px !important;
+            text-align: center !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02) !important;
+        }
+        .cert-badge {
+            display: inline-block !important;
+            font-size: 0.75rem !important;
+            font-weight: 800 !important;
+            padding: 4px 12px !important;
+            border-radius: 50px !important;
+            margin-bottom: 16px !important;
+            letter-spacing: 0.05em !important;
+        }
+        .badge-basic { background: #fef3c7 !important; color: #b45309 !important; }
+        .badge-medium { background: #f1f5f9 !important; color: #475569 !important; }
+        .badge-premium { background: #fef08a !important; color: #854d0e !important; }
+
         .dossier-cta-box {
             text-align: center !important;
-            background: #f0fdf4 !important;
-            border: 1px solid #bbf7d0 !important;
+            background: #0f172a !important;
             border-radius: 20px !important;
-            padding: 32px !important;
+            padding: 40px 32px !important;
             margin-top: 48px !important;
         }
         .dossier-cta-box-h3 {
             font-family: system-ui, sans-serif !important;
             font-size: 1.5rem !important;
             margin-bottom: 12px !important;
-            color: #166534 !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
         }
         .dossier-cta-box-p {
-            color: #1e293b !important;
-            margin-bottom: 0 !important;
+            color: #94a3b8 !important;
+            margin-bottom: 24px !important;
             display: block !important;
+        }
+        .dossier-contact-info {
+            background: rgba(255,255,255,0.05) !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
+            border-radius: 12px !important;
+            padding: 20px !important;
+            max-width: 400px !important;
+            margin: 0 auto 24px auto !important;
+            text-align: left !important;
         }
         .dossier-cta-btn {
             display: inline-block !important;
-            background: #166534 !important;
+            background: #2563eb !important;
             color: #ffffff !important;
             font-family: system-ui, sans-serif !important;
             font-weight: 700 !important;
             text-decoration: none !important;
-            padding: 12px 32px !important;
+            padding: 14px 36px !important;
             border-radius: 8px !important;
-            margin-top: 16px !important;
         }
         .dossier-footer {
             text-align: center !important;
@@ -1861,25 +2743,19 @@ const EN_DOSSIER_TEMPLATE = `<div class="dossier-main-wrapper">
         }
         .dossier-print-btn {
             display: inline-block !important;
-            background: #d97706 !important;
-            color: #ffffff !important;
-            font-family: system-ui, sans-serif !important;
-            font-weight: 700 !important;
+            background: #f1f5f9 !important;
+            color: #475569 !important;
+            font-weight: 600 !important;
             text-decoration: none !important;
-            padding: 10px 24px !important;
-            border-radius: 8px !important;
-            border: none !important;
+            padding: 8px 20px !important;
+            border-radius: 6px !important;
+            border: 1px solid #cbd5e1 !important;
             cursor: pointer !important;
             margin-bottom: 16px !important;
-            font-size: 0.95rem !important;
-            transition: background 0.2s !important;
+            font-size: 0.9rem !important;
         }
-        .dossier-print-btn:hover {
-            background: #b45309 !important;
-        }
-        .dossier-page-break {
-            page-break-before: always !important;
-        }
+        .dossier-page-break { page-break-before: always !important; }
+        
         @media print {
             .dossier-container {
                 max-width: 100% !important;
@@ -1888,96 +2764,130 @@ const EN_DOSSIER_TEMPLATE = `<div class="dossier-main-wrapper">
                 border: none !important;
                 box-shadow: none !important;
             }
-            .dossier-cta-btn, .dossier-print-btn {
-                display: none !important;
-            }
+            .dossier-cta-btn, .dossier-print-btn { display: none !important; }
+            .ejes-grid { grid-template-columns: 1fr !important; }
+            .cert-grid { grid-template-columns: 1fr !important; }
         }
     </style>
 
     <div class="dossier-container">
         <div class="dossier-header">
             <div class="dossier-logo-container">
-                <span class="dossier-logo-icon">🏅</span>
+                <img src="logo_age_friend_seal.png" alt="Age Friend Seal Logo" class="dossier-logo-img">
                 <span class="dossier-logo-text"><span class="dossier-logo-accent">Age</span> Friend Seal</span>
             </div>
-            <div class="dossier-h1">CORPORATE ALLIANCES DOSSIER</div>
-            <div class="dossier-subtitle">Strategic Proposal for B2B, B2C, Suppliers & Institutions</div>
+            <div class="dossier-h1">CORPORATE ALLIANCE DOSSIER</div>
+            <div class="dossier-subtitle">Strategic Proposal for Certification</div>
             <div class="dossier-meta-info">
-                <div class="dossier-meta-item">Document: <strong>Partnership Pitch</strong></div>
-                <div class="dossier-meta-item">Year: <strong>2026</strong></div>
-                <div class="dossier-meta-item">Institute: <strong>International Certification Institute</strong></div>
+                <div class="dossier-meta-item">Document: <strong>B2B Executive Summary</strong></div>
+                <div class="dossier-meta-item">Date of Issue: <strong>June 2026</strong></div>
+                <div class="dossier-meta-item">Issuer: <strong>Age Friend Seal</strong></div>
             </div>
         </div>
 
         <div class="dossier-section">
-            <div class="dossier-section-title"><span>📉</span> 1. The Demographic Winter & The Silver Opportunity</div>
-            <div class="dossier-p">The world is experiencing a demographic shift without historical precedent. The rate at which babies are born is rapidly decelerating globally: in 1990 the global fertility rate was 3.3 births per woman, whereas today it averages just 2.3. With the replacement rate at 2.1, nearly two-thirds of the global population now lives in countries with declining rates. Combined with advancements in longevity, the over-50 age bracket is the fastest-growing globally.</div>
+            <div class="dossier-section-title"><span>📉</span> 1. The Silent Tsunami & Return on Investment</div>
+            <div class="dossier-p">The world is facing an unprecedented demographic shift. With the global fertility rate dropping to 2.3 and life expectancy rising drastically, the Silver Generation (over 50 years old) now holds more than <strong>50% of global purchasing power</strong>.</div>
+            
             <div class="dossier-highlight-box">
-                <div class="dossier-highlight-box-p">"The Silver Economy is no longer a fiscal risk or a welfare policy, but the definitive engine for consumer spending and business innovation."</div>
+                <div class="dossier-highlight-box-p">"The Silver Economy is no longer a welfare policy but the definitive engine for corporate profitability, cost reduction, and market loyalty."</div>
             </div>
-            <div class="dossier-p">Given this scenario, <strong>Age Friend Seal</strong> provides its own proprietary technical framework structured in three certification pillars, integrating global standards and guidelines from organizations such as ISO, WHO, PAHO, IDB Lab, ILO, UN, and the World Bank.</div>
+            
+            <div class="dossier-p"><strong>Proven Financial Impact (ROI):</strong></div>
+            <ul class="dossier-ul">
+                <li class="dossier-li"><strong>Turnover Savings (4%):</strong> Employees over 50 demonstrate a retention rate 3 times higher than younger generations, drastically reducing hiring costs.</li>
+                <li class="dossier-li"><strong>Productivity Increase (1.1%):</strong> OECD estimates show that for every 10% increase in the senior workforce, total productivity rises steadily.</li>
+                <li class="dossier-li"><strong>Innovation Gains (19%):</strong> Intergenerational teams integrate digital freshness with resilience, elevating revenue derived from innovation.</li>
+            </ul>
+        </div>
+
+        <div class="dossier-section">
+            <div class="dossier-section-title"><span>🏛️</span> 2. The 5 Global Foundations of the Seal</div>
+            <div class="dossier-p">Age Friend Seal provides a unified, proprietary technical framework that integrates the world's best standards to eradicate ageism and capitalize on the Silver Economy.</div>
+            
+            <div class="ejes-grid">
+                <div class="eje-card">
+                    <h4><span>🌐</span> Talent & Workplace Axis</h4>
+                    <p>Fostering senior employability, blind resumes, and structuring reverse mentoring to retain intellectual capital.</p>
+                    <span class="eje-norma">ISO 25550 / ILO</span>
+                </div>
+                <div class="eje-card">
+                    <h4><span>🤝</span> Support Axis</h4>
+                    <p>Comprehensive support and asynchronous flexibility for employees caring for dependent relatives.</p>
+                    <span class="eje-norma">ISO 25551 / PAHO</span>
+                </div>
+                <div class="eje-card">
+                    <h4><span>💻</span> Digital Market Axis</h4>
+                    <p>AgeTech accessibility, bias auditing in AI algorithms, and mandatory direct human escape protocols.</p>
+                    <span class="eje-norma">ISO 25556</span>
+                </div>
+                <div class="eje-card">
+                    <h4><span>🏥</span> Health & Environment</h4>
+                    <p>Adapting physical infrastructure free of barriers and screening functional capacities.</p>
+                    <span class="eje-norma">WHO (Age-Friendly)</span>
+                </div>
+                <div class="eje-card" style="grid-column: 1 / -1;">
+                    <h4><span>⚖️</span> International Treaty</h4>
+                    <p>Organizational policies protecting equal treatment, prohibiting ageist dismissal, and promoting gradual retirement schemes.</p>
+                    <span class="eje-norma">ILO Recommendation 162</span>
+                </div>
+            </div>
         </div>
 
         <div class="dossier-page-break"></div>
 
         <div class="dossier-section">
-            <div class="dossier-section-title"><span>💼</span> 2. B2B Clients & Talent Management (Workplace & Conciliation Pillars)</div>
-            <div class="dossier-p">The future shortage of an active workforce requires organizations to retain and empower their senior intellectual capital, eradicate ageism, and support caregiving employees. Intergenerational cross-mentorship is the key to synchronizing the digital freshness of younger workers with the strategic experience of senior professionals.</div>
-            <div class="dossier-p"><strong>Core Pillars & Impact:</strong></div>
-            <div class="dossier-ul">
-                <div class="dossier-li"><strong>Workplace Pillar (Talent & Employability):</strong> Unbiased recruitment, active senior retention, and reverse mentoring. Integrates guidelines from <strong>ISO 25550</strong>, <strong>ILO</strong> conventions, and <strong>UN</strong> pro-age policies.</div>
-                <div class="dossier-li"><strong>Conciliation Pillar (Family Support):</strong> Support for "sandwich generation" employees caring for elder relatives, through asynchronous schedules and caregiving leaves. Based on <strong>ISO 25551</strong> and <strong>PAHO/WHO</strong> integrated care guidelines.</div>
-                <div class="dossier-li"><strong>Productivity & Innovation:</strong> Multigenerational teams boost innovation revenue by 19% and increase total productivity by 1.1% for every 10% increase in the proportion of senior employees (OECD data).</div>
+            <div class="dossier-section-title"><span>📈</span> 3. The Certification Ladder</div>
+            <div class="dossier-p">We adapt the process to the maturity and budget of each organization through three progressive levels:</div>
+            
+            <div class="cert-grid">
+                <div class="cert-card">
+                    <span class="cert-badge badge-basic">BASIC</span>
+                    <h4 style="margin:0 0 8px 0; color:#0f172a; font-size:1.15rem;">Initial Commitment</h4>
+                    <p style="margin:0; font-size:0.9rem; color:#475569;">Online self-diagnostic with a Quick Wins analytical report and entry-level badge.</p>
+                </div>
+                <div class="cert-card">
+                    <span class="cert-badge badge-medium">MEDIUM</span>
+                    <h4 style="margin:0 0 8px 0; color:#0f172a; font-size:1.15rem;">Prior Certification</h4>
+                    <p style="margin:0; font-size:0.9rem; color:#475569;">Virtual audit, review of regulatory progress, and structuring of a formal action plan.</p>
+                </div>
+                <div class="cert-card">
+                    <span class="cert-badge badge-premium">PREMIUM</span>
+                    <h4 style="margin:0 0 8px 0; color:#0f172a; font-size:1.15rem;">Certified Company</h4>
+                    <p style="margin:0; font-size:0.9rem; color:#475569;">Exhaustive physical audit, Senior Mystery Shopper, and full validation of the Seal.</p>
+                </div>
             </div>
         </div>
 
         <div class="dossier-section">
-            <div class="dossier-section-title"><span>🛍️</span> 3. B2C Clients & Digital Market Pillar (Consumer & Inclusion)</div>
-            <div class="dossier-p">People over 50 command over 50% of global consumer spending. However, many current physical and digital channels unintentionally exclude them due to accessibility barriers.</div>
-            <div class="dossier-p"><strong>Certification Pillar & Inclusion:</strong></div>
-            <div class="dossier-ul">
-                <div class="dossier-li"><strong>Digital Market Pillar (Design & Channels):</strong> Certified accessibility for touchscreens (AgeTech), age bias audits in AI algorithms, and mandatory human assistance buttons. Based on <strong>ISO 25556</strong>, the <strong>WHO</strong> age-friendly cities network, and <strong>IDB Lab</strong> principles.</div>
-                <div class="dossier-li"><strong>Silver Service & Loyalty:</strong> Priority care protocols and assisted channels that increase brand loyalty and transaction size in the silver segment.</div>
-                <div class="dossier-li"><strong>Certification & Trust:</strong> A visible, trusted seal that validates your commitment and actively attracts high-purchasing-power seniors.</div>
-            </div>
-        </div>
-
-        <div class="dossier-page-break"></div>
-
-        <div class="dossier-section">
-            <div class="dossier-section-title"><span>🤝</span> 4. Suppliers & AgeTech Innovation</div>
-            <div class="dossier-p">Technology is the great enabler for active longevity. We aim to integrate and certify technological solutions and services that foster senior autonomy and inclusion.</div>
-            <div class="dossier-p"><strong>Integration Pillars:</strong></div>
-            <div class="dossier-ul">
-                <div class="dossier-li"><strong>Assistive Devices:</strong> Smart home IoT and sensors powered by Artificial Intelligence.</div>
-                <div class="dossier-li"><strong>Telemedicine:</strong> Specialized monitoring and preventive care platforms.</div>
-                <div class="dossier-li"><strong>Silver Finance:</strong> Unbiased loan and insurance products designed without age barriers.</div>
-            </div>
-        </div>
-
-        <div class="dossier-section">
-            <div class="dossier-section-title"><span>🏛️</span> 5. Institutions & Ecosystem Partnerships</div>
-            <div class="dossier-p">We drive public-private partnerships to promote active hiring subsidies, age-friendly urban environments, and formal training networks for the caregiving economy.</div>
-            <div class="dossier-p"><strong>Partnership Mapping:</strong></div>
-            <div class="dossier-ul">
-                <div class="dossier-li"><strong>Age-Friendly Cities & Municipalities:</strong> Public space adaptation programs based on WHO frameworks.</div>
-                <div class="dossier-li"><strong>Labor Promotion:</strong> Cross-mentorship networks linking local SMEs with senior consultants.</div>
-                <div class="dossier-li"><strong>Caregiver Training:</strong> Educational alliances to professionalize the senior care ecosystem.</div>
-            </div>
+            <div class="dossier-section-title"><span>🚀</span> 4. Strategic Alliances Available</div>
+            <ul class="dossier-ul">
+                <li class="dossier-li"><strong>B2B & Employers:</strong> Certify your employer brand, structure multigenerational teams, and ensure competitiveness.</li>
+                <li class="dossier-li"><strong>B2C & Retail:</strong> Adapt the usability of your sales channels to capture loyalty from the senior demographic.</li>
+                <li class="dossier-li"><strong>AgeTech Suppliers:</strong> Integrate your software or telemedicine solutions into our recommendation ecosystem.</li>
+                <li class="dossier-li"><strong>Public Sector:</strong> Collaborate on designing age-friendly cities and validation for hiring subsidies.</li>
+            </ul>
         </div>
 
         <div class="dossier-cta-box">
-            <div class="dossier-cta-box-h3">Ready to certify your business or start a partnership?</div>
-            <div class="dossier-cta-box-p">Contact our alliances team directly to schedule a personalized strategic session.</div>
-            <a href="mailto:qdoblea@gmail.com" class="dossier-cta-btn">Contact Partnerships</a>
+            <div class="dossier-cta-box-h3">Start Your Certification Journey</div>
+            <div class="dossier-cta-box-p">The self-diagnostic is the first step. Schedule a virtual audit and turn generational diversity into your greatest competitive advantage.</div>
+            
+            <div class="dossier-contact-info">
+                <div style="color: #ffffff !important; font-weight: 700 !important; margin-bottom: 12px !important; font-size: 1.1rem !important;">📞 Direct Contact:</div>
+                <div style="color: #cbd5e1 !important; font-size: 1rem !important; margin-bottom: 8px !important;">✉️ <strong>Email:</strong> qdoblea@gmail.com</div>
+                <div style="color: #cbd5e1 !important; font-size: 1rem !important;">🌐 <strong>Web:</strong> www.agefriendseal.com</div>
+            </div>
+
+            <a href="mailto:qdoblea@gmail.com" target="_blank" rel="noopener noreferrer" class="dossier-cta-btn">Contact Us Now</a>
         </div>
 
         <div class="dossier-footer">
-            <button onclick="window.print()" class="dossier-print-btn">Print / Save as PDF</button>
-            <div class="dossier-p" style="margin-top: 12px;">&copy; 2026 Age-Friendly International Certification Institute. All rights reserved.</div>
+            <button onclick="window.print()" class="dossier-print-btn">🖨️ Print / Save as PDF</button>
+            <div class="dossier-p" style="margin-top: 12px; font-size: 0.85rem !important;">&copy; 2026 Age-Friendly International Certification Institute. All rights reserved.</div>
         </div>
     </div>
-</div>`;
+</div>`;;
 
 // Función para colapsar y expandir los detalles de las normas de manera animada
 function toggleCardDetails(id, btn) {
@@ -2005,3 +2915,179 @@ function toggleCardDetails(id, btn) {
     }
 }
 
+// ==========================================================================
+// Funciones Adicionales de Interactividad (Accesibilidad, ROI, Mobile, Accordion)
+// ==========================================================================
+
+function initAccessibilityWidget() {
+    const toggleBtn = document.querySelector('.a11y-toggle');
+    const panel = document.querySelector('.a11y-panel');
+    const closeBtn = document.getElementById('a11y-close');
+    const btnDecrease = document.getElementById('btn-text-decrease');
+    const btnReset = document.getElementById('btn-text-reset');
+    const btnIncrease = document.getElementById('btn-text-increase');
+    const toggleContrast = document.getElementById('toggle-contrast');
+
+    if (toggleBtn && panel) {
+        toggleBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            panel.classList.toggle('hidden');
+        });
+    }
+
+    if (closeBtn && panel) {
+        closeBtn.addEventListener('click', () => {
+            panel.classList.add('hidden');
+        });
+    }
+
+    let currentFontSize = 100; // percent
+    
+    try {
+        const savedContrast = localStorage.getItem('high-contrast');
+        if (savedContrast === 'true') {
+            if (toggleContrast) toggleContrast.checked = true;
+            document.body.classList.add('high-contrast');
+        }
+        
+        const savedFontSize = localStorage.getItem('font-size-percent');
+        if (savedFontSize) {
+            currentFontSize = parseInt(savedFontSize);
+            document.documentElement.style.fontSize = currentFontSize + '%';
+        }
+    } catch (e) {
+        console.error("Error loading a11y settings:", e);
+    }
+
+    if (btnIncrease) {
+        btnIncrease.addEventListener('click', () => {
+            currentFontSize += 10;
+            if (currentFontSize > 150) currentFontSize = 150;
+            document.documentElement.style.fontSize = currentFontSize + '%';
+            localStorage.setItem('font-size-percent', currentFontSize);
+        });
+    }
+
+    if (btnDecrease) {
+        btnDecrease.addEventListener('click', () => {
+            currentFontSize -= 10;
+            if (currentFontSize < 80) currentFontSize = 80;
+            document.documentElement.style.fontSize = currentFontSize + '%';
+            localStorage.setItem('font-size-percent', currentFontSize);
+        });
+    }
+
+    if (btnReset) {
+        btnReset.addEventListener('click', () => {
+            currentFontSize = 100;
+            document.documentElement.style.fontSize = '100%';
+            localStorage.setItem('font-size-percent', currentFontSize);
+        });
+    }
+
+    if (toggleContrast) {
+        toggleContrast.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                document.body.classList.add('high-contrast');
+                localStorage.setItem('high-contrast', 'true');
+            } else {
+                document.body.classList.remove('high-contrast');
+                localStorage.setItem('high-contrast', 'false');
+            }
+        });
+    }
+}
+
+function initROISimulator() {
+    const inputEmployees = document.getElementById('roi-employees');
+    const inputSalary = document.getElementById('roi-salary');
+    const inputRevenue = document.getElementById('roi-revenue');
+
+    if (!inputEmployees || !inputSalary || !inputRevenue) return;
+
+    const valEmployees = document.getElementById('val-employees');
+    const valSalary = document.getElementById('val-salary');
+    const valRevenue = document.getElementById('val-revenue');
+
+    const resTurnover = document.getElementById('res-turnover');
+    const resProductivity = document.getElementById('res-productivity');
+    const resTotal = document.getElementById('res-total');
+
+    function formatCurrency(val) {
+        return '$' + new Intl.NumberFormat('en-US').format(val);
+    }
+
+    function calculate() {
+        const employees = parseInt(inputEmployees.value);
+        const salary = parseInt(inputSalary.value);
+        const revenue = parseInt(inputRevenue.value);
+
+        if (valEmployees) valEmployees.textContent = new Intl.NumberFormat('en-US').format(employees);
+        if (valSalary) valSalary.textContent = formatCurrency(salary);
+        if (valRevenue) valRevenue.textContent = formatCurrency(revenue);
+
+        const turnoverSavings = Math.round((employees * 0.04) * (salary * 0.5));
+        const productivityGains = Math.round(revenue * 0.011);
+        const totalImpact = turnoverSavings + productivityGains;
+
+        if (resTurnover) resTurnover.textContent = '+' + formatCurrency(turnoverSavings);
+        if (resProductivity) resProductivity.textContent = '+' + formatCurrency(productivityGains);
+        if (resTotal) resTotal.textContent = '+' + formatCurrency(totalImpact);
+    }
+
+    inputEmployees.addEventListener('input', calculate);
+    inputSalary.addEventListener('input', calculate);
+    inputRevenue.addEventListener('input', calculate);
+
+    calculate();
+}
+
+function initMobileMenu() {
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const navLinks = document.querySelector('.nav-links');
+    
+    if (mobileMenuBtn && navLinks) {
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenuBtn.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+        
+        const links = navLinks.querySelectorAll('a');
+        links.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenuBtn.classList.remove('active');
+                navLinks.classList.remove('active');
+            });
+        });
+    }
+}
+
+function initAccordion() {
+    const accordions = document.querySelectorAll('.accordion-header');
+    
+    accordions.forEach(header => {
+        header.addEventListener('click', function() {
+            const currentItem = this.parentElement;
+            const isActive = currentItem.classList.contains('active');
+            
+            document.querySelectorAll('.accordion-item').forEach(item => {
+                item.classList.remove('active');
+                item.querySelector('.accordion-header').setAttribute('aria-expanded', 'false');
+            });
+            
+            if (!isActive) {
+                currentItem.classList.add('active');
+                this.setAttribute('aria-expanded', 'true');
+            }
+        });
+    });
+}
+
+// Inicializar todos los componentes interactivos adicionales al cargar
+window.addEventListener('DOMContentLoaded', () => {
+    init();
+    initAccessibilityWidget();
+    initROISimulator();
+    initMobileMenu();
+    initAccordion();
+});

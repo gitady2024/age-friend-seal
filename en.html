@@ -20,17 +20,40 @@
     <!-- Navigation -->
     <header class="navbar">
         <div class="container nav-container">
-            <div class="logo">
+            <a href="#" class="logo">
                 <img src="logo_age_friend_seal.png" alt="Age Friend Seal Logo" class="logo-img">
                 <span class="logo-text"><span class="logo-accent">Age</span> Friend Seal</span>
-            </div>
+            </a>
+
+            <!-- Mobile Menu Button -->
+            <button class="menu-toggle" id="mobile-menu-btn" aria-label="Open menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
             <nav class="nav-links">
-                <a href="#oportunidad">Silver Economy</a>
-                <a href="#escalera">Certifications</a>
-                <a href="#normativas">Global Foundations</a>
-                <a href="#alianzas">Alliances</a>
-                <a href="#radar-noticias">Longevity Radar</a>
-                <a href="#autodiagnostico" class="btn btn-primary" id="btn-nav-start">Self-Diagnostic MVP</a>
+                <a href="#oportunidad">Opportunity</a>
+                
+                <!-- Menú Desplegable (Dropdown) -->
+                <div class="nav-dropdown">
+                    <a href="#escalera" class="nav-dropdown-toggle">Certifications <span style="font-size: 0.7em; margin-left: 4px;">▼</span></a>
+                    <div class="nav-dropdown-menu">
+                        <a href="#normativas">Standards</a>
+                        <a href="#alianzas">Alliances</a>
+                    </div>
+                </div>
+                
+                <a href="#radar-noticias" class="hide-on-laptop">Radar</a>
+                
+                <!-- CTA Primario -->
+                <a href="#autodiagnostico" class="btn btn-primary" id="btn-nav-start">Self-Diagnostic</a>
+                
+                <!-- Acceso Secundario -->
+                <a href="#" class="nav-auth-link" id="btn-nav-auth">
+                    <span style="font-size: 1.2rem; margin-right: 4px;">👤</span> Login
+                </a>
+                
                 <a href="index.html" class="lang-switch-btn">
                     <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2">
                         <rect width="3" height="2" fill="#AD1519"/>
@@ -57,13 +80,17 @@
             <div class="hero-visual">
                 <div class="glass-card hero-stats-card">
                     <div class="card-icon">📈</div>
-                    <h3>+50%</h3>
-                    <p>Of global purchasing power is held by the senior generation.</p>
+                    <div class="stats-info">
+                        <h3>+50%</h3>
+                        <p>Of global purchasing power is held by the senior generation.</p>
+                    </div>
                 </div>
-                <div class="glass-card hero-stats-card shift-y">
+                <div class="glass-card hero-stats-card">
                     <div class="card-icon">🤝</div>
-                    <h3>3x</h3>
-                    <p>Higher retention in employees over 50 compared to young workers.</p>
+                    <div class="stats-info">
+                        <h3>3x</h3>
+                        <p>Higher retention in employees over 50 compared to young workers.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -91,6 +118,75 @@
                     <div class="stat-number">1.1%</div>
                     <h4>More Total Productivity</h4>
                     <p>For every 10% increase in employees over 50 years old (according to OECD estimates).</p>
+                </div>
+            </div>
+
+            <!-- B2B Return on Investment (ROI) Simulator -->
+            <div class="glass-card roi-simulator-card" style="margin-top: 40px;">
+                <div class="roi-header text-center">
+                    <span class="register-badge" style="margin-bottom: 8px;">B2B SIMULATOR</span>
+                    <h3 style="color: var(--text-primary);">Calculate your Financial Impact</h3>
+                    <p class="subtitle" style="margin-bottom: 24px; font-size: 1rem;">Estimate the annual benefit of increasing your senior talent by 10%, reducing turnover costs and raising productivity.</p>
+                </div>
+                
+                <div class="roi-grid">
+                    <!-- Control Panel (Inputs) -->
+                    <div class="roi-controls">
+                        <div class="form-group roi-slider-group">
+                            <div class="roi-slider-header">
+                                <label for="roi-employees">Total Employees</label>
+                                <span class="roi-value-display" id="val-employees">250</span>
+                            </div>
+                            <input type="range" id="roi-employees" class="custom-slider" min="10" max="5000" step="10" value="250">
+                        </div>
+                        
+                        <div class="form-group roi-slider-group">
+                            <div class="roi-slider-header">
+                                <label for="roi-salary">Average Annual Salary (USD)</label>
+                                <span class="roi-value-display" id="val-salary">$25,000</span>
+                            </div>
+                            <input type="range" id="roi-salary" class="custom-slider" min="5000" max="150000" step="1000" value="25000">
+                        </div>
+                        
+                        <div class="form-group roi-slider-group">
+                            <div class="roi-slider-header">
+                                <label for="roi-revenue">Annual Revenue (USD)</label>
+                                <span class="roi-value-display" id="val-revenue">$5,000,000</span>
+                            </div>
+                            <input type="range" id="roi-revenue" class="custom-slider" min="100000" max="50000000" step="100000" value="5000000">
+                        </div>
+                    </div>
+
+                    <!-- Results Panel (Outputs) -->
+                    <div class="roi-results-board">
+                        <div class="roi-result-item">
+                            <div class="roi-result-icon">🔄</div>
+                            <div class="roi-result-text">
+                                <h5>Turnover Savings (4%)</h5>
+                                <p>Cost avoided in recruitment and learning curve.</p>
+                            </div>
+                            <div class="roi-result-number text-success" id="res-turnover">+$125,000</div>
+                        </div>
+                        
+                        <div class="roi-result-item">
+                            <div class="roi-result-icon">⚡</div>
+                            <div class="roi-result-text">
+                                <h5>Productivity Gain (1.1%)</h5>
+                                <p>Increase in efficiency and knowledge transfer.</p>
+                            </div>
+                            <div class="roi-result-number text-success" id="res-productivity">+$55,000</div>
+                        </div>
+
+                        <div class="roi-total-divider"></div>
+                        
+                        <div class="roi-result-item total">
+                            <div class="roi-result-text">
+                                <h4>Annual Financial Impact</h4>
+                            </div>
+                            <div class="roi-result-number total-glow" id="res-total">+$180,000</div>
+                        </div>
+                        <a href="#escalera" class="btn btn-gradient btn-block" style="margin-top: 16px;">View Certification Plans</a>
+                    </div>
                 </div>
             </div>
 
@@ -167,145 +263,145 @@
         </div>
     </section>
 
-    <!-- Foundations & Technical Standards -->
+    <!-- Foundations & Technical Standards (Accordion) -->
     <section id="normativas" class="normativas-section">
         <div class="container">
             <div class="section-title text-center">
-                <h2>Foundations & International Regulations</h2>
-                <p class="subtitle">Our evaluation standards are fully backed by the frameworks and technical standards of leading global organizations in longevity and development.</p>
+                <h2>The 5 Global Foundations of Certification</h2>
+                <p class="subtitle">Our framework integrates the most demanding global standards to guide companies in adopting pro-age policies with high social and economic impact.</p>
             </div>
-            <div class="normativas-grid">
-                <!-- Work & Employability Axis -->
-                <div class="glass-card normativa-card" id="card-iso-25550">
-                    <div class="normativa-badge badge-iso">WORK AXIS</div>
-                    <div class="normativa-header">
-                        <div class="card-icon">🌐</div>
-                        <h3>Internal Talent & Employability Axis</h3>
-                    </div>
-                    <p class="normativa-org">Based on ISO 25550:2022, ILO and UN Treaties</p>
-                    <p class="normativa-text">Defines Sello guidelines to eradicate corporate ageism, ensure retention and employability of senior professionals, and leverage multigenerational teams as a driver for innovation.</p>
-                    <ul class="normativa-bullet">
-                        <li>Fostering active longevity and senior employability</li>
-                        <li>Structured reverse and cross-generational mentoring</li>
-                        <li>Blind recruitment processes free of age bias</li>
-                    </ul>
-                    
-                    <!-- Collapsible details container -->
-                    <div class="expanded-details" id="details-iso-25550">
-                        <div class="expanded-details-content">
-                            <h4>Key Parameters & Benefits:</h4>
-                            <ul>
-                                <li><strong>Retention & Career Longevity:</strong> Programs to conserve senior intellectual capital and combat age-related unemployment.</li>
-                                <li><strong>Reverse Mentoring:</strong> Bidirectional training (juniors guide on emerging tech; seniors on leadership and crisis resolution).</li>
-                                <li><strong>Blind Resumes:</strong> Removal of graduation dates, photos, and birth dates during candidate screenings.</li>
-                                <li><strong>Ergonomic Workspace:</strong> Sensory adaptations (acoustics, light levels) designed to prevent fatigue and support older workers.</li>
+            
+            <div class="accordion-container">
+                <!-- Item 1 -->
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="false">
+                        <div class="accordion-title-wrap">
+                            <div class="card-icon" style="width: 48px; height: 48px; font-size: 1.5rem;">🌐</div>
+                            <div class="accordion-title-text">
+                                <span class="normativa-badge badge-iso" style="margin-bottom: 4px;">WORK AXIS</span>
+                                <h3>Internal Talent & Employability</h3>
+                            </div>
+                        </div>
+                        <span class="accordion-icon"></span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-inner-content">
+                            <p class="normativa-org">Based on ISO 25550:2022, ILO and UN Treaties</p>
+                            <p class="normativa-text">Defines Sello guidelines to eradicate corporate ageism, ensure retention and employability of senior professionals, and leverage multigenerational teams as a driver for innovation.</p>
+                            <ul class="normativa-bullet">
+                                <li><strong>Retention & Career Longevity:</strong> Programs to conserve senior intellectual capital.</li>
+                                <li><strong>Reverse Mentoring:</strong> Bidirectional training between junior and senior staff.</li>
+                                <li><strong>Blind Resumes:</strong> Removal of birth dates and photos during candidate screenings.</li>
                             </ul>
+                            <a href="https://www.iso.org/standard/76420.html" target="_blank" class="normativa-link">View reference standard ISO 25550 ↗</a>
                         </div>
                     </div>
-                    
-                    <div class="normativa-footer-actions">
-                        <button class="toggle-details-btn" onclick="toggleCardDetails('details-iso-25550', this)">More details ▾</button>
-                        <a href="https://www.iso.org/standard/76420.html" target="_blank" class="normativa-link">View reference standard ↗</a>
-                    </div>
                 </div>
-                <!-- Support & Work-Life Balance Axis -->
-                <div class="glass-card normativa-card" id="card-iso-25551">
-                    <div class="normativa-badge badge-iso">SUPPORT AXIS</div>
-                    <div class="normativa-header">
-                        <div class="card-icon">🤝</div>
-                        <h3>Eldercare & Employee Support Axis</h3>
-                    </div>
-                    <p class="normativa-org">Based on ISO 25551:2021, WHO and PAHO</p>
-                    <p class="normativa-text">Standardizes corporate support for "sandwich generation" employees, preventing premature career exit by harmonizing work with eldercare duties for dependent relatives.</p>
-                    <ul class="normativa-bullet">
-                        <li>Asynchronous schedule flexibility and telecommuting</li>
-                        <li>Specific assistance programs to mitigate caregiver burnout</li>
-                        <li>Supportive organizational culture free of bias and penalties</li>
-                    </ul>
-                    
-                    <!-- Collapsible details container -->
-                    <div class="expanded-details" id="details-iso-25551">
-                        <div class="expanded-details-content">
-                            <h4>Key Parameters & Benefits:</h4>
-                            <ul>
-                                <li><strong>Schedule Adaptability:</strong> Direct channels to easily adapt hours for eldercare medical appointments.</li>
-                                <li><strong>Burnout Mitigation:</strong> Dedicated counseling (EAP) and specialized emotional support for caregivers.</li>
-                                <li><strong>Dependency Guidance:</strong> Legal advice and social-health resources directory to streamline family care tasks.</li>
-                                <li><strong>Eldercare Leave:</strong> Flexible time banks and paid leave options designated for eldercare emergencies.</li>
+
+                <!-- Item 2 -->
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="false">
+                        <div class="accordion-title-wrap">
+                            <div class="card-icon" style="width: 48px; height: 48px; font-size: 1.5rem;">🤝</div>
+                            <div class="accordion-title-text">
+                                <span class="normativa-badge badge-iso" style="margin-bottom: 4px;">SUPPORT AXIS</span>
+                                <h3>Eldercare & Employee Support</h3>
+                            </div>
+                        </div>
+                        <span class="accordion-icon"></span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-inner-content">
+                            <p class="normativa-org">Based on ISO 25551:2021, WHO and PAHO</p>
+                            <p class="normativa-text">Standardizes corporate support for "sandwich generation" employees, preventing premature career exit by harmonizing work with eldercare duties for dependent relatives.</p>
+                            <ul class="normativa-bullet">
+                                <li><strong>Schedule Adaptability:</strong> Direct channels for eldercare medical appointments.</li>
+                                <li><strong>Burnout Mitigation:</strong> Dedicated emotional support for caregivers.</li>
+                                <li><strong>Eldercare Leave:</strong> Flexible time banks designated for eldercare emergencies.</li>
                             </ul>
+                            <a href="https://www.iso.org/standard/77288.html" target="_blank" class="normativa-link">View reference standard ISO 25551 ↗</a>
                         </div>
                     </div>
-                    
-                    <div class="normativa-footer-actions">
-                        <button class="toggle-details-btn" onclick="toggleCardDetails('details-iso-25551', this)">More details ▾</button>
-                        <a href="https://www.iso.org/standard/77288.html" target="_blank" class="normativa-link">View reference standard ↗</a>
-                    </div>
                 </div>
-                <!-- Market & Digital Inclusion Axis -->
-                <div class="glass-card normativa-card" id="card-iso-25556">
-                    <div class="normativa-badge badge-iso">DIGITAL AXIS</div>
-                    <div class="normativa-header">
-                        <div class="card-icon">💻</div>
-                        <h3>Senior Customer & Digital Inclusion Axis</h3>
-                    </div>
-                    <p class="normativa-org">Based on ISO 25556:2025, WHO (Age-Friendly) and IDB Lab</p>
-                    <p class="normativa-text">Regulates channel and tech accessibility to ensure that massive services digitalization does not exclude the over-50 population, capturing the huge potential of the Silver Economy.</p>
-                    <ul class="normativa-bullet">
-                        <li>Touch and visual accessibility layers tailored for senior eyes</li>
-                        <li>Ethical algorithm auditing to avoid implicit age bias in AI</li>
-                        <li>Mandatory direct human support protocol for critical services</li>
-                    </ul>
-                    
-                    <!-- Collapsible details container -->
-                    <div class="expanded-details" id="details-iso-25556">
-                        <div class="expanded-details-content">
-                            <h4>Key Parameters & Benefits:</h4>
-                            <ul>
-                                <li><strong>AgeTech Touch Design:</strong> Interfaces compensating for hand tremors and visual contrast reduction.</li>
-                                <li><strong>AI & Scoring Auditing:</strong> Reviewing automated credit and scoring pipelines to prevent age discrimination.</li>
-                                <li><strong>Direct Human Escape:</strong> Direct one-tap buttons to talk to real support agents for essential services.</li>
-                                <li><strong>Silver Economy Focus:</strong> Aligning product and sales offerings to serve the wealthiest global demographic.</li>
+
+                <!-- Item 3 -->
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="false">
+                        <div class="accordion-title-wrap">
+                            <div class="card-icon" style="width: 48px; height: 48px; font-size: 1.5rem;">💻</div>
+                            <div class="accordion-title-text">
+                                <span class="normativa-badge badge-iso" style="margin-bottom: 4px;">DIGITAL AXIS</span>
+                                <h3>Senior Customer & Digital Inclusion</h3>
+                            </div>
+                        </div>
+                        <span class="accordion-icon"></span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-inner-content">
+                            <p class="normativa-org">Based on ISO 25556:2025, WHO (Age-Friendly) and IDB Lab</p>
+                            <p class="normativa-text">Regulates channel and tech accessibility to ensure that massive services digitalization does not exclude the over-50 population, capturing the huge potential of the Silver Economy.</p>
+                            <ul class="normativa-bullet">
+                                <li><strong>AgeTech Touch Design:</strong> Interfaces compensating for visual contrast reduction.</li>
+                                <li><strong>AI & Bias Auditing:</strong> Reviewing automated algorithms to prevent age discrimination.</li>
+                                <li><strong>Direct Human Escape:</strong> Direct one-tap buttons to talk to real support agents.</li>
                             </ul>
+                            <a href="https://www.iso.org/standard/84224.html" target="_blank" class="normativa-link">View reference standard ISO 25556 ↗</a>
                         </div>
                     </div>
-                    
-                    <div class="normativa-footer-actions">
-                        <button class="toggle-details-btn" onclick="toggleCardDetails('details-iso-25556', this)">More details ▾</button>
-                        <a href="https://www.iso.org/standard/84224.html" target="_blank" class="normativa-link">View reference standard ↗</a>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="false">
+                        <div class="accordion-title-wrap">
+                            <div class="card-icon" style="width: 48px; height: 48px; font-size: 1.5rem;">🏥</div>
+                            <div class="accordion-title-text">
+                                <span class="normativa-badge badge-oms" style="margin-bottom: 4px;">HEALTH & ENVIRONMENT</span>
+                                <h3>WHO Frameworks (Age-Friendly & ICOPE)</h3>
+                            </div>
+                        </div>
+                        <span class="accordion-icon"></span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-inner-content">
+                            <p class="normativa-org">World Health Organization</p>
+                            <p class="normativa-text">Standards for adapting physical environments, accessibility of analog channels coexisting with digital ones, and screening intrinsic capacity.</p>
+                            <ul class="normativa-bullet">
+                                <li>Physical environments and buildings free of access barriers.</li>
+                                <li>Alternative analog/telephone communication channels.</li>
+                                <li>Community-clinical screening of functional capacities.</li>
+                            </ul>
+                            <a href="https://extranet.who.int/agefriendlyworld/" target="_blank" class="normativa-link">View WHO programs ↗</a>
+                        </div>
                     </div>
                 </div>
-                <!-- OMS -->
-                <div class="glass-card normativa-card">
-                    <div class="normativa-badge badge-oms">HEALTH & ENVIRONMENT</div>
-                    <div class="normativa-header">
-                        <div class="card-icon">🏥</div>
-                        <h3>WHO Frameworks (Age-Friendly & ICOPE)</h3>
+
+                <!-- Item 5 -->
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="false">
+                        <div class="accordion-title-wrap">
+                            <div class="card-icon" style="width: 48px; height: 48px; font-size: 1.5rem;">🏛️</div>
+                            <div class="accordion-title-text">
+                                <span class="normativa-badge badge-bid" style="margin-bottom: 4px;">INTERNATIONAL TREATY</span>
+                                <h3>ILO Recommendation 162</h3>
+                            </div>
+                        </div>
+                        <span class="accordion-icon"></span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-inner-content">
+                            <p class="normativa-org">International Labour Organization</p>
+                            <p class="normativa-text">Global political-legal treaty on labor matters. Protects equal opportunities, prohibits ageist dismissal, and promotes flexible retirement schemes.</p>
+                            <ul class="normativa-bullet">
+                                <li>Equal opportunities without chronological discrimination.</li>
+                                <li>Corporate transition and gradual retirement programs.</li>
+                                <li>Labor protection in corporate restructurings.</li>
+                            </ul>
+                            <a href="https://www.ilo.org/dyn/normlex/en/f?p=NORMLEXPUB:12100:0::NO::P12100_ILO_CODE:R162" target="_blank" class="normativa-link">View ILO Recommendation ↗</a>
+                        </div>
                     </div>
-                    <p class="normativa-org">World Health Organization</p>
-                    <p class="normativa-text">Standards for adapting physical environments, accessibility of analog channels coexisting with digital ones, and screening intrinsic capacity.</p>
-                    <ul class="normativa-bullet">
-                        <li>Physical environments and buildings free of access barriers</li>
-                        <li>Alternative analog/telephone communication channels</li>
-                        <li>Community-clinical screening of functional capacities</li>
-                    </ul>
-                    <a href="https://extranet.who.int/agefriendlyworld/" target="_blank" class="normativa-link">View WHO programs ↗</a>
                 </div>
-                <!-- OIT -->
-                <div class="glass-card normativa-card">
-                    <div class="normativa-badge badge-bid">INTERNATIONAL TREATY</div>
-                    <div class="normativa-header">
-                        <div class="card-icon">🏛️</div>
-                        <h3>ILO Recommendation 162</h3>
-                    </div>
-                    <p class="normativa-org">International Labour Organization</p>
-                    <p class="normativa-text">Global political-legal treaty on labor matters. Protects equal opportunities, prohibits ageist dismissal, and promotes flexible retirement schemes.</p>
-                    <ul class="normativa-bullet">
-                        <li>Equal opportunities without chronological discrimination</li>
-                        <li>Corporate transition and gradual retirement programs</li>
-                        <li>Labor protection in corporate restructurings</li>
-                    </ul>
-                    <a href="https://www.ilo.org/dyn/normlex/en/f?p=NORMLEXPUB:12100:0::NO::P12100_ILO_CODE:R162" target="_blank" class="normativa-link">View ILO Recommendation ↗</a>
-                </div>
+
             </div>
         </div>
     </section>
@@ -418,55 +514,85 @@
                     <div class="quiz-options" id="quiz-options">
                         <!-- Dynamic options in JS -->
                     </div>
-                </div>
-
-                <!-- REGISTRATION VIEW (Hidden at start) -->
+                </div>                <!-- REGISTRATION VIEW (Hidden at start) -->
                 <div class="quiz-register-container hidden" id="quiz-register-view">
                     <div class="register-header text-center">
-                        <span class="register-badge">CORPORATE REGISTRATION</span>
-                        <h3>Create your professional account</h3>
-                        <p>Fill in your corporate details to save your progress and unlock the remaining questions of the diagnostic.</p>
+                        <span class="register-badge">USER REGISTRATION</span>
+                        <h3>Create your account</h3>
+                        <p>Fill in your details to save your progress and unlock the remaining questions of the diagnostic.</p>
                     </div>
                     <form id="quiz-register-form" class="register-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="reg-company">Company Name</label>
-                                <input type="text" id="reg-company" required placeholder="e.g. Silver Travel Agency">
-                            </div>
-                            <div class="form-group">
-                                <label for="reg-sector">Company Sector</label>
-                                <select id="reg-sector" required>
-                                    <option value="" disabled selected>Select a sector...</option>
-                                    <option value="Turismo y Hospitalidad">Tourism & Hospitality</option>
-                                    <option value="Consumo masivo">Consumer Goods</option>
-                                    <option value="Bebidas">Beverages</option>
-                                    <option value="Sector publico">Public Sector</option>
-                                    <option value="Servicios financieros">Financial Services</option>
-                                    <option value="Tecnología y software">Technology & Software</option>
-                                    <option value="Salud y bienestar">Health & Wellness</option>
-                                    <option value="Retail">Retail</option>
-                                    <option value="Energía y recursos naturales">Energy & Natural Resources</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="reg-name">Representative (First & Last Name)</label>
-                                <input type="text" id="reg-name" required placeholder="e.g. Ana Martínez">
-                            </div>
-                            <div class="form-group">
-                                <label for="reg-role">Representative Job Title</label>
-                                <input type="text" id="reg-role" required placeholder="e.g. Operations Director">
-                            </div>
-                        </div>
                         <div class="form-group">
-                            <label for="reg-email">Corporate Email</label>
-                            <input type="email" id="reg-email" required placeholder="name@company.com">
+                            <label for="quiz-reg-user-type">Account Type</label>
+                            <select id="quiz-reg-user-type" required>
+                                <option value="personal">Personal User</option>
+                                <option value="empresa">Company User</option>
+                            </select>
                         </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="quiz-reg-name">First & Last Name</label>
+                                <input type="text" id="quiz-reg-name" required placeholder="e.g. Ana Martínez">
+                            </div>
+                            <div class="form-group">
+                                <label for="quiz-reg-email">Email Address</label>
+                                <input type="email" id="quiz-reg-email" required placeholder="name@email.com">
+                            </div>
+                        </div>
+                        
+                        <!-- Personal User Fields -->
+                        <div class="form-group" id="quiz-field-personal-country">
+                            <label for="quiz-reg-country">Country</label>
+                            <input type="text" id="quiz-reg-country" placeholder="e.g. Chile">
+                        </div>
+                        
+                        <!-- Company User Fields -->
+                        <div class="form-group hidden-field" id="quiz-field-company-sector">
+                            <label for="quiz-reg-sector-type">Company Sector</label>
+                            <select id="quiz-reg-sector-type">
+                                <option value="" disabled selected>Select sector...</option>
+                                <option value="privado">Private Sector</option>
+                                <option value="publico">Public Sector</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Public Sector Sub-field -->
+                        <div class="form-group hidden-field" id="quiz-field-public-level">
+                            <label for="quiz-reg-public-level">Government Level</label>
+                            <select id="quiz-reg-public-level">
+                                <option value="" disabled selected>Select level...</option>
+                                <option value="municipal">Municipal Government</option>
+                                <option value="provincial">Provincial Government</option>
+                                <option value="nacional">National Government</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Private Sector Sub-field (Vertical) -->
+                        <div class="form-group hidden-field" id="quiz-field-private-vertical">
+                            <label for="quiz-reg-private-vertical">Economic Vertical</label>
+                            <select id="quiz-reg-private-vertical">
+                                <option value="" disabled selected>Select vertical...</option>
+                                <option value="Finanzas y Seguro">Banking & Insurance</option>
+                                <option value="Salud y Farmacia">Healthcare & Pharma</option>
+                                <option value="Tecnología y Software">Tech & Software</option>
+                                <option value="Comercio y Distribución">Retail & Distribution</option>
+                                <option value="Manufactura e Industria">Manufacturing & Industry</option>
+                                <option value="Educación">Education</option>
+                                <option value="Bienes Raíces y Construcción">Real Estate & Construction</option>
+                                <option value="Energía y Recursos Naturales">Energy & Resources</option>
+                                <option value="Entretenimiento, Medios y Turismo">Media, Entertainment & Tourism</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Role -->
+                        <div class="form-group hidden-field" id="quiz-field-company-role">
+                            <label for="quiz-reg-role">Representative Job Title</label>
+                            <input type="text" id="quiz-reg-role" placeholder="e.g. Operations Manager">
+                        </div>
+                        
                         <button type="submit" class="btn btn-gradient btn-block">Create Account & Send Code</button>
                     </form>
                 </div>
-
                 <!-- OTP VERIFICATION VIEW (Hidden at start) -->
                 <div class="quiz-confirm-container hidden" id="quiz-confirm-view">
                     <div class="register-header text-center">
@@ -571,7 +697,7 @@
                 <div class="results-actions">
                     <button class="btn btn-gradient btn-lg btn-block" id="btn-claim-sello">Obtain "Initial Commitment" Seal ($99 USD)</button>
                     <div class="results-sub-actions">
-                        <button class="btn btn-outline" id="btn-download-pdf">Download Full Report (PDF)</button>
+                        <button class="btn btn-outline" id="btn-download-excel">Download Action Plan (.csv / Excel)</button>
                         <button class="btn btn-outline" id="btn-restart-quiz">Repeat Self-Diagnostic</button>
                     </div>
                 </div>
@@ -587,22 +713,73 @@
                 <p class="subtitle">We collaborate with corporations, businesses, suppliers, and public institutions to lead the Great Adaptation of the workforce and senior consumption.</p>
             </div>
             
-            <div class="alianzas-grid">
-                <div class="glass-card alianzas-card">
-                    <h4>💼 B2B Clients & Employers</h4>
-                    <p>Design an action plan to capture senior intellectual capital, structure intergenerational mentoring, and certify your employer brand under the ISO 25550 standard.</p>
+            <div class="accordion-container" style="margin: 40px auto; text-align: left;">
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="false">
+                        <div class="accordion-title-wrap">
+                            <div class="card-icon" style="width: 48px; height: 48px; font-size: 1.5rem;">💼</div>
+                            <div class="accordion-title-text">
+                                <h3 style="font-size: 1.2rem; margin: 0;">B2B Clients & Employers</h3>
+                            </div>
+                        </div>
+                        <span class="accordion-icon"></span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-inner-content">
+                            <p style="color: var(--text-secondary); margin-bottom: 0;">Design an action plan to capture senior intellectual capital, structure intergenerational mentoring, and certify your employer brand under the ISO 25550 standard.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="glass-card alianzas-card">
-                    <h4>🛍️ B2C Consumption & Channels</h4>
-                    <p>Adapt your physical branches and digital platforms to the cognitive and visual accessibility of the silver generation under ISO 25556 and WHO guidelines.</p>
+
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="false">
+                        <div class="accordion-title-wrap">
+                            <div class="card-icon" style="width: 48px; height: 48px; font-size: 1.5rem;">🛍️</div>
+                            <div class="accordion-title-text">
+                                <h3 style="font-size: 1.2rem; margin: 0;">B2C Consumption & Channels</h3>
+                            </div>
+                        </div>
+                        <span class="accordion-icon"></span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-inner-content">
+                            <p style="color: var(--text-secondary); margin-bottom: 0;">Adapt your physical branches and digital platforms to the cognitive and visual accessibility of the silver generation under ISO 25556 and WHO guidelines.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="glass-card alianzas-card">
-                    <h4>🤝 Suppliers & AgeTech</h4>
-                    <p>Connect with our ecosystem of technological solutions applied to monitoring, telemedicine, and the autonomy of people over 50 years old.</p>
+
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="false">
+                        <div class="accordion-title-wrap">
+                            <div class="card-icon" style="width: 48px; height: 48px; font-size: 1.5rem;">🤝</div>
+                            <div class="accordion-title-text">
+                                <h3 style="font-size: 1.2rem; margin: 0;">Suppliers & AgeTech</h3>
+                            </div>
+                        </div>
+                        <span class="accordion-icon"></span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-inner-content">
+                            <p style="color: var(--text-secondary); margin-bottom: 0;">Connect with our ecosystem of technological solutions applied to monitoring, telemedicine, and the autonomy of people over 50 years old.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="glass-card alianzas-card">
-                    <h4>🏛️ Public & Private Institutions</h4>
-                    <p>Develop strategic alliances to foster active hiring subsidies, age-friendly environments, and urban longevity plans.</p>
+
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="false">
+                        <div class="accordion-title-wrap">
+                            <div class="card-icon" style="width: 48px; height: 48px; font-size: 1.5rem;">🏛️</div>
+                            <div class="accordion-title-text">
+                                <h3 style="font-size: 1.2rem; margin: 0;">Public & Private Institutions</h3>
+                            </div>
+                        </div>
+                        <span class="accordion-icon"></span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-inner-content">
+                            <p style="color: var(--text-secondary); margin-bottom: 0;">Develop strategic alliances to foster active hiring subsidies, age-friendly environments, and urban longevity plans.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -720,13 +897,215 @@
         </div>
     </div>
 
+    <!-- Authentication Modal (Login / Register / OTP) -->
+    <div class="modal-overlay hidden" id="auth-modal">
+        <div class="glass-card modal-content text-center" style="max-width: 500px;">
+            <button class="modal-close" id="btn-auth-modal-close">&times;</button>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" id="tab-login">Login</button>
+                <button class="auth-tab-btn" id="tab-register">Register</button>
+            </div>
+            
+            <div class="auth-view" id="view-login">
+                <form id="form-login" class="modal-form" style="text-align: left; margin-top: 20px;">
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <input type="email" id="login-email" required placeholder="name@email.com">
+                    </div>
+                    <button type="submit" class="btn btn-gradient btn-block" style="margin-top: 12px;">Login</button>
+                </form>
+            </div>
+            
+            <div class="auth-view hidden" id="view-register">
+                <form id="form-register" class="modal-form" style="text-align: left; margin-top: 20px;">
+                    <div class="form-group">
+                        <label for="auth-reg-user-type">Account Type</label>
+                        <select id="auth-reg-user-type" required>
+                            <option value="personal">Personal User</option>
+                            <option value="empresa">Company User</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="auth-reg-name">First & Last Name</label>
+                        <input type="text" id="auth-reg-name" required placeholder="e.g. John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="auth-reg-email">Email Address</label>
+                        <input type="email" id="auth-reg-email" required placeholder="name@email.com">
+                    </div>
+                    
+                    <!-- Personal User Fields -->
+                    <div class="form-group" id="field-personal-country">
+                        <label for="auth-reg-country">Country</label>
+                        <input type="text" id="auth-reg-country" placeholder="e.g. Chile">
+                    </div>
+                    
+                    <!-- Company User Fields -->
+                    <div class="form-group hidden-field" id="field-company-sector">
+                        <label for="auth-reg-sector-type">Company Sector</label>
+                        <select id="auth-reg-sector-type">
+                            <option value="" disabled selected>Select sector...</option>
+                            <option value="privado">Private Sector</option>
+                            <option value="publico">Public Sector</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Public Sector Sub-field -->
+                    <div class="form-group hidden-field" id="field-public-level">
+                        <label for="auth-reg-public-level">Government Level</label>
+                        <select id="auth-reg-public-level">
+                            <option value="" disabled selected>Select level...</option>
+                            <option value="municipal">Municipal Government</option>
+                            <option value="provincial">Provincial Government</option>
+                            <option value="nacional">National Government</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Private Sector Sub-field (Vertical) -->
+                    <div class="form-group hidden-field" id="field-private-vertical">
+                        <label for="auth-reg-private-vertical">Economic Vertical</label>
+                        <select id="auth-reg-private-vertical">
+                            <option value="" disabled selected>Select vertical...</option>
+                            <option value="Finanzas y Seguro">Banking & Insurance</option>
+                            <option value="Salud y Farmacia">Healthcare & Pharma</option>
+                            <option value="Tecnología y Software">Tech & Software</option>
+                            <option value="Comercio y Distribución">Retail & Distribution</option>
+                            <option value="Manufactura e Industria">Manufacturing & Industry</option>
+                            <option value="Educación">Education</option>
+                            <option value="Bienes Raíces y Construcción">Real Estate & Construction</option>
+                            <option value="Energía y Recursos Naturales">Energy & Resources</option>
+                            <option value="Entretenimiento, Medios y Turismo">Media, Entertainment & Tourism</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Role (for Company) -->
+                    <div class="form-group hidden-field" id="field-company-role">
+                        <label for="auth-reg-role">Job Title</label>
+                        <input type="text" id="auth-reg-role" placeholder="e.g. Operations Manager">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-gradient btn-block" style="margin-top: 12px;">Register & Send Code</button>
+                </form>
+            </div>
+            
+            <div class="auth-view hidden" id="view-otp">
+                <div style="font-size: 3rem; margin-bottom: 16px;">🔑</div>
+                <h3>Email Confirmation</h3>
+                <p>We have sent a verification code to <strong id="auth-otp-email-display">your email</strong>. Enter it to continue.</p>
+                <div class="otp-inputs-wrapper" style="margin-top: 20px;">
+                    <div class="otp-inputs">
+                        <input type="text" maxlength="1" class="otp-digit" data-index="0" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-digit" data-index="1" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-digit" data-index="2" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-digit" data-index="3" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-digit" data-index="4" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-digit" data-index="5" inputmode="numeric">
+                    </div>
+                </div>
+                <div id="auth-otp-error-msg" class="otp-error hidden" style="margin-top: 10px;">⚠️ The code entered is incorrect. Try again.</div>
+                <button class="btn btn-primary btn-block" id="btn-auth-confirm-otp" style="margin-top: 20px;">Verify Account</button>
+                <p class="otp-resend" style="margin-top: 15px;">Didn't receive the code? <a href="#" id="btn-auth-otp-resend">Resend email</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Profile Modal (My Account) -->
+    <div class="modal-overlay hidden" id="account-modal">
+        <div class="glass-card modal-content" style="max-width: 500px;">
+            <button class="modal-close" id="btn-account-modal-close">&times;</button>
+            <div class="text-center" style="margin-bottom: 20px;">
+                <div style="font-size: 3.5rem; margin-bottom: 8px;">👤</div>
+                <h3 id="account-title-name">User Name</h3>
+                <span class="user-badge-type" id="account-user-badge">Personal</span>
+            </div>
+            
+            <div class="account-details-list" style="text-align: left; margin-bottom: 24px;">
+                <div class="account-detail-item"><strong>Email Address:</strong> <span id="account-detail-email">email@example.com</span></div>
+                <div class="account-detail-item" id="detail-item-country"><strong>Country:</strong> <span id="account-detail-country">Chile</span></div>
+                <div class="account-detail-item hidden-field" id="detail-item-sector"><strong>Sector:</strong> <span id="account-detail-sector">-</span></div>
+                <div class="account-detail-item hidden-field" id="detail-item-subsector"><strong>Sector Detail:</strong> <span id="account-detail-subsector">-</span></div>
+                <div class="account-detail-item hidden-field" id="detail-item-role"><strong>Job Title:</strong> <span id="account-detail-role">-</span></div>
+            </div>
+            
+            <!-- Upgrade Section (visible only for personal users) -->
+            <div id="upgrade-section" class="hidden-field" style="border-top: 1px dashed var(--border-color); padding-top: 20px; text-align: left;">
+                <h4 style="color: var(--accent-blue); margin-bottom: 8px;">🚀 Upgrade to Company Account</h4>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">Add your corporate details to download the alliance dossier and request certification meetings.</p>
+                <form id="form-upgrade" class="modal-form">
+                    <div class="form-group">
+                        <label for="upg-sector-type">Sector</label>
+                        <select id="upg-sector-type" required>
+                            <option value="" disabled selected>Select sector...</option>
+                            <option value="privado">Private Sector</option>
+                            <option value="publico">Public Sector</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Public Sector Sub-field -->
+                    <div class="form-group hidden-field" id="field-upg-public-level">
+                        <label for="upg-public-level">Government Level</label>
+                        <select id="upg-public-level">
+                            <option value="" disabled selected>Select level...</option>
+                            <option value="municipal">Municipal Government</option>
+                            <option value="provincial">Provincial Government</option>
+                            <option value="nacional">National Government</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Private Sector Sub-field (Vertical) -->
+                    <div class="form-group hidden-field" id="field-upg-private-vertical">
+                        <label for="upg-private-vertical">Economic Vertical</label>
+                        <select id="upg-private-vertical">
+                            <option value="" disabled selected>Select vertical...</option>
+                            <option value="Finanzas y Seguro">Banking & Insurance</option>
+                            <option value="Salud y Farmacia">Healthcare & Pharma</option>
+                            <option value="Tecnología y Software">Tech & Software</option>
+                            <option value="Comercio y Distribución">Retail & Distribution</option>
+                            <option value="Manufactura e Industria">Manufacturing & Industry</option>
+                            <option value="Educación">Education</option>
+                            <option value="Bienes Raíces y Construcción">Real Estate & Construction</option>
+                            <option value="Energía y Recursos Naturales">Energy & Resources</option>
+                            <option value="Entretenimiento, Medios y Turismo">Media, Entertainment & Tourism</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Job Title -->
+                    <div class="form-group">
+                        <label for="upg-role">Job Title</label>
+                        <input type="text" id="upg-role" required placeholder="e.g. Commercial Manager">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-gradient btn-block">Confirm & Update to Company</button>
+                </form>
+            </div>
+            
+            <button class="btn btn-outline btn-block" id="btn-auth-logout" style="margin-top: 16px;">Logout</button>
+        </div>
+    </div>
+
+    <!-- Permission Warning Modal (Personal Account Blocked) -->
+    <div class="modal-overlay hidden" id="auth-alert-modal">
+        <div class="glass-card modal-content text-center" style="max-width: 480px;">
+            <button class="modal-close" id="btn-auth-alert-close">&times;</button>
+            <div style="font-size: 3.5rem; margin-bottom: 16px;">⚠️</div>
+            <h3>Exclusive Corporate Access</h3>
+            <p id="auth-alert-text">This feature (downloading the corporate dossier or scheduling consultancy meetings) is reserved for **Company** accounts.</p>
+            <div style="margin-top: 24px; display: flex; flex-direction: column; gap: 12px;">
+                <button class="btn btn-gradient btn-block" id="btn-auth-alert-upgrade">Complete Company Details</button>
+                <button class="btn btn-outline btn-block" id="btn-auth-alert-login">Login / Register</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container footer-container text-center">
-            <div class="logo" style="justify-content: center; margin-bottom: 16px;">
+            <a href="#" class="logo" style="justify-content: center; margin-bottom: 16px;">
                 <img src="logo_age_friend_seal.png" alt="Age Friend Seal Logo" class="logo-img">
                 <span class="logo-text"><span class="logo-accent">Age</span> Friend Seal</span>
-            </div>
+            </a>
             <p class="footer-links" style="margin-bottom: 16px;">
                 <a href="#oportunidad" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Silver Economy</a> |
                 <a href="#alianzas" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Alliances</a> |
@@ -738,6 +1117,40 @@
             <p class="footer-note">Developed under the framework of the ISO 25550 standard and intergenerational best practices.</p>
         </div>
     </footer>
+
+    <!-- Native Accessibility Widget -->
+    <div class="a11y-widget" id="a11y-widget">
+        <button class="a11y-toggle" id="a11y-toggle" aria-label="Accessibility Options">
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="10" r="3"></circle>
+                <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"></path>
+            </svg>
+        </button>
+        <div class="a11y-panel hidden" id="a11y-panel">
+            <div class="a11y-header">
+                <h4>Accessibility</h4>
+                <button id="a11y-close">&times;</button>
+            </div>
+            <div class="a11y-options">
+                <div class="a11y-option">
+                    <span>Text Size</span>
+                    <div class="a11y-controls">
+                        <button id="btn-text-decrease">A-</button>
+                        <button id="btn-text-reset">A</button>
+                        <button id="btn-text-increase">A+</button>
+                    </div>
+                </div>
+                <div class="a11y-option">
+                    <span>High Contrast</span>
+                    <label class="a11y-switch">
+                        <input type="checkbox" id="toggle-contrast">
+                        <span class="a11y-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Logic Script -->
     <script src="app.js"></script>
