@@ -1891,31 +1891,22 @@ function downloadPitchDossier(lang, format = 'pdf') {
     const safeContent = rawContent.replace(/<img[^>]*>/g, '<span style="font-size: 3rem; margin-right: 10px;">🏅</span>');
     
     if (format === 'pdf' && typeof html2pdf !== 'undefined') {
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = safeContent;
-        
-        // Posicionamiento oculto pero renderizable
-        tempDiv.style.position = 'absolute';
-        tempDiv.style.top = '0';
-        tempDiv.style.left = '0';
-        tempDiv.style.width = '800px';
-        tempDiv.style.zIndex = '-1'; 
-        tempDiv.style.backgroundColor = '#ffffff';
-        
-        document.body.appendChild(tempDiv);
-
         const opt = {
             margin:       15,
             filename:     lang === 'es' ? 'Dossier_AgeFriendSeal.pdf' : 'Dossier_AgeFriendSeal_EN.pdf',
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true, logging: false },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            // Añadimos configuración para que respete los saltos de página del dossier
+            pagebreak:    { mode: 'css', before: '.dossier-page-break' } 
         };
         
-        html2pdf().set(opt).from(tempDiv).save().then(() => {
-            document.body.removeChild(tempDiv);
-        });
+        // LA MAGIA ESTÁ AQUÍ: Pasamos el 'safeContent' directamente a .from()
+        // Eliminamos todo el proceso de crear el tempDiv, añadirlo y removerlo del document.body
+        html2pdf().set(opt).from(safeContent).save();
+        
     } else {
+        // Flujo para descarga en HTML
         const blob = new Blob([safeContent], { type: 'text/html;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
