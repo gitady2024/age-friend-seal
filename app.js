@@ -1896,14 +1896,16 @@ async function downloadPitchDossier(lang, format = 'pdf') {
         tempDiv.innerHTML = safeContent;
         tempDiv.id = 'temp-pdf-container';
         tempDiv.style.cssText = `
-            position: fixed;
-            top: 0;
+            position: absolute;
+            top: -9999px;
             left: 0;
             width: 1200px;
-            opacity: 0;
+            opacity: 1;
+            visibility: visible;
             pointer-events: none;
-            z-index: -1;
+            z-index: 1;
             background-color: #ffffff;
+            overflow: visible;
         `;
         
         document.body.appendChild(tempDiv);
@@ -1925,17 +1927,23 @@ async function downloadPitchDossier(lang, format = 'pdf') {
                 html2canvas:  { 
                     scale: 2,
                     useCORS: true,
+                    allowTaint: false,
                     logging: false,
                     backgroundColor: '#ffffff',
                     windowWidth: 1200,
+                    scrollX: 0,
+                    scrollY: 0,
                     // Esta función se ejecuta en el documento clonado internamente
                     onclone: (clonedDoc) => {
                         const clonedEl = clonedDoc.getElementById('temp-pdf-container');
                         if (clonedEl) {
+                            clonedEl.style.position = 'relative';
+                            clonedEl.style.top = '0';
+                            clonedEl.style.left = '0';
                             clonedEl.style.opacity = '1';
-                            clonedEl.style.position = 'static';
-                            clonedEl.style.zIndex = 'auto';
-                            // Asegurar fondo blanco en el clone
+                            clonedEl.style.visibility = 'visible';
+                            clonedEl.style.zIndex = '1';
+                            clonedEl.style.overflow = 'visible';
                             clonedDoc.body.style.backgroundColor = '#ffffff';
                         }
                     }

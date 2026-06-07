@@ -1793,6 +1793,11 @@ a.price:hover {
    Sección Demográfica (Natalidad vs Longevidad) & Alianzas
    ========================================================================== */
 
+.demographic-section {
+    padding: 80px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
 .demographic-card {
     background: var(--bg-card);
     backdrop-filter: blur(16px);
