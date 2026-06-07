@@ -1883,44 +1883,84 @@ function triggerFallbackPitchLead(leadData, recipientEmail) {
     alert(t.pitchSuccessAlert);
 }
 
-function downloadPitchDossier(lang, format = 'pdf') {
+async function downloadPitchDossier(lang, format = 'pdf') {
     const rawContent = lang === 'es' ? ES_DOSSIER_TEMPLATE : EN_DOSSIER_TEMPLATE;
     
-    // TRUCO VITAL: Reemplazamos la imagen local por un elemento de texto/emoji 
-    // Esto evita que las políticas de seguridad (CORS) bloqueen el PDF y lo dejen en blanco.
+    // Reemplazamos imágenes por emoji para evitar problemas CORS
     const safeContent = rawContent.replace(/<img[^>]*>/g, '<span style="font-size: 3rem; margin-right: 10px;">🏅</span>');
     
     if (format === 'pdf' && typeof html2pdf !== 'undefined') {
+        // 1. Crear contenedor temporal - LO HACEMOS VISIBLE pero no interactivo
+        //    usando opacity:0 en lugar de posicionarlo fuera de pantalla
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = safeContent;
-        
-        // Posicionamiento off-screen para que se renderice en el DOM pero no sea visible ni interfiera
-        tempDiv.style.position = 'absolute';
-        tempDiv.style.left = '-10000px';
-        tempDiv.style.top = '0';
-        tempDiv.style.width = '800px';
-        tempDiv.style.backgroundColor = '#ffffff';
+        tempDiv.id = 'temp-pdf-container';
+        tempDiv.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 1200px;
+            opacity: 0;
+            pointer-events: none;
+            z-index: -1;
+            background-color: #ffffff;
+        `;
         
         document.body.appendChild(tempDiv);
 
-        const opt = {
-            margin:       15,
-            filename:     lang === 'es' ? 'Dossier_AgeFriendSeal.pdf' : 'Dossier_AgeFriendSeal_EN.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, logging: false },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak:    { mode: 'css', before: '.dossier-page-break' } 
-        };
-        
-        html2pdf().set(opt).from(tempDiv).save().then(() => {
-            tempDiv.remove();
-        }).catch(err => {
-            console.error("Error generating PDF:", err);
-            tempDiv.remove();
-        });
+        try {
+            // 2. Esperar a que TODO esté listo para renderizar
+            //    Fuentes web + layout + imágenes
+            await document.fonts.ready;
+            await new Promise(resolve => requestAnimationFrame(resolve));
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
+            // Forzar reflow para asegurar que el navegador ha calculado todos los estilos
+            void tempDiv.offsetHeight;
+
+            const opt = {
+                margin:       15,
+                filename:     lang === 'es' ? 'Dossier_AgeFriendSeal.pdf' : 'Dossier_AgeFriendSeal_EN.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { 
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff',
+                    windowWidth: 1200,
+                    // Esta función se ejecuta en el documento clonado internamente
+                    onclone: (clonedDoc) => {
+                        const clonedEl = clonedDoc.getElementById('temp-pdf-container');
+                        if (clonedEl) {
+                            clonedEl.style.opacity = '1';
+                            clonedEl.style.position = 'static';
+                            clonedEl.style.zIndex = 'auto';
+                            // Asegurar fondo blanco en el clone
+                            clonedDoc.body.style.backgroundColor = '#ffffff';
+                        }
+                    }
+                },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak:    { mode: 'css', before: '.dossier-page-break' }
+            };
+            
+            // 3. Generar el PDF desde el elemento
+            await html2pdf().set(opt).from(tempDiv).save();
+            
+        } catch (err) {
+            console.error("Error generando PDF:", err);
+            // Fallback: si html2pdf falla, ofrecer impresión del navegador
+            alert('Hubo un problema generando el PDF automático. Se abrirá la ventana de impresión.');
+            window.print();
+        } finally {
+            // 4. SIEMPRE limpiar el DOM
+            if (tempDiv.parentNode) {
+                tempDiv.parentNode.removeChild(tempDiv);
+            }
+        }
         
     } else {
-        // Flujo para descarga en HTML
+        // Flujo para descarga en HTML (sin cambios)
         const blob = new Blob([safeContent], { type: 'text/html;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
