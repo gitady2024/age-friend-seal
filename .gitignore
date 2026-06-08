@@ -1,0 +1,19 @@
+# Documentos y recursos de planificación/diseño pesados
+*.pdf
+*.pptx
+*.docx
+*.xlsx
+*.m4a
+*.zip
+CUADERNO LLM/
+
+# Carpetas de dependencias y logs locales
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env
+.env.local
+.env.*.local
+.DS_Store
+Thumbs.db
