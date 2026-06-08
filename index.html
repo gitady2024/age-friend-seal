@@ -14,6 +14,8 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <!-- html2pdf SDK -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Supabase JS Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -549,6 +551,16 @@
                                 <input type="email" id="quiz-reg-email" required placeholder="nombre@correo.com">
                             </div>
                         </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="quiz-reg-username">Nombre de Usuario</label>
+                                <input type="text" id="quiz-reg-username" required placeholder="Ej. ana_martinez">
+                            </div>
+                            <div class="form-group">
+                                <label for="quiz-reg-password">Contraseña (Mín. 6 caracteres)</label>
+                                <input type="password" id="quiz-reg-password" required minlength="6" placeholder="••••••••">
+                            </div>
+                        </div>
                         
                         <!-- Campos específicos para Usuario Personal -->
                         <div class="form-group" id="quiz-field-personal-country">
@@ -600,31 +612,8 @@
                             <input type="text" id="quiz-reg-role" placeholder="Ej. Directora de Operaciones">
                         </div>
                         
-                        <button type="submit" class="btn btn-gradient btn-block">Crear Cuenta y Enviar Código</button>
+                        <button type="submit" class="btn btn-gradient btn-block">Crear Cuenta y Guardar Resultados</button>
                     </form>
-                </div>
-
-
-                <!-- VISTA VERIFICACIÓN OTP (Oculta al inicio) -->
-                <div class="quiz-confirm-container hidden" id="quiz-confirm-view">
-                    <div class="register-header text-center">
-                        <span class="register-badge">VERIFICACIÓN</span>
-                        <h3>Confirme su dirección de correo</h3>
-                        <p>Hemos enviado un código de verificación de 6 dígitos a <strong id="sent-email-display">su correo</strong>. Ingréselo para continuar.</p>
-                    </div>
-                    <div class="otp-inputs-wrapper">
-                        <div class="otp-inputs">
-                            <input type="text" maxlength="1" class="otp-digit" data-index="0" inputmode="numeric">
-                            <input type="text" maxlength="1" class="otp-digit" data-index="1" inputmode="numeric">
-                            <input type="text" maxlength="1" class="otp-digit" data-index="2" inputmode="numeric">
-                            <input type="text" maxlength="1" class="otp-digit" data-index="3" inputmode="numeric">
-                            <input type="text" maxlength="1" class="otp-digit" data-index="4" inputmode="numeric">
-                            <input type="text" maxlength="1" class="otp-digit" data-index="5" inputmode="numeric">
-                        </div>
-                    </div>
-                    <div id="otp-error-msg" class="otp-error hidden">⚠️ El código ingresado es incorrecto. Intente nuevamente.</div>
-                    <button class="btn btn-primary btn-block" id="btn-confirm-otp">Verificar Cuenta y Continuar</button>
-                    <p class="otp-resend">¿No recibió el código? <a href="#" id="btn-otp-resend">Reenviar correo</a></p>
                 </div>
 
                 <!-- Controles -->
@@ -922,8 +911,12 @@
             <div class="auth-view" id="view-login">
                 <form id="form-login" class="modal-form" style="text-align: left; margin-top: 20px;">
                     <div class="form-group">
-                        <label for="login-email">Correo Electrónico</label>
-                        <input type="email" id="login-email" required placeholder="nombre@correo.com">
+                        <label for="login-email">Correo Electrónico o Usuario</label>
+                        <input type="text" id="login-email" required placeholder="nombre@correo.com o usuario">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Contraseña</label>
+                        <input type="password" id="login-password" required placeholder="••••••••">
                     </div>
                     <button type="submit" class="btn btn-gradient btn-block" style="margin-top: 12px;">Iniciar Sesión</button>
                 </form>
@@ -946,6 +939,14 @@
                     <div class="form-group">
                         <label for="auth-reg-email">Correo Electrónico</label>
                         <input type="email" id="auth-reg-email" required placeholder="nombre@correo.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="auth-reg-username">Nombre de Usuario</label>
+                        <input type="text" id="auth-reg-username" required placeholder="Ej. juanperez123">
+                    </div>
+                    <div class="form-group">
+                        <label for="auth-reg-password">Contraseña (Mínimo 6 caracteres)</label>
+                        <input type="password" id="auth-reg-password" required minlength="6" placeholder="••••••••">
                     </div>
                     
                     <!-- Campos específicos para Usuario Personal -->
@@ -998,27 +999,8 @@
                         <input type="text" id="auth-reg-role" placeholder="Ej. Gerente de Operaciones">
                     </div>
                     
-                    <button type="submit" class="btn btn-gradient btn-block" style="margin-top: 12px;">Registrarse y Enviar Código</button>
+                    <button type="submit" class="btn btn-gradient btn-block" style="margin-top: 12px;">Crear Cuenta</button>
                 </form>
-            </div>
-            
-            <div class="auth-view hidden" id="view-otp">
-                <div style="font-size: 3rem; margin-bottom: 16px;">🔑</div>
-                <h3>Confirmación de Correo</h3>
-                <p>Hemos enviado un código de verificación a <strong id="auth-otp-email-display">tu correo</strong>. Ingrésalo para continuar.</p>
-                <div class="otp-inputs-wrapper" style="margin-top: 20px;">
-                    <div class="otp-inputs">
-                        <input type="text" maxlength="1" class="otp-digit" data-index="0" inputmode="numeric">
-                        <input type="text" maxlength="1" class="otp-digit" data-index="1" inputmode="numeric">
-                        <input type="text" maxlength="1" class="otp-digit" data-index="2" inputmode="numeric">
-                        <input type="text" maxlength="1" class="otp-digit" data-index="3" inputmode="numeric">
-                        <input type="text" maxlength="1" class="otp-digit" data-index="4" inputmode="numeric">
-                        <input type="text" maxlength="1" class="otp-digit" data-index="5" inputmode="numeric">
-                    </div>
-                </div>
-                <div id="auth-otp-error-msg" class="otp-error hidden" style="margin-top: 10px;">⚠️ El código ingresado es incorrecto. Intente nuevamente.</div>
-                <button class="btn btn-primary btn-block" id="btn-auth-confirm-otp" style="margin-top: 20px;">Verificar Cuenta</button>
-                <p class="otp-resend" style="margin-top: 15px;">¿No recibió el código? <a href="#" id="btn-auth-otp-resend">Reenviar correo</a></p>
             </div>
         </div>
     </div>

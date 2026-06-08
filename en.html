@@ -14,6 +14,8 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <!-- html2pdf SDK -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Supabase JS Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -543,6 +545,16 @@
                                 <input type="email" id="quiz-reg-email" required placeholder="name@email.com">
                             </div>
                         </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="quiz-reg-username">Username</label>
+                                <input type="text" id="quiz-reg-username" required placeholder="e.g. ana_martinez">
+                            </div>
+                            <div class="form-group">
+                                <label for="quiz-reg-password">Password (Min. 6 chars)</label>
+                                <input type="password" id="quiz-reg-password" required minlength="6" placeholder="••••••••">
+                            </div>
+                        </div>
                         
                         <!-- Personal User Fields -->
                         <div class="form-group" id="quiz-field-personal-country">
@@ -594,29 +606,8 @@
                             <input type="text" id="quiz-reg-role" placeholder="e.g. Operations Manager">
                         </div>
                         
-                        <button type="submit" class="btn btn-gradient btn-block">Create Account & Send Code</button>
+                        <button type="submit" class="btn btn-gradient btn-block">Create Account & Save Results</button>
                     </form>
-                </div>
-                <!-- OTP VERIFICATION VIEW (Hidden at start) -->
-                <div class="quiz-confirm-container hidden" id="quiz-confirm-view">
-                    <div class="register-header text-center">
-                        <span class="register-badge">VERIFICATION</span>
-                        <h3>Confirm your email address</h3>
-                        <p>We have sent a 6-digit verification code to <strong id="sent-email-display">your email</strong>. Enter it below to continue.</p>
-                    </div>
-                    <div class="otp-inputs-wrapper">
-                        <div class="otp-inputs">
-                            <input type="text" maxlength="1" class="otp-digit" data-index="0" inputmode="numeric">
-                            <input type="text" maxlength="1" class="otp-digit" data-index="1" inputmode="numeric">
-                            <input type="text" maxlength="1" class="otp-digit" data-index="2" inputmode="numeric">
-                            <input type="text" maxlength="1" class="otp-digit" data-index="3" inputmode="numeric">
-                            <input type="text" maxlength="1" class="otp-digit" data-index="4" inputmode="numeric">
-                            <input type="text" maxlength="1" class="otp-digit" data-index="5" inputmode="numeric">
-                        </div>
-                    </div>
-                    <div id="otp-error-msg" class="otp-error hidden">⚠️ The code entered is incorrect. Try again.</div>
-                    <button class="btn btn-primary btn-block" id="btn-confirm-otp">Verify Account & Continue</button>
-                    <p class="otp-resend">Didn't receive the code? <a href="#" id="btn-otp-resend">Resend email</a></p>
                 </div>
 
                 <!-- Controls -->
@@ -914,8 +905,12 @@
             <div class="auth-view" id="view-login">
                 <form id="form-login" class="modal-form" style="text-align: left; margin-top: 20px;">
                     <div class="form-group">
-                        <label for="login-email">Email Address</label>
-                        <input type="email" id="login-email" required placeholder="name@email.com">
+                        <label for="login-email">Email or Username</label>
+                        <input type="text" id="login-email" required placeholder="name@email.com or username">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required placeholder="••••••••">
                     </div>
                     <button type="submit" class="btn btn-gradient btn-block" style="margin-top: 12px;">Login</button>
                 </form>
@@ -938,6 +933,14 @@
                     <div class="form-group">
                         <label for="auth-reg-email">Email Address</label>
                         <input type="email" id="auth-reg-email" required placeholder="name@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="auth-reg-username">Username</label>
+                        <input type="text" id="auth-reg-username" required placeholder="e.g. johndoe123">
+                    </div>
+                    <div class="form-group">
+                        <label for="auth-reg-password">Password (Minimum 6 characters)</label>
+                        <input type="password" id="auth-reg-password" required minlength="6" placeholder="••••••••">
                     </div>
                     
                     <!-- Personal User Fields -->
@@ -990,27 +993,8 @@
                         <input type="text" id="auth-reg-role" placeholder="e.g. Operations Manager">
                     </div>
                     
-                    <button type="submit" class="btn btn-gradient btn-block" style="margin-top: 12px;">Register & Send Code</button>
+                    <button type="submit" class="btn btn-gradient btn-block" style="margin-top: 12px;">Create Account</button>
                 </form>
-            </div>
-            
-            <div class="auth-view hidden" id="view-otp">
-                <div style="font-size: 3rem; margin-bottom: 16px;">🔑</div>
-                <h3>Email Confirmation</h3>
-                <p>We have sent a verification code to <strong id="auth-otp-email-display">your email</strong>. Enter it to continue.</p>
-                <div class="otp-inputs-wrapper" style="margin-top: 20px;">
-                    <div class="otp-inputs">
-                        <input type="text" maxlength="1" class="otp-digit" data-index="0" inputmode="numeric">
-                        <input type="text" maxlength="1" class="otp-digit" data-index="1" inputmode="numeric">
-                        <input type="text" maxlength="1" class="otp-digit" data-index="2" inputmode="numeric">
-                        <input type="text" maxlength="1" class="otp-digit" data-index="3" inputmode="numeric">
-                        <input type="text" maxlength="1" class="otp-digit" data-index="4" inputmode="numeric">
-                        <input type="text" maxlength="1" class="otp-digit" data-index="5" inputmode="numeric">
-                    </div>
-                </div>
-                <div id="auth-otp-error-msg" class="otp-error hidden" style="margin-top: 10px;">⚠️ The code entered is incorrect. Try again.</div>
-                <button class="btn btn-primary btn-block" id="btn-auth-confirm-otp" style="margin-top: 20px;">Verify Account</button>
-                <p class="otp-resend" style="margin-top: 15px;">Didn't receive the code? <a href="#" id="btn-auth-otp-resend">Resend email</a></p>
             </div>
         </div>
     </div>

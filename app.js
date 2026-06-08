@@ -5,6 +5,11 @@ const EMAILJS_CONFIG = {
     templateId: "template_wlejnde"     // Reemplazar por tu ID de plantilla
 };
 
+// Configuración de Supabase
+const SUPABASE_URL = "https://zkqmjbvcdzrl.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_Xu_fwUSPwVTD5bdWqTeCkA_bI5TSQ0-";
+const supabaseClient = typeof window.supabase !== 'undefined' ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
 // Detectar Idioma Actual
 const currentLang = document.documentElement.lang || 'es';
 
@@ -928,13 +933,11 @@ function setupEventListeners() {
                 const authModal = document.getElementById('auth-modal');
                 const viewLogin = document.getElementById('view-login');
                 const viewRegister = document.getElementById('view-register');
-                const viewOtp = document.getElementById('view-otp');
                 const tabLogin = document.getElementById('tab-login');
                 const tabRegister = document.getElementById('tab-register');
 
                 if (viewLogin) viewLogin.classList.remove('hidden');
                 if (viewRegister) viewRegister.classList.add('hidden');
-                if (viewOtp) viewOtp.classList.add('hidden');
                 if (tabLogin) tabLogin.classList.add('active');
                 if (tabRegister) tabRegister.classList.remove('active');
 
@@ -968,7 +971,6 @@ function setupEventListeners() {
     const tabRegister = document.getElementById('tab-register');
     const viewLogin = document.getElementById('view-login');
     const viewRegister = document.getElementById('view-register');
-    const viewOtp = document.getElementById('view-otp');
 
     if (tabLogin && tabRegister) {
         tabLogin.addEventListener('click', () => {
@@ -976,7 +978,6 @@ function setupEventListeners() {
             tabRegister.classList.remove('active');
             if (viewLogin) viewLogin.classList.remove('hidden');
             if (viewRegister) viewRegister.classList.add('hidden');
-            if (viewOtp) viewOtp.classList.add('hidden');
         });
 
         tabRegister.addEventListener('click', () => {
@@ -984,7 +985,6 @@ function setupEventListeners() {
             tabLogin.classList.remove('active');
             if (viewLogin) viewLogin.classList.add('hidden');
             if (viewRegister) viewRegister.classList.remove('hidden');
-            if (viewOtp) viewOtp.classList.add('hidden');
             handleUserTypeChange(document.getElementById('auth-reg-user-type').value, 'auth-reg-');
         });
     }
@@ -1019,29 +1019,63 @@ function setupEventListeners() {
     // 5. Envío de Formulario Login
     const formLogin = document.getElementById('form-login');
     if (formLogin) {
-        formLogin.addEventListener('submit', (e) => {
+        formLogin.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('login-email').value.trim();
-            const account = ageFriendAccounts.find(acc => acc.email.toLowerCase() === email.toLowerCase());
+            const emailOrUsername = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
 
-            if (account) {
-                tempAuthData = {
-                    user: account,
-                    isNew: false
-                };
-                // Mostrar vista OTP en el modal
-                if (viewLogin) viewLogin.classList.add('hidden');
-                if (viewOtp) {
-                    viewOtp.classList.remove('hidden');
-                    const emailDisp = document.getElementById('auth-otp-email-display');
-                    if (emailDisp) emailDisp.textContent = email;
+            if (!supabaseClient) {
+                alert("Error: Cliente de Supabase no inicializado.");
+                return;
+            }
+
+            try {
+                let email = emailOrUsername;
+
+                // Si no contiene '@', asumimos que es un nombre de usuario y buscamos el email en la tabla profiles
+                if (!emailOrUsername.includes('@')) {
+                    const { data: profileData, error: profileError } = await supabaseClient
+                        .from('profiles')
+                        .select('email')
+                        .eq('username', emailOrUsername)
+                        .maybeSingle();
+
+                    if (profileError || !profileData) {
+                        alert(currentLang === 'es' ? "⚠️ Nombre de usuario no encontrado." : "⚠️ Username not found.");
+                        return;
+                    }
+                    email = profileData.email;
                 }
-                // Limpiar inputs OTP
-                document.querySelectorAll('#view-otp .otp-digit').forEach(input => input.value = '');
-                // Enviar correo
-                sendAuthVerificationEmail(account.name, account.company || '', email, 'modal');
-            } else {
-                alert(TRANSLATIONS[currentLang].authEmailNotExists);
+
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) throw error;
+
+                // Cargar el perfil correspondiente
+                const { data: profile, error: profileError } = await supabaseClient
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', data.user.id)
+                    .single();
+
+                if (profileError) throw profileError;
+
+                currentUser = profile;
+                currentUser.company = profile.user_type === 'empresa' ? profile.subsector : '';
+                isConfirmed = true;
+                userRegistrationData = currentUser;
+
+                updateAuthUI();
+                closeModal(document.getElementById('auth-modal'));
+                formLogin.reset();
+
+                alert(TRANSLATIONS[currentLang].authLoginSuccess);
+            } catch (err) {
+                console.error("Error al iniciar sesión:", err);
+                alert((currentLang === 'es' ? "Error al iniciar sesión: " : "Login error: ") + err.message);
             }
         });
     }
@@ -1054,12 +1088,8 @@ function setupEventListeners() {
             const email = document.getElementById('auth-reg-email').value.trim();
             const name = document.getElementById('auth-reg-name').value.trim();
             const type = document.getElementById('auth-reg-user-type').value;
-
-            const exists = ageFriendAccounts.some(acc => acc.email.toLowerCase() === email.toLowerCase());
-            if (exists) {
-                alert(TRANSLATIONS[currentLang].authEmailExists);
-                return;
-            }
+            const username = document.getElementById('auth-reg-username').value.trim();
+            const password = document.getElementById('auth-reg-password').value;
 
             let user = { name, email, type };
             if (type === 'personal') {
@@ -1070,98 +1100,23 @@ function setupEventListeners() {
                 user.role = document.getElementById('auth-reg-role').value.trim();
                 if (sector === 'publico') {
                     user.subsector = document.getElementById('auth-reg-public-level').value;
-                    user.company = document.getElementById('auth-reg-public-level').options[document.getElementById('auth-reg-public-level').selectedIndex].text;
                 } else {
                     user.subsector = document.getElementById('auth-reg-private-vertical').value;
-                    user.company = document.getElementById('auth-reg-private-vertical').options[document.getElementById('auth-reg-private-vertical').selectedIndex].text;
                 }
             }
 
-            tempAuthData = {
-                user,
-                isNew: true
-            };
-
-            // Mostrar vista OTP
-            if (viewRegister) viewRegister.classList.add('hidden');
-            if (viewOtp) {
-                viewOtp.classList.remove('hidden');
-                const emailDisp = document.getElementById('auth-otp-email-display');
-                if (emailDisp) emailDisp.textContent = email;
-            }
-            // Limpiar inputs OTP
-            document.querySelectorAll('#view-otp .otp-digit').forEach(input => input.value = '');
-            // Enviar correo
-            sendAuthVerificationEmail(name, user.company || '', email, 'modal');
-        });
-    }
-
-    // 7. Configuración de Entrada de OTP con salto automático
-    setupOtpInputsAutoJump('view-otp');
-    setupOtpInputsAutoJump('quiz-confirm-view');
-
-    // 8. Botón Confirmar OTP en Modal
-    const btnAuthConfirmOtp = document.getElementById('btn-auth-confirm-otp');
-    if (btnAuthConfirmOtp) {
-        btnAuthConfirmOtp.addEventListener('click', () => {
-            let code = "";
-            document.querySelectorAll('#view-otp .otp-digit').forEach(input => code += input.value);
-            const errorMsg = document.getElementById('auth-otp-error-msg');
-            if (code === currentVerificationCode) {
-                confirmAuthSuccess();
-            } else {
-                if (errorMsg) {
-                    errorMsg.textContent = TRANSLATIONS[currentLang].otpErrorMsg;
-                    errorMsg.classList.remove('hidden');
-                }
-            }
-        });
-    }
-
-    // 9. Botón Confirmar OTP en Cuestionario
-    const btnConfirmOtp = document.getElementById('btn-confirm-otp');
-    if (btnConfirmOtp) {
-        btnConfirmOtp.addEventListener('click', () => {
-            let code = "";
-            document.querySelectorAll('#quiz-confirm-view .otp-digit').forEach(input => code += input.value);
-            const errorMsg = document.getElementById('otp-error-msg');
-            if (code === currentVerificationCode) {
-                confirmAuthSuccess();
-            } else {
-                if (errorMsg) {
-                    errorMsg.textContent = TRANSLATIONS[currentLang].otpErrorMsg;
-                    errorMsg.classList.remove('hidden');
-                }
-            }
-        });
-    }
-
-    // 10. Reenvío de OTP
-    const btnAuthOtpResend = document.getElementById('btn-auth-otp-resend');
-    if (btnAuthOtpResend) {
-        btnAuthOtpResend.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (tempAuthData && tempAuthData.user) {
-                sendAuthVerificationEmail(tempAuthData.user.name, tempAuthData.user.company || '', tempAuthData.user.email, 'modal');
-            }
-        });
-    }
-    const btnOtpResend = document.getElementById('btn-otp-resend');
-    if (btnOtpResend) {
-        btnOtpResend.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (tempAuthData && tempAuthData.user) {
-                sendAuthVerificationEmail(tempAuthData.user.name, tempAuthData.user.company || '', tempAuthData.user.email, 'quiz');
-            }
+            registerUserInSupabase(user, username, password, 'modal');
         });
     }
 
     // 11. Cerrar Sesión
     const btnAuthLogout = document.getElementById('btn-auth-logout');
     if (btnAuthLogout) {
-        btnAuthLogout.addEventListener('click', () => {
+        btnAuthLogout.addEventListener('click', async () => {
+            if (supabaseClient) {
+                await supabaseClient.auth.signOut();
+            }
             currentUser = null;
-            localStorage.removeItem('age_friend_user');
             isConfirmed = false;
             userRegistrationData = null;
             updateAuthUI();
@@ -1173,39 +1128,52 @@ function setupEventListeners() {
     // 12. Envío de Formulario Upgrade
     const formUpgrade = document.getElementById('form-upgrade');
     if (formUpgrade) {
-        formUpgrade.addEventListener('submit', (e) => {
+        formUpgrade.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!currentUser) return;
 
             const sector = document.getElementById('upg-sector-type').value;
             const role = document.getElementById('upg-role').value.trim();
-            
-            currentUser.type = 'empresa';
-            currentUser.sector = sector;
-            currentUser.role = role;
+            let subsector = "";
+            let company = "";
 
             if (sector === 'publico') {
-                currentUser.subsector = document.getElementById('upg-public-level').value;
-                currentUser.company = document.getElementById('upg-public-level').options[document.getElementById('upg-public-level').selectedIndex].text;
+                subsector = document.getElementById('upg-public-level').value;
+                company = document.getElementById('upg-public-level').options[document.getElementById('upg-public-level').selectedIndex].text;
             } else {
-                currentUser.subsector = document.getElementById('upg-private-vertical').value;
-                currentUser.company = document.getElementById('upg-private-vertical').options[document.getElementById('upg-private-vertical').selectedIndex].text;
+                subsector = document.getElementById('upg-private-vertical').value;
+                company = document.getElementById('upg-private-vertical').options[document.getElementById('upg-private-vertical').selectedIndex].text;
             }
 
-            const idx = ageFriendAccounts.findIndex(acc => acc.email.toLowerCase() === currentUser.email.toLowerCase());
-            if (idx !== -1) {
-                ageFriendAccounts[idx] = currentUser;
-            } else {
-                ageFriendAccounts.push(currentUser);
+            if (supabaseClient) {
+                const { error: upgradeError } = await supabaseClient
+                    .from('profiles')
+                    .update({
+                        user_type: 'empresa',
+                        sector: sector,
+                        subsector: subsector,
+                        role: role
+                    })
+                    .eq('id', currentUser.id);
+
+                if (upgradeError) {
+                    alert("Error al actualizar cuenta: " + upgradeError.message);
+                    return;
+                }
             }
-            localStorage.setItem('age_friend_accounts', JSON.stringify(ageFriendAccounts));
-            localStorage.setItem('age_friend_user', JSON.stringify(currentUser));
-            
+
+            currentUser.type = 'empresa';
+            currentUser.user_type = 'empresa';
+            currentUser.sector = sector;
+            currentUser.subsector = subsector;
+            currentUser.role = role;
+            currentUser.company = company;
+
             isConfirmed = true;
             userRegistrationData = currentUser;
 
             updateAuthUI();
-            
+
             closeModal(document.getElementById('account-modal'));
             alert(TRANSLATIONS[currentLang].authUpgradeSuccess);
         });
@@ -1251,13 +1219,11 @@ function setupEventListeners() {
             const authModal = document.getElementById('auth-modal');
             const viewLogin = document.getElementById('view-login');
             const viewRegister = document.getElementById('view-register');
-            const viewOtp = document.getElementById('view-otp');
             const tabLogin = document.getElementById('tab-login');
             const tabRegister = document.getElementById('tab-register');
 
             if (viewLogin) viewLogin.classList.remove('hidden');
             if (viewRegister) viewRegister.classList.add('hidden');
-            if (viewOtp) viewOtp.classList.add('hidden');
             if (tabLogin) tabLogin.classList.add('active');
             if (tabRegister) tabRegister.classList.remove('active');
 
@@ -1273,12 +1239,8 @@ function setupEventListeners() {
             const email = document.getElementById('quiz-reg-email').value.trim();
             const name = document.getElementById('quiz-reg-name').value.trim();
             const type = document.getElementById('quiz-reg-user-type').value;
-
-            const exists = ageFriendAccounts.some(acc => acc.email.toLowerCase() === email.toLowerCase());
-            if (exists) {
-                alert(TRANSLATIONS[currentLang].authEmailExists);
-                return;
-            }
+            const username = document.getElementById('quiz-reg-username').value.trim();
+            const password = document.getElementById('quiz-reg-password').value;
 
             let user = { name, email, type };
             if (type === 'personal') {
@@ -1289,71 +1251,61 @@ function setupEventListeners() {
                 user.role = document.getElementById('quiz-reg-role').value.trim();
                 if (sector === 'publico') {
                     user.subsector = document.getElementById('quiz-reg-public-level').value;
-                    user.company = document.getElementById('quiz-reg-public-level').options[document.getElementById('quiz-reg-public-level').selectedIndex].text;
                 } else {
                     user.subsector = document.getElementById('quiz-reg-private-vertical').value;
-                    user.company = document.getElementById('quiz-reg-private-vertical').options[document.getElementById('quiz-reg-private-vertical').selectedIndex].text;
                 }
             }
 
-            tempAuthData = {
-                user,
-                isNew: true
-            };
-
-            hideRegistrationView();
-            showVerificationView(email);
-            sendAuthVerificationEmail(name, user.company || '', email, 'quiz');
+            registerUserInSupabase(user, username, password, 'quiz');
         });
     }
 }
 
-function setupOtpInputsAutoJump(containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    const inputs = container.querySelectorAll('.otp-digit');
-    inputs.forEach((input, index) => {
-        input.addEventListener('keyup', (e) => {
-            const val = input.value;
-            if (val.length === 1 && index < inputs.length - 1) {
-                inputs[index + 1].focus();
-            }
-        });
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Backspace' && input.value.length === 0 && index > 0) {
-                inputs[index - 1].focus();
-            }
-        });
-    });
-}// ==========================================================================
-// Vistas y Lógica de Autenticación, OTP y Upgrade (Restaurado e Implementado)
+// ==========================================================================
+// Vistas y Lógica de Autenticación en Supabase y Upgrade
 // ==========================================================================
 
-function initAuthSession() {
-    try {
-        const savedAccounts = localStorage.getItem('age_friend_accounts');
-        ageFriendAccounts = savedAccounts ? JSON.parse(savedAccounts) : [];
-    } catch (e) {
-        console.error("Error al cargar cuentas:", e);
-        ageFriendAccounts = [];
+async function initAuthSession() {
+    if (!supabaseClient) {
+        console.error("Supabase client is not initialized.");
+        return;
     }
-
     try {
-        const savedUser = localStorage.getItem('age_friend_user');
-        currentUser = savedUser ? JSON.parse(savedUser) : null;
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        if (error) throw error;
+
+        if (session && session.user) {
+            const { data: profile, error: profileError } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+
+            if (profileError) {
+                console.error("Error fetching profile, using auth email:", profileError);
+                currentUser = {
+                    id: session.user.id,
+                    email: session.user.email,
+                    name: session.user.user_metadata?.full_name || "Usuario",
+                    type: 'personal'
+                };
+            } else {
+                currentUser = profile;
+                currentUser.company = profile.user_type === 'empresa' ? profile.subsector : '';
+            }
+            isConfirmed = true;
+            userRegistrationData = currentUser;
+        } else {
+            currentUser = null;
+            isConfirmed = false;
+            userRegistrationData = null;
+        }
     } catch (e) {
-        console.error("Error al cargar usuario activo:", e);
+        console.error("Error loading session:", e);
         currentUser = null;
-    }
-
-    if (currentUser) {
-        isConfirmed = true;
-        userRegistrationData = currentUser;
-    } else {
         isConfirmed = false;
         userRegistrationData = null;
     }
-
     updateAuthUI();
 }
 
@@ -1386,15 +1338,16 @@ function updateAuthUI() {
         const detailItemSubsector = document.getElementById('detail-item-subsector');
         const detailItemRole = document.getElementById('detail-item-role');
 
-        if (accountTitleName) accountTitleName.textContent = currentUser.name;
+        if (accountTitleName) accountTitleName.textContent = currentUser.full_name || currentUser.name;
         if (accountDetailEmail) accountDetailEmail.textContent = currentUser.email;
 
+        const isEmpresa = currentUser.user_type === 'empresa' || currentUser.type === 'empresa';
         if (accountUserBadge) {
-            accountUserBadge.textContent = currentUser.type === 'empresa' ? (currentLang === 'es' ? 'Empresa' : 'Company') : (currentLang === 'es' ? 'Personal' : 'Personal');
-            accountUserBadge.className = 'user-badge-type ' + currentUser.type;
+            accountUserBadge.textContent = isEmpresa ? (currentLang === 'es' ? 'Empresa' : 'Company') : (currentLang === 'es' ? 'Personal' : 'Personal');
+            accountUserBadge.className = 'user-badge-type ' + (isEmpresa ? 'empresa' : 'personal');
         }
 
-        if (currentUser.type === 'personal') {
+        if (!isEmpresa) {
             if (detailItemCountry) detailItemCountry.classList.remove('hidden-field');
             if (accountDetailCountry) accountDetailCountry.textContent = currentUser.country || '';
             if (detailItemSector) detailItemSector.classList.add('hidden-field');
@@ -1455,7 +1408,7 @@ function handleUserTypeChange(type, prefix = 'auth-reg-') {
     const countryField = document.getElementById(prefix === 'auth-reg-' ? 'field-personal-country' : 'quiz-field-personal-country');
     const sectorField = document.getElementById(prefix === 'auth-reg-' ? 'field-company-sector' : 'quiz-field-company-sector');
     const roleField = document.getElementById(prefix === 'auth-reg-' ? 'field-company-role' : 'quiz-field-company-role');
-    
+
     const publicField = document.getElementById(prefix === 'auth-reg-' ? 'field-public-level' : 'quiz-field-public-level');
     const privateField = document.getElementById(prefix === 'auth-reg-' ? 'field-private-vertical' : 'quiz-field-private-vertical');
 
@@ -1475,7 +1428,7 @@ function handleUserTypeChange(type, prefix = 'auth-reg-') {
 
         toggleRequiredFields(false, prefix + 'country');
         toggleRequiredFields(true, prefix + 'sector-type', prefix + 'role');
-        
+
         const sectorVal = document.getElementById(prefix + 'sector-type').value;
         handleSectorTypeChange(sectorVal, prefix);
     }
@@ -1502,101 +1455,103 @@ function handleSectorTypeChange(sector, prefix = 'auth-reg-') {
     }
 }
 
-function sendAuthVerificationEmail(name, company, email, target) {
-    const randomPIN = Math.floor(100000 + Math.random() * 900000).toString();
-    tempAuthData = tempAuthData || {};
-    tempAuthData.verificationCode = randomPIN;
-    tempAuthData.target = target;
-    
-    if (typeof emailjs !== 'undefined' && EMAILJS_CONFIG.publicKey && EMAILJS_CONFIG.publicKey !== "TU_PUBLIC_KEY") {
-        console.log(TRANSLATIONS[currentLang].otpSentRealConsole);
-        
-        const templateParams = {
-            to_name: name,
-            to_email: email,
-            company_name: company,
-            verification_code: randomPIN
-        };
-        
-        emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, templateParams)
-            .then((response) => {
-                console.log("Correo enviado con éxito!", response.status, response.text);
-                currentVerificationCode = randomPIN;
-                alert(TRANSLATIONS[currentLang].otpSentReal.replace('{email}', email));
-            }, (error) => {
-                console.error("Fallo al enviar correo vía EmailJS:", error);
-                triggerAuthFallbackVerification(randomPIN, email, target, "Fallo al enviar el correo real (límite superado o claves incorrectas).");
-            });
-    } else {
-        triggerAuthFallbackVerification("123456", email, target);
+async function registerUserInSupabase(user, username, password, target) {
+    if (!supabaseClient) {
+        alert("Error: Cliente de Supabase no inicializado.");
+        return;
     }
-}
 
-function triggerAuthFallbackVerification(pin, email, target, reason = "") {
-    currentVerificationCode = pin;
-    tempAuthData = tempAuthData || {};
-    tempAuthData.verificationCode = pin;
-    tempAuthData.target = target;
-    if (reason) {
-        console.warn(`${reason} Activando simulación local de contingencia.`);
-    }
-    showToastOTP(pin);
-}
+    try {
+        // 1. Verificar si el nombre de usuario ya está tomado
+        const { data: existingUser, error: checkError } = await supabaseClient
+            .from('profiles')
+            .select('id')
+            .eq('username', username)
+            .maybeSingle();
 
-function confirmAuthSuccess() {
-    currentUser = tempAuthData.user;
-    
-    if (tempAuthData.isNew) {
-        ageFriendAccounts.push(currentUser);
-        localStorage.setItem('age_friend_accounts', JSON.stringify(ageFriendAccounts));
-    } else {
-        const idx = ageFriendAccounts.findIndex(acc => acc.email.toLowerCase() === currentUser.email.toLowerCase());
-        if (idx !== -1) {
-            ageFriendAccounts[idx] = currentUser;
-            localStorage.setItem('age_friend_accounts', JSON.stringify(ageFriendAccounts));
+        if (checkError) throw checkError;
+        if (existingUser) {
+            alert(currentLang === 'es' ? "⚠️ El nombre de usuario ya está registrado por otra cuenta." : "⚠️ The username is already taken by another account.");
+            return;
         }
-    }
-    localStorage.setItem('age_friend_user', JSON.stringify(currentUser));
-    isConfirmed = true;
-    userRegistrationData = currentUser;
 
-    updateAuthUI();
+        // 2. Registrar el usuario en Supabase Auth
+        const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({
+            email: user.email,
+            password: password,
+            options: {
+                data: {
+                    full_name: user.name
+                }
+            }
+        });
 
-    const errorMsg = document.getElementById('auth-otp-error-msg');
-    if (errorMsg) errorMsg.classList.add('hidden');
-    
-    const errorMsgQuiz = document.getElementById('otp-error-msg');
-    if (errorMsgQuiz) errorMsgQuiz.classList.add('hidden');
+        if (signUpError) throw signUpError;
 
-    const toast = document.querySelector('.toast-notification');
-    if (toast) toast.remove();
+        const userId = signUpData.user.id;
 
-    if (tempAuthData.target === 'quiz') {
-        hideVerificationView();
-        calculateResults();
-    } else {
-        const authModal = document.getElementById('auth-modal');
-        if (authModal) closeModal(authModal);
-        
-        const formLogin = document.getElementById('form-login');
-        if (formLogin) formLogin.reset();
-        const formRegister = document.getElementById('form-register');
-        if (formRegister) formRegister.reset();
-        
-        const viewLogin = document.getElementById('view-login');
-        const viewRegister = document.getElementById('view-register');
-        const viewOtp = document.getElementById('view-otp');
-        
-        if (viewLogin) viewLogin.classList.remove('hidden');
-        if (viewRegister) viewRegister.classList.add('hidden');
-        if (viewOtp) viewOtp.classList.add('hidden');
-        
-        const tabLogin = document.getElementById('tab-login');
-        const tabRegister = document.getElementById('tab-register');
-        if (tabLogin) tabLogin.classList.add('active');
-        if (tabRegister) tabRegister.classList.remove('active');
+        // 3. Crear el perfil en la tabla de perfiles públicos
+        const { error: profileError } = await supabaseClient
+            .from('profiles')
+            .insert({
+                id: userId,
+                username: username,
+                full_name: user.name,
+                user_type: user.type,
+                email: user.email,
+                country: user.country || null,
+                sector: user.sector || null,
+                subsector: user.subsector || null,
+                role: user.role || null
+            });
 
-        alert(tempAuthData.isNew ? TRANSLATIONS[currentLang].authRegisterSuccess : TRANSLATIONS[currentLang].authLoginSuccess);
+        if (profileError) throw profileError;
+
+        // 4. Manejar el inicio de sesión según si hay sesión inmediata o requiere verificar email
+        if (signUpData.session) {
+            currentUser = {
+                id: userId,
+                username: username,
+                full_name: user.name,
+                user_type: user.type,
+                country: user.country || null,
+                sector: user.sector || null,
+                subsector: user.subsector || null,
+                role: user.role || null
+            };
+            currentUser.company = user.type === 'empresa' ? user.subsector : '';
+            isConfirmed = true;
+            userRegistrationData = currentUser;
+            updateAuthUI();
+
+            if (target === 'quiz') {
+                hideRegistrationView();
+                calculateResults();
+            } else {
+                closeModal(document.getElementById('auth-modal'));
+                const formRegister = document.getElementById('form-register');
+                if (formRegister) formRegister.reset();
+                alert(TRANSLATIONS[currentLang].authRegisterSuccess);
+            }
+        } else {
+            alert(currentLang === 'es' ?
+                "¡Registro exitoso! Por favor, revisa tu correo electrónico para confirmar tu cuenta antes de iniciar sesión." :
+                "Registration successful! Please check your email to confirm your account before logging in.");
+
+            if (target === 'quiz') {
+                hideRegistrationView();
+                document.getElementById('question-box').classList.remove('hidden');
+                document.getElementById('quiz-progress-bar').classList.remove('hidden');
+                document.getElementById('quiz-controls').classList.remove('hidden');
+            } else {
+                closeModal(document.getElementById('auth-modal'));
+                const formRegister = document.getElementById('form-register');
+                if (formRegister) formRegister.reset();
+            }
+        }
+    } catch (err) {
+        console.error("Error al registrar cuenta:", err);
+        alert((currentLang === 'es' ? "Error al registrar cuenta: " : "Registration error: ") + err.message);
     }
 }
 
@@ -1740,6 +1695,21 @@ function calculateResults() {
         resultsHeaderTitle.textContent = t.resultsTitle.replace('{companyName}', userRegistrationData ? userRegistrationData.company : (currentLang === 'es' ? 'Su Empresa' : 'Your Company'));
     }
 
+    // Guardar resultados en Supabase si el usuario está logueado
+    if (supabaseClient && currentUser) {
+        supabaseClient.from('diagnostics').insert({
+            user_id: currentUser.id,
+            answers: userAnswers,
+            total_score: totalScore,
+            pillar_1_score: pilarPercents[0],
+            pillar_2_score: pilarPercents[1],
+            pillar_3_score: pilarPercents[2]
+        }).then(({ error }) => {
+            if (error) console.error("Error al guardar autodiagnóstico en Supabase:", error);
+            else console.log("Autodiagnóstico guardado correctamente en la nube.");
+        });
+    }
+
     // Ocultar Cuestionario y Mostrar Resultados
     quizCard.classList.add('hidden');
     resultsCard.classList.remove('hidden');
@@ -1776,83 +1746,7 @@ function hideRegistrationView() {
     document.getElementById('quiz-register-view').classList.add('hidden');
 }
 
-function showVerificationView(email) {
-    document.getElementById('sent-email-display').textContent = email;
-    document.getElementById('quiz-confirm-view').classList.remove('hidden');
-    
-    // Auto focus en el primer input OTP
-    const firstOtpInput = document.querySelector('.otp-digit');
-    if (firstOtpInput) firstOtpInput.focus();
-}
-
-function hideVerificationView() {
-    document.getElementById('quiz-confirm-view').classList.add('hidden');
-}
-
-function resumeQuestionnaire() {
-    document.getElementById('question-box').classList.remove('hidden');
-    document.getElementById('quiz-progress-bar').classList.remove('hidden');
-    document.getElementById('quiz-controls').classList.remove('hidden');
-    
-    currentQuestionIndex = 3; // Pregunta 4 (índice 3)
-    loadQuestion(currentQuestionIndex);
-}
-
-function showToastOTP(pin = "123456") {
-    const existingToast = document.querySelector('.toast-notification');
-    if (existingToast) existingToast.remove();
-    
-    const t = TRANSLATIONS[currentLang];
-    
-    const toast = document.createElement('div');
-    toast.className = 'toast-notification';
-    toast.innerHTML = `
-        <span class="toast-title">${t.otpFallbackTitle}</span>
-        <span class="toast-desc">${t.otpFallbackDesc}</span>
-        <span class="toast-code">${pin}</span>
-    `;
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        if (toast.parentNode) toast.remove();
-    }, 15000);
-}
-
-// Envío de correo real o local
-function sendVerificationEmail(name, company, email) {
-    const randomPIN = Math.floor(100000 + Math.random() * 900000).toString();
-    
-    if (typeof emailjs !== 'undefined' && EMAILJS_CONFIG.publicKey && EMAILJS_CONFIG.publicKey !== "TU_PUBLIC_KEY") {
-        console.log(TRANSLATIONS[currentLang].otpSentRealConsole);
-        
-        const templateParams = {
-            to_name: name,
-            to_email: email,
-            company_name: company,
-            verification_code: randomPIN
-        };
-        
-        emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, templateParams)
-            .then((response) => {
-                console.log("Correo enviado con éxito!", response.status, response.text);
-                currentVerificationCode = randomPIN;
-                alert(TRANSLATIONS[currentLang].otpSentReal.replace('{email}', email));
-            }, (error) => {
-                console.error("Fallo al enviar correo vía EmailJS:", error);
-                triggerFallbackVerification(randomPIN, email, "Fallo al enviar el correo real (límite superado o claves incorrectas).");
-            });
-    } else {
-        triggerFallbackVerification("123456", email);
-    }
-}
-
-function triggerFallbackVerification(pin, email, reason = "") {
-    currentVerificationCode = pin;
-    if (reason) {
-        console.warn(`${reason} Activando simulación local de contingencia.`);
-    }
-    showToastOTP(pin);
-}
+// Funciones OTP obsoletas eliminadas por la integración de Supabase Auth
 
 function triggerFallbackPitchLead(leadData, recipientEmail) {
     console.warn("Fallo o ausencia de configuración EmailJS para Leads. Activando simulación local.");
