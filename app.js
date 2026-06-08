@@ -6,7 +6,7 @@ const EMAILJS_CONFIG = {
 };
 
 // Configuración de Supabase
-const SUPABASE_URL = "https://zkqmjbvcdzrl.supabase.co";
+const SUPABASE_URL = "https://thwexjeyzkqmjbvcdzrl.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_Xu_fwUSPwVTD5bdWqTeCkA_bI5TSQ0-";
 const supabaseClient = typeof window.supabase !== 'undefined' ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
@@ -1512,6 +1512,7 @@ async function registerUserInSupabase(user, username, password, target) {
             currentUser = {
                 id: userId,
                 username: username,
+                email: user.email,
                 full_name: user.name,
                 user_type: user.type,
                 country: user.country || null,
