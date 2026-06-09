@@ -1780,91 +1780,127 @@ function triggerFallbackPitchLead(leadData, recipientEmail) {
 
 async function downloadPitchDossier(lang, format = 'pdf') {
     const rawContent = lang === 'es' ? ES_DOSSIER_TEMPLATE : EN_DOSSIER_TEMPLATE;
+    const safeContent = rawContent.replace(/<img[^>]*>/g, '').replace(/<style[^>]*>.*?<\/style>/gs, '');
     
-    // Reemplazamos imágenes por emoji para evitar problemas CORS
-    const safeContent = rawContent.replace(/<img[^>]*>/g, '<span style="font-size: 3rem; margin-right: 10px;">🏅</span>');
-    
-    if (format === 'pdf' && typeof html2pdf !== 'undefined') {
-        // 1. Crear contenedor temporal - LO HACEMOS VISIBLE pero no interactivo
-        //    usando opacity:0 en lugar de posicionarlo fuera de pantalla
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = safeContent;
-        tempDiv.id = 'temp-pdf-container';
-        tempDiv.style.cssText = `
-            position: absolute;
-            top: -9999px;
-            left: 0;
-            width: 1200px;
-            opacity: 1;
-            visibility: visible;
-            pointer-events: none;
-            z-index: 1;
-            background-color: #ffffff;
-            overflow: visible;
-        `;
-        
-        document.body.appendChild(tempDiv);
-
-        try {
-            // 2. Esperar a que TODO esté listo para renderizar
-            //    Fuentes web + layout + imágenes
-            await document.fonts.ready;
-            await new Promise(resolve => requestAnimationFrame(resolve));
-            await new Promise(resolve => setTimeout(resolve, 300));
-            
-            // Forzar reflow para asegurar que el navegador ha calculado todos los estilos
-            void tempDiv.offsetHeight;
-
-            const opt = {
-                margin:       15,
-                filename:     lang === 'es' ? 'Dossier_AgeFriendSeal.pdf' : 'Dossier_AgeFriendSeal_EN.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { 
-                    scale: 2,
-                    useCORS: true,
-                    allowTaint: false,
-                    logging: false,
-                    backgroundColor: '#ffffff',
-                    windowWidth: 1200,
-                    scrollX: 0,
-                    scrollY: 0,
-                    // Esta función se ejecuta en el documento clonado internamente
-                    onclone: (clonedDoc) => {
-                        const clonedEl = clonedDoc.getElementById('temp-pdf-container');
-                        if (clonedEl) {
-                            clonedEl.style.position = 'relative';
-                            clonedEl.style.top = '0';
-                            clonedEl.style.left = '0';
-                            clonedEl.style.opacity = '1';
-                            clonedEl.style.visibility = 'visible';
-                            clonedEl.style.zIndex = '1';
-                            clonedEl.style.overflow = 'visible';
-                            clonedDoc.body.style.backgroundColor = '#ffffff';
+    if (format === 'pdf') {
+        // Abrir en ventana y llamar a print automáticamente
+        const printWindow = window.open('', '', 'width=900,height=700');
+        const html = `
+            <!DOCTYPE html>
+            <html lang="${lang}">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>${lang === 'es' ? 'Dossier Age Friend Seal' : 'Age Friend Seal Dossier'}</title>
+                <style>
+                    * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                    }
+                    body {
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        line-height: 1.8;
+                        color: #333333;
+                        padding: 20px;
+                        background: white;
+                    }
+                    h1 {
+                        text-align: center;
+                        font-size: 32px;
+                        font-weight: bold;
+                        color: #0f172a;
+                        margin-bottom: 8px;
+                        letter-spacing: 0.5px;
+                    }
+                    .subtitle {
+                        text-align: center;
+                        font-size: 14px;
+                        color: #555555;
+                        margin-bottom: 25px;
+                        font-weight: 500;
+                    }
+                    hr {
+                        border: none;
+                        border-top: 2.5px solid #d4af37;
+                        margin: 25px 0;
+                        opacity: 0.6;
+                    }
+                    .content {
+                        margin: 30px 0;
+                        text-align: justify;
+                    }
+                    .content p {
+                        margin-bottom: 12px;
+                        font-size: 12px;
+                        line-height: 1.8;
+                    }
+                    .content div {
+                        margin-bottom: 12px;
+                        font-size: 12px;
+                        line-height: 1.8;
+                    }
+                    .footer {
+                        text-align: center;
+                        font-size: 10px;
+                        color: #888888;
+                        margin-top: 50px;
+                        padding-top: 15px;
+                        border-top: 1px solid #dddddd;
+                        page-break-before: avoid;
+                    }
+                    @media print {
+                        body {
+                            margin: 0;
+                            padding: 15mm;
+                            background: white;
+                        }
+                        .footer {
+                            position: fixed;
+                            bottom: 10mm;
+                            left: 0;
+                            right: 0;
+                            text-align: center;
                         }
                     }
-                },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak:    { mode: 'css', before: '.dossier-page-break' }
-            };
-            
-            // 3. Generar el PDF desde el elemento
-            await html2pdf().set(opt).from(tempDiv).save();
-            
-        } catch (err) {
-            console.error("Error generando PDF:", err);
-            // Fallback: si html2pdf falla, ofrecer impresión del navegador
-            alert('Hubo un problema generando el PDF automático. Se abrirá la ventana de impresión.');
-            window.print();
-        } finally {
-            // 4. SIEMPRE limpiar el DOM
-            if (tempDiv.parentNode) {
-                tempDiv.parentNode.removeChild(tempDiv);
-            }
+                    @page {
+                        margin: 15mm;
+                        size: A4;
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>${lang === 'es' ? 'DOSSIER CORPORATIVO' : 'CORPORATE DOSSIER'}</h1>
+                <div class="subtitle">Age Friend Seal - ${lang === 'es' ? 'Instituto Certificador Internacional' : 'International Certification Institute'}</div>
+                <hr>
+                <div class="content">
+                    ${safeContent}
+                </div>
+                <div class="footer">© 2026 Age Friend Seal. ${lang === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.'}</div>
+                <script>
+                    // Esperar a que cargue completamente antes de imprimir
+                    window.addEventListener('load', function() {
+                        setTimeout(function() {
+                            window.print();
+                        }, 500);
+                    });
+                    // Si cierra la ventana sin imprimir, mostrar opción
+                    window.addEventListener('afterprint', function() {
+                        window.close();
+                    });
+                </script>
+            </body>
+            </html>
+        `;
+        if (!printWindow) {
+            alert(lang === 'es' ? 'Por favor desactiva el bloqueador de ventanas emergentes' : 'Please disable pop-up blocker');
+            return;
         }
-        
+        printWindow.document.write(html);
+        printWindow.document.close();
     } else {
-        // Flujo para descarga en HTML (sin cambios)
-        const blob = new Blob([safeContent], { type: 'text/html;charset=utf-8' });
+        // Descarga en HTML
+        const blob = new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dossier Age Friend Seal</title><style>body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; max-width: 900px; margin: 0 auto; } h1, h2, h3 { color: #0f172a; margin: 20px 0 10px 0; } p { margin: 10px 0; }</style></head><body><h1>${lang === 'es' ? 'Dossier Corporativo' : 'Corporate Dossier'}</h1><hr>${safeContent}</body></html>`], { type: 'text/html;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
@@ -2337,7 +2373,7 @@ const ES_DOSSIER_TEMPLATE = `<div class="dossier-main-wrapper">
     <div class="dossier-container">
         <div class="dossier-header">
             <div class="dossier-logo-container">
-                <img src="logo_age_friend_seal.png" alt="Age Friend Seal Logo" class="dossier-logo-img">
+                <img src="public/assets/logo_age_friend_seal.png" alt="Age Friend Seal Logo" class="dossier-logo-img">
                 <span class="dossier-logo-text"><span class="dossier-logo-accent">Age</span> Friend Seal</span>
             </div>
             <div class="dossier-h1">DOSSIER DE ALIANZAS Y CERTIFICACIÓN</div>
@@ -2721,7 +2757,7 @@ const EN_DOSSIER_TEMPLATE = `<div class="dossier-main-wrapper">
     <div class="dossier-container">
         <div class="dossier-header">
             <div class="dossier-logo-container">
-                <img src="logo_age_friend_seal.png" alt="Age Friend Seal Logo" class="dossier-logo-img">
+                <img src="public/assets/logo_age_friend_seal.png" alt="Age Friend Seal Logo" class="dossier-logo-img">
                 <span class="dossier-logo-text"><span class="dossier-logo-accent">Age</span> Friend Seal</span>
             </div>
             <div class="dossier-h1">CORPORATE ALLIANCE DOSSIER</div>
@@ -3039,3 +3075,4 @@ window.addEventListener('DOMContentLoaded', () => {
     initMobileMenu();
     initAccordion();
 });
+
