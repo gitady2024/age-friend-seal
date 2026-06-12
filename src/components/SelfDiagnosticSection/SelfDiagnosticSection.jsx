@@ -154,8 +154,14 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                       className={`option-card ${selected ? 'selected' : ''}`}
                       key={optionText}
                       onClick={() => selectOption(option)}
+                      style={{ display: 'flex', alignItems: 'center', textAlign: 'left', gap: '15px' }}
                     >
-                      {optionText}
+                      <div style={{
+                        minWidth: '20px', height: '20px', borderRadius: '50%', 
+                        border: selected ? '6px solid var(--accent-color)' : '2px solid var(--border-color)', 
+                        transition: 'all 0.2s', backgroundColor: selected ? 'var(--background-color)' : 'transparent'
+                      }}></div>
+                      <span>{optionText}</span>
                     </button>
                   );
                 })}

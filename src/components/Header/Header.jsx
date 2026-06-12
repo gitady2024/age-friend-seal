@@ -69,28 +69,49 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
             {currentUser ? (language === 'es' ? 'Mi Cuenta' : 'My Account') : intl.formatMessage({ id: 'nav.access' })}
           </button>
 
-          <button
-            type="button"
-            className="lang-switch-btn"
-            aria-label={intl.formatMessage({ id: 'language.label' })}
-            onClick={() => onLanguageChange(nextLanguage)}
-          >
-            {nextLanguage === 'en' ? (
-              <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
-                <rect width="60" height="30" fill="#012169" />
-                <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6" />
-                <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" strokeWidth="2" />
-                <path d="M30,0 V30 M0,15 H60" stroke="#fff" strokeWidth="10" />
-                <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" strokeWidth="6" />
-              </svg>
-            ) : (
-              <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2">
-                <rect width="3" height="2" fill="#c60b1e" />
-                <rect width="3" height="1" y="0.5" fill="#ffc400" />
-              </svg>
-            )}
-            {intl.formatMessage({ id: `language.${nextLanguage}` })}
-          </button>
+          <div className="nav-dropdown" style={{ marginLeft: '10px' }}>
+            <button
+              type="button"
+              className="nav-dropdown-toggle lang-switch-btn"
+              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+            >
+              {language === 'es' ? (
+                <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2">
+                  <rect width="3" height="2" fill="#c60b1e" />
+                  <rect width="3" height="1" y="0.5" fill="#ffc400" />
+                </svg>
+              ) : (
+                <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+                  <rect width="60" height="30" fill="#012169" />
+                  <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6" />
+                  <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" strokeWidth="2" />
+                  <path d="M30,0 V30 M0,15 H60" stroke="#fff" strokeWidth="10" />
+                  <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" strokeWidth="6" />
+                </svg>
+              )}
+              {intl.formatMessage({ id: `language.${language}` })}
+              <span style={{ fontSize: '0.7em', marginLeft: 4 }}>▼</span>
+            </button>
+            <div className="nav-dropdown-menu" style={{ minWidth: '150px' }}>
+              <a href="#" onClick={(e) => { e.preventDefault(); onLanguageChange('es'); closeMenu(); }} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2" style={{ margin: 0 }}>
+                  <rect width="3" height="2" fill="#c60b1e" />
+                  <rect width="3" height="1" y="0.5" fill="#ffc400" />
+                </svg>
+                Español
+              </a>
+              <a href="#" onClick={(e) => { e.preventDefault(); onLanguageChange('en'); closeMenu(); }} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" style={{ margin: 0 }}>
+                  <rect width="60" height="30" fill="#012169" />
+                  <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6" />
+                  <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" strokeWidth="2" />
+                  <path d="M30,0 V30 M0,15 H60" stroke="#fff" strokeWidth="10" />
+                  <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" strokeWidth="6" />
+                </svg>
+                English
+              </a>
+            </div>
+          </div>
         </nav>
       </div>
     </header>
