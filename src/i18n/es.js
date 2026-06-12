@@ -137,6 +137,7 @@ export const esMessages = {
   "Hero.011": "Mayor retención en empleados mayores a 50 años frente a jóvenes.",
   "language.en": "EN",
   "language.es": "ES",
+  "language.pt": "PT",
   "language.label": "Idioma",
   "Modals.001": "×",
   "Modals.002": "📄",

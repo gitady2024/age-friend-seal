@@ -137,6 +137,7 @@ export const enMessages = {
   "Hero.011": "Higher retention in employees over 50 compared to young workers.",
   "language.en": "EN",
   "language.es": "ES",
+  "language.pt": "PT",
   "language.label": "Language",
   "Modals.001": "×",
   "Modals.002": "📄",
