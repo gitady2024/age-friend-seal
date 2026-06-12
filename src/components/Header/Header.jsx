@@ -70,15 +70,17 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
           </button>
 
           <div className="nav-dropdown" style={{ marginLeft: '10px' }}>
-            <button
-              type="button"
-              className="nav-dropdown-toggle lang-switch-btn"
-              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-            >
+            <a href="#" className="nav-dropdown-toggle lang-switch-btn" onClick={(e) => e.preventDefault()} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               {language === 'es' ? (
                 <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2">
                   <rect width="3" height="2" fill="#c60b1e" />
                   <rect width="3" height="1" y="0.5" fill="#ffc400" />
+                </svg>
+              ) : language === 'pt' ? (
+                <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+                  <rect width="600" height="400" fill="#006600"/>
+                  <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
+                  <circle cx="300" cy="200" r="100" fill="#003399"/>
                 </svg>
               ) : (
                 <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
@@ -91,7 +93,7 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
               )}
               {intl.formatMessage({ id: `language.${language}` })}
               <span style={{ fontSize: '0.7em', marginLeft: 4 }}>▼</span>
-            </button>
+            </a>
             <div className="nav-dropdown-menu" style={{ minWidth: '150px' }}>
               <a href="#" onClick={(e) => { e.preventDefault(); onLanguageChange('es'); closeMenu(); }} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2" style={{ margin: 0 }}>
@@ -109,6 +111,14 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
                   <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" strokeWidth="6" />
                 </svg>
                 English
+              </a>
+              <a href="#" onClick={(e) => { e.preventDefault(); onLanguageChange('pt'); closeMenu(); }} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" style={{ margin: 0 }}>
+                  <rect width="600" height="400" fill="#006600"/>
+                  <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
+                  <circle cx="300" cy="200" r="100" fill="#003399"/>
+                </svg>
+                Português
               </a>
             </div>
           </div>
