@@ -1,0 +1,545 @@
+﻿/* ==========================================================================
+   CORRECCIONES MÓVILES (Menú Hamburguesa y Hero Section)
+   ========================================================================== */
+
+/* 1. Reparación del Menú Desplegable */
+@media (max-width: 992px) {
+    /* Forzar la aparición del menú móvil (Anula el display:none antiguo) */
+    .nav-links {
+        display: flex !important; 
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: rgba(11, 15, 25, 0.98); /* Más opaco para mejor lectura */
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        flex-direction: column;
+        align-items: center;
+        padding: 24px;
+        gap: 16px;
+        border-bottom: 1px solid var(--border-color);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        
+        /* Oculto inicialmente */
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-20px);
+        transition: var(--transition-smooth);
+    }
+
+    .nav-links.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    /* Recuperar los enlaces que ocultamos en la vista laptop */
+    .hide-on-laptop {
+        display: inline-block !important;
+    }
+
+    /* Estilizar los enlaces para que sean botones fáciles de tocar (A11Y) */
+    .nav-links a:not(.btn),
+    .nav-links .nav-auth-link {
+        width: 100%;
+        text-align: center;
+        padding: 12px 0;
+        font-size: 1.15rem;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .nav-links a:last-child {
+        border-bottom: none;
+    }
+
+    /* Igualar el ancho de los botones dentro del menú */
+    .nav-links .btn, 
+    .nav-links .lang-switch-btn,
+    .nav-links .nav-auth-link {
+        width: 100%;
+        justify-content: center;
+        height: 50px;
+        margin-top: 8px;
+    }
+}
+
+/* 2. Reparación del Hero y los Botones */
+@media (max-width: 768px) {
+    .hero-content {
+        text-align: center;
+    }
+
+    /* Apilar botones verticalmente para que respiren */
+    .hero-actions {
+        flex-direction: column !important; 
+        width: 100%;
+        gap: 16px;
+    }
+
+    .hero-actions .btn {
+        width: 100%; /* Botones de ancho completo */
+        margin: 0;
+        padding: 16px 20px; /* Recuperar área táctil cómoda */
+    }
+
+    /* Ajustes tipográficos para que no se vea tan aglomerado en celulares */
+    h1 {
+        font-size: 2.2rem;
+        line-height: 1.25;
+        margin-bottom: 16px;
+    }
+    
+    .hero-content p {
+        font-size: 1.05rem;
+        padding: 0 8px;
+        margin-bottom: 28px;
+    }
+}
+
+/* ==========================================================================
+   CORRECCIONES MÓVILES (Formularios, Cuestionario y Modales)
+   ========================================================================== */
+
+@media (max-width: 600px) {
+    /* 1. Arreglar los campos apilados (separarlos correctamente) */
+    .register-form .form-row {
+        grid-template-columns: 1fr;
+        gap: 16px !important; /* Reemplaza el gap:0 anterior para que respiren */
+    }
+
+    /* 2. Optimizar el espacio interno (padding) en pantallas chicas */
+    .modal-content {
+        padding: 24px 20px;
+    }
+    
+    .quiz-container, .results-container {
+        padding: 24px 16px;
+    }
+
+    /* 3. Asegurar que los 6 cuadritos del código OTP no se desborden de la pantalla */
+    .otp-inputs {
+        gap: 6px;
+        justify-content: center;
+    }
+    
+    .otp-digit {
+        width: 40px; /* Un poco más estrechos */
+        height: 50px;
+        font-size: 1.25rem;
+    }
+
+    /* 4. Mejorar la UX de los botones de navegación del cuestionario */
+    .quiz-controls {
+        flex-direction: column-reverse; /* Pone el botón "Siguiente" arriba, más a la mano */
+        gap: 12px;
+    }
+
+    .quiz-controls .btn {
+        width: 100%;
+        margin: 0;
+    }
+
+    /* 5. Ajustar el tamaño del gráfico circular de resultados */
+    .score-circle-container {
+        transform: scale(0.85); /* Lo reduce un 15% para que no ocupe toda la pantalla */
+        margin: 16px auto;
+    }
+}
+
+/* ==========================================================================
+   Acordeón de Fundamentos Globales
+   ========================================================================== */
+
+.accordion-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.accordion-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+}
+
+.accordion-item:hover {
+    border-color: var(--accent-blue);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.accordion-item.active {
+    border-color: var(--accent-blue);
+}
+
+.accordion-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    text-align: left;
+    outline: none;
+}
+
+.accordion-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.accordion-title-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.accordion-title-text h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    line-height: 1.2;
+}
+
+.accordion-icon {
+    width: 24px;
+    height: 24px;
+    position: relative;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+    margin-left: 16px;
+}
+
+.accordion-icon::before, 
+.accordion-icon::after {
+    content: '';
+    position: absolute;
+    background: var(--text-primary);
+    border-radius: 2px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.accordion-icon::before { width: 16px; height: 2px; }
+.accordion-icon::after { width: 2px; height: 16px; transition: transform 0.3s ease, opacity 0.3s ease; }
+
+/* Rotar a "Menos (-)" cuando está activo */
+.accordion-item.active .accordion-icon::after { 
+    transform: translate(-50%, -50%) rotate(90deg); 
+    opacity: 0; 
+}
+
+/* Magia de CSS Grid para animar height: auto */
+.accordion-content {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.accordion-item.active .accordion-content {
+    grid-template-rows: 1fr;
+}
+
+.accordion-inner-content {
+    min-height: 0;
+    overflow: hidden;
+    padding: 0 24px 0 88px; /* El 88px alinea el texto con el título (omitiendo el icono) */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease, padding 0.25s ease;
+}
+
+.accordion-item.active .accordion-inner-content {
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+    padding-bottom: 24px;
+    margin-top: 4px;
+    opacity: 1;
+    visibility: visible;
+}
+
+@media (max-width: 600px) {
+    .accordion-title-wrap {
+        gap: 12px;
+    }
+    .accordion-header {
+        padding: 16px;
+    }
+    .accordion-title-text h3 {
+        font-size: 1.1rem;
+    }
+    .accordion-inner-content {
+        padding: 0 16px 0 16px; /* En móvil, no indentamos para ganar espacio */
+    }
+
+    .accordion-item.active .accordion-inner-content {
+        padding-top: 16px;
+        padding-bottom: 20px;
+    }
+}
+
+/* ==========================================================================
+   Radar de Noticias (Diseño Minimalista / Peso Pluma)
+   ========================================================================== */
+
+.news-grid {
+    display: flex !important;
+    flex-direction: column;
+    max-width: 800px; /* Un poco más estrecho para facilitar la lectura */
+    margin: 0 auto;
+}
+
+/* Eliminar el aspecto de tarjeta pesada */
+.news-minimal-item {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 0 !important;
+    transition: background 0.3s ease;
+}
+
+.news-minimal-item:last-child {
+    border-bottom: none !important;
+}
+
+.news-minimal-item:hover {
+    box-shadow: none !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* Cabecera limpia (Solo Título) */
+.minimal-header {
+    padding: 20px 16px !important;
+}
+
+.minimal-title {
+    font-family: var(--font-body) !important; /* Usar fuente de cuerpo para no ser tan pesado */
+    font-size: 1.1rem !important;
+    font-weight: 500 !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+    color: var(--text-primary);
+    text-align: left;
+    padding-right: 24px;
+}
+
+.news-minimal-item.active .minimal-title {
+    color: var(--accent-blue);
+}
+
+/* Icono sutil */
+.minimal-icon {
+    opacity: 0.6;
+}
+
+.news-minimal-item.active .minimal-icon {
+    opacity: 1;
+}
+
+/* Contenido interno desplegable */
+.minimal-content {
+    padding: 0 16px 24px 16px !important; /* Alineado con el título */
+}
+
+.news-meta-inline {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.news-date-inline {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.minimal-desc {
+    font-size: 0.95rem !important;
+    color: var(--text-secondary) !important;
+    margin-bottom: 16px !important;
+}
+
+.minimal-footer {
+    border-top: none !important;
+    padding-top: 0 !important;
+    justify-content: flex-start !important;
+    gap: 20px;
+}
+
+.minimal-footer .normativa-link {
+    margin-top: 0 !important;
+    font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   Menú Desplegable (Dropdown) en Navbar
+   ========================================================================== */
+
+.nav-dropdown {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.nav-dropdown-toggle {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* Contenedor del submenú */
+.nav-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: rgba(11, 15, 25, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px 0;
+    min-width: 160px;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: var(--transition-smooth);
+    box-shadow: var(--shadow-premium);
+    z-index: 100;
+}
+
+/* Pseudo-elemento "zona segura" para que el mouse no pierda el menú al bajar */
+.nav-dropdown::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 0;
+    width: 100%;
+    height: 15px;
+}
+
+/* Activar en hover (Escritorio) */
+.nav-dropdown:hover .nav-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Estilo de los enlaces dentro del dropdown */
+.nav-dropdown-menu a {
+    padding: 10px 20px !important;
+    font-size: 0.9rem !important;
+    color: var(--text-secondary) !important;
+    text-align: left;
+    width: 100%;
+    transition: background 0.2s, color 0.2s;
+    border-bottom: none !important;
+}
+
+.nav-dropdown-menu a:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary) !important;
+}
+
+/* Adaptación para la versión móvil */
+@media (max-width: 992px) {
+    .nav-dropdown {
+        width: 100%;
+        flex-direction: column;
+    }
+    
+    .nav-dropdown-toggle span {
+        display: none; /* Ocultamos la flecha ▼ en móvil */
+    }
+    
+    /* En móvil se muestra siempre visible pero como un subnivel (sangría) */
+    .nav-dropdown-menu {
+        position: static;
+        transform: none !important;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        background: rgba(255, 255, 255, 0.02);
+        border: none;
+        border-radius: 8px;
+        box-shadow: none;
+        padding: 8px 0;
+        margin-top: 8px;
+        width: 100%;
+    }
+
+    .nav-dropdown-menu a {
+        text-align: center !important;
+        font-size: 1rem !important;
+        padding: 8px 0 !important;
+        color: var(--text-muted) !important;
+    }
+}
+
+/* ==========================================================================
+   Limpieza y Orden de Tarjetas Hero (Estadísticas)
+   ========================================================================== */
+
+.hero-visual {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: stretch; /* Asegura que ambas tarjetas tengan exactamente el mismo ancho */
+}
+
+.hero-stats-card {
+    display: flex;
+    align-items: center; /* Centra el icono verticalmente respecto al texto */
+    gap: 24px;
+    padding: 28px 32px; /* Espaciado más amplio y limpio */
+}
+
+/* Anulamos cualquier desfase horizontal previo para mantener el orden */
+.hero-stats-card.shift-y {
+    transform: none;
+}
+
+/* Contenedor interno para agrupar el número y el texto en columna */
+.stats-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.hero-stats-card h3 {
+    font-size: 2.2rem;
+    line-height: 1;
+    margin-bottom: 6px; /* Separación sutil entre el número y el párrafo */
+}
+
+.hero-stats-card p {
+    font-size: 1rem;
+    line-height: 1.4;
+    margin-bottom: 0;
+}
+
+/* Adaptación elegante para móviles */
+@media (max-width: 768px) {
+    .hero-stats-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 28px 24px;
+    }
+    
+    .stats-info {
+        align-items: center;
+    }
+}
+
+
+

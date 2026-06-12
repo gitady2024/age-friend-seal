@@ -1,0 +1,149 @@
+﻿/* ==========================================================================
+   Sección Comparativa
+   ========================================================================== */
+.comparativa-section {
+    padding: 100px 0;
+}
+
+.comparativa-container {
+    padding: 40px;
+    overflow: hidden;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.comparativa-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-body);
+}
+
+.comparativa-table th, .comparativa-table td {
+    padding: 20px 24px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.comparativa-table th {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+.comparativa-table td.td-label {
+    max-width: 320px;
+}
+
+.comparativa-table td.td-label strong {
+    color: var(--text-primary);
+}
+
+.comparativa-table td.td-label small {
+    color: var(--text-muted);
+}
+
+.comparativa-table .text-center {
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.comparativa-table .table-text {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+.comparativa-table .success-check {
+    color: #10b981;
+}
+
+.comparativa-table .danger-cross {
+    color: #ef4444;
+}
+
+.comparativa-table .warning-circle {
+    color: #f59e0b;
+}
+
+/* Columna destacada (Age Friend Seal) */
+.comparativa-table .highlight-column {
+    background-color: rgba(251, 191, 36, 0.03);
+    border-left: 1px solid rgba(251, 191, 36, 0.2);
+    border-right: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+.comparativa-table th.highlight-column {
+    color: #fbbf24;
+    background-color: rgba(251, 191, 36, 0.06);
+    border-top: 2px solid #fbbf24;
+}
+
+.comparativa-table tr:last-child td.highlight-column {
+    border-bottom: 2px solid #fbbf24;
+}
+
+/* Estilos para los ejes de recomendaciones en los resultados */
+.rec-axis-group {
+    padding: 12px 0 0 0;
+}
+
+.rec-axis-title {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fbbf24; /* Tonalidad dorada */
+    margin-bottom: 12px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+/* 5. Asegurar que el selector de idioma (EN) mantenga su forma */
+.lang-switch-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-primary);
+    text-decoration: none;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    transition: var(--transition-smooth);
+    cursor: pointer;
+    white-space: nowrap;
+    height: 40px;
+}
+
+.flag-icon {
+    width: 16px;
+    height: 11px;
+    border-radius: 1px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.lang-switch-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--accent-blue);
+    box-shadow: var(--shadow-glow);
+}
+
+.footer .logo-container-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 16px;
+}
+

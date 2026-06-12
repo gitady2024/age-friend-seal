@@ -1,0 +1,224 @@
+﻿/* ==========================================================================
+   Estructura Navbar
+   ========================================================================== */
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(11, 15, 25, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 16px 0;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 1.6rem;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.logo-img {
+    height: 36px;
+    width: 36px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(251, 191, 36, 0.5);
+    box-shadow: 0 0 8px rgba(251, 191, 36, 0.2);
+    object-fit: cover;
+}
+
+.logo-accent {
+    background: var(--gradient-silver);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-right: 2px;
+}
+
+/* 1. Evitar que el texto del logo se rompa en varias líneas */
+.logo-text {
+    white-space: nowrap;
+    font-size: 1.4rem; /* Lo reducimos ligeramente para ganar espacio (antes 1.6rem) */
+}
+
+/* 2. Hacer que el espacio entre enlaces sea fluido y no fijo */
+.nav-links {
+    display: flex;
+    align-items: center;
+    /* Usamos clamp() para que el gap sea de 24px en pantallas grandes, pero se reduzca hasta 12px en pantallas chicas */
+    gap: clamp(12px, 1.5vw, 24px); 
+}
+
+/* 3. Evitar que los enlaces se rompan y ajustar su tamaño */
+.nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem; /* Un poco más pequeño y elegante */
+    white-space: nowrap; /* ESTO ES CLAVE: evita que "Economía Plateada" quede en dos líneas */
+    transition: var(--transition-smooth);
+}
+
+.nav-links a:not(.btn):hover {
+    color: var(--text-primary);
+}
+
+/* 4. Armonizar los botones en la barra de navegación */
+.nav-links .btn {
+    padding: 8px 16px; /* Reducimos el padding vertical y horizontal para que no se vean tan toscos */
+    font-size: 0.9rem; /* Texto del botón más sutil */
+    height: 40px; /* Forzamos una altura consistente */
+    white-space: nowrap;
+}
+
+
+/* Mobile navigation */
+/* ==========================================================================
+   Menú Hamburguesa y Diseño Responsivo (Navbar)
+   ========================================================================== */
+
+/* Botón Hamburguesa (oculto por defecto en escritorio) */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 28px;
+    height: 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 101; /* Asegura que quede por encima del menú desplegado */
+}
+
+/* Las tres líneas del menú */
+.menu-toggle span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: var(--text-primary);
+    border-radius: 2px;
+    transition: var(--transition-smooth);
+}
+
+/* Animación a "X" cuando está activo */
+.menu-toggle.active span:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+}
+.menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+.menu-toggle.active span:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+}
+
+/* Ocultar menú normal y mostrar hamburguesa en pantallas menores a 992px */
+@media (max-width: 992px) {
+    .menu-toggle {
+        display: flex;
+    }
+
+    .nav-links {
+        position: absolute;
+        top: 100%; /* Justo debajo del navbar */
+        left: 0;
+        width: 100%;
+        background: rgba(11, 15, 25, 0.95);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        flex-direction: column;
+        align-items: center;
+        padding: 32px 24px;
+        gap: 20px;
+        border-bottom: 1px solid var(--border-color);
+        box-shadow: var(--shadow-premium);
+        
+        /* Oculto inicialmente con animación */
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-20px);
+        transition: var(--transition-smooth);
+    }
+
+    /* Clase que se activa con JS para mostrar el menú */
+    .nav-links.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    
+    /* Adaptar botones y enlaces para que ocupen todo el ancho en el móvil */
+    .nav-links a {
+        font-size: 1.1rem; /* Texto un poco más grande en móvil para facilitar el tap */
+        width: 100%;
+        text-align: center;
+    }
+
+    .nav-links .btn, 
+    .nav-links .lang-switch-btn {
+        width: 100%;
+        justify-content: center;
+        height: 48px; /* Botones más altos (área táctil) */
+    }
+}
+
+/* ==========================================================================
+   Mejoras de Limpieza Visual en Navbar
+   ========================================================================== */
+
+/* Estilo limpio para el acceso de usuarios (sin botón pesado) */
+.nav-auth-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: transparent;
+    border: 0;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    font-family: inherit;
+    line-height: 1;
+    transition: var(--transition-smooth);
+    padding: 8px 4px;
+    white-space: nowrap;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.nav-auth-link:hover {
+    color: var(--accent-blue);
+    transform: translateY(-2px);
+}
+
+.nav-auth-link:focus-visible {
+    outline: 2px solid var(--accent-blue);
+    outline-offset: 4px;
+    border-radius: 8px;
+}
+
+.nav-auth-link.logged-in {
+    color: var(--accent-gold, #fbbf24);
+}
+
+/* Ocultar elementos no críticos en pantallas menores a 1200px (Laptops) */
+@media (max-width: 1250px) {
+    .hide-on-laptop {
+        display: none !important;
+    }
+}
+
+

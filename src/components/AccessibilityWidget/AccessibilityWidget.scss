@@ -1,0 +1,139 @@
+﻿/* ==========================================================================
+   Widget de Accesibilidad (A11Y) y Modos Especiales
+   ========================================================================== */
+
+/* Escalamiento de Texto Base */
+html {
+    transition: font-size 0.3s ease;
+}
+html.text-large { font-size: 18px; }
+html.text-xlarge { font-size: 20px; }
+
+/* Variables de Alto Contraste */
+body.high-contrast {
+    --bg-main: #000000;
+    --bg-card: #111111;
+    --text-primary: #ffffff;
+    --text-secondary: #e5e5e5;
+    --text-muted: #cccccc;
+    --border-color: #ffffff;
+    --accent-blue: #ffff00; /* Amarillo sobre negro para alto contraste */
+    --accent-blue-hover: #e6e600;
+    --gradient-corporate: #ffff00;
+}
+
+body.high-contrast .glass-card,
+body.high-contrast .navbar,
+body.high-contrast .footer {
+    background: #000000;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 2px solid #ffffff;
+    box-shadow: none;
+}
+
+body.high-contrast .btn-gradient,
+body.high-contrast .btn-primary {
+    background: var(--accent-blue);
+    color: #000000;
+    border: 2px solid #000000;
+    font-weight: 800;
+}
+
+/* Estilos del Widget */
+.a11y-widget {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 9999;
+}
+
+.a11y-toggle {
+    background: var(--accent-blue);
+    color: #fff;
+    border: none;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+}
+
+.a11y-toggle:hover {
+    transform: scale(1.05);
+}
+
+body.high-contrast .a11y-toggle {
+    background: #ffff00;
+    color: #000;
+    border: 2px solid #fff;
+}
+
+.a11y-panel {
+    position: absolute;
+    bottom: 70px;
+    left: 0;
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    width: 280px;
+    padding: 20px;
+    box-shadow: var(--shadow-premium);
+    transform-origin: bottom left;
+    transition: all 0.3s ease;
+}
+
+.a11y-panel.hidden {
+    opacity: 0;
+    transform: scale(0.9);
+    pointer-events: none;
+}
+
+.a11y-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+}
+
+.a11y-header h4 { margin: 0; font-size: 1.1rem; }
+.a11y-header button {
+    background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer;
+}
+
+.a11y-option {
+    margin-bottom: 16px;
+}
+.a11y-option span {
+    display: block; font-size: 0.9rem; margin-bottom: 8px; color: var(--text-secondary);
+}
+
+.a11y-controls {
+    display: flex; gap: 8px;
+}
+.a11y-controls button {
+    flex: 1; padding: 8px; background: rgba(255,255,255,0.1); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px; cursor: pointer; font-weight: bold;
+}
+.a11y-controls button:hover { background: rgba(255,255,255,0.2); }
+
+/* Toggle Switch para Alto Contraste */
+.a11y-switch {
+    position: relative; display: inline-block; width: 50px; height: 26px;
+}
+.a11y-switch input { opacity: 0; width: 0; height: 0; }
+.a11y-slider {
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.2); transition: .4s; border-radius: 34px; border: 1px solid var(--border-color);
+}
+.a11y-slider:before {
+    position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: var(--text-primary); transition: .4s; border-radius: 50%;
+}
+input:checked + .a11y-slider { background-color: var(--accent-blue); }
+input:checked + .a11y-slider:before { transform: translateX(24px); background-color: #000; }
+

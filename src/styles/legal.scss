@@ -1,0 +1,48 @@
+﻿/* Estilos para Páginas Legales */
+.legal-section {
+    padding: 60px 0 100px 0;
+}
+.legal-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 48px;
+    box-shadow: var(--shadow-premium);
+}
+.legal-card h1 {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+    background: var(--gradient-silver);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+.legal-meta {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 16px;
+}
+.legal-body h2 {
+    font-size: 1.5rem;
+    margin-top: 32px;
+    margin-bottom: 16px;
+    color: #fbbf24; /* Dorado para resaltar secciones */
+}
+.legal-body p, .legal-body li {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 16px;
+}
+.legal-body ul, .legal-body ol {
+    margin-bottom: 24px;
+    padding-left: 24px;
+}
+.legal-body li {
+    margin-bottom: 8px;
+}
+
