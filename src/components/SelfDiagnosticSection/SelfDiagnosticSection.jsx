@@ -1,14 +1,23 @@
 import "./SelfDiagnosticSection.scss";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { questions } from "../../data/diagnostic.js";
+import { questions as defaultQuestions } from "../../data/diagnostic.js";
+import { QUESTIONS_BY_SECTOR } from "../../data/questionsBySector.js";
 import { downloadTextFile } from "../../utils/downloads.js";
+
+const pilarNames = [
+  { es: "Pilar 1: Prácticas Internas", en: "Pillar 1: Internal Practices" },
+  { es: "Pilar 2: Prácticas Externas", en: "Pillar 2: External Practices" },
+  { es: "Pilar 3: Ecosistema y Entorno", en: "Pillar 3: Ecosystem and Environment" }
+];
 
 function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPayment }) {
   const intl = useIntl();
   const sectionRef = useRef(null);
+  
+  const [currentQuestions, setCurrentQuestions] = useState(defaultQuestions);
   const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState(Array(questions.length).fill(null));
+  const [answers, setAnswers] = useState(Array(defaultQuestions.length).fill(null));
   const [showResults, setShowResults] = useState(false);
   const [registrationType, setRegistrationType] = useState('personal');
   const [sectorType, setSectorType] = useState('');
@@ -23,10 +32,30 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
     role: ''
   });
 
-  const question = questions[step];
-  const progress = ((step + 1) / questions.length) * 100;
+  useEffect(() => {
+    let newQuestions = defaultQuestions;
+    if (currentUser && currentUser.type === 'empresa') {
+      let sector = currentUser.sector === 'publico' ? 'Sector Público' : (currentUser.subsector || "Finanzas y Seguro");
+      if (sector === 'Sector Público') {
+        sector = Object.keys(QUESTIONS_BY_SECTOR).find(k => k.includes('BLICO')) || "Comercio y Distribución";
+      } else if (!QUESTIONS_BY_SECTOR[sector]) {
+        sector = Object.keys(QUESTIONS_BY_SECTOR).find(k => k.includes(currentUser.subsector)) || "Comercio y Distribución";
+      }
+      newQuestions = QUESTIONS_BY_SECTOR[sector] || defaultQuestions;
+    }
+    
+    if (newQuestions !== currentQuestions) {
+      setCurrentQuestions(newQuestions);
+      setStep(0);
+      setAnswers(Array(newQuestions.length).fill(null));
+      setShowResults(false);
+    }
+  }, [currentUser, currentQuestions]);
 
-  const results = useMemo(() => calculateResults(answers, language), [answers, language]);
+  const question = currentQuestions[step];
+  const progress = ((step + 1) / currentQuestions.length) * 100;
+
+  const results = useMemo(() => calculateResults(answers, language, currentQuestions), [answers, language, currentQuestions]);
 
   const selectOption = (option) => {
     setAnswers((current) => {
@@ -38,7 +67,7 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
 
   const goNext = () => {
     if (!answers[step]) return;
-    if (step === questions.length - 1) {
+    if (step === currentQuestions.length - 1) {
       setShowResults(true);
       requestAnimationFrame(() => sectionRef.current?.scrollIntoView({ behavior: 'smooth' }));
     } else {
@@ -48,7 +77,7 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
 
   const restart = () => {
     setStep(0);
-    setAnswers(Array(questions.length).fill(null));
+    setAnswers(Array(currentQuestions.length).fill(null));
     setShowResults(false);
   };
 
@@ -76,10 +105,10 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
   const downloadCsv = () => {
     const rows = [
       ['Question', 'Score', 'Recommendation'],
-      ...questions.map((item, index) => [
-        `"${item.text[language].replace(/"/g, '""')}"`,
+      ...currentQuestions.map((item, index) => [
+        `"${(item.question || item.text[language]).replace(/"/g, '""')}"`,
         answers[index]?.score ?? '',
-        `"${item.recommendation[language].replace(/"/g, '""')}"`
+        `""`
       ])
     ];
     rows.push(['Global score', `${results.globalPercent}%`, '']);
@@ -96,11 +125,16 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
 
         {!showResults && (
           <div className="glass-card quiz-container" id="quiz-card">
+            {currentUser && currentUser.type === 'empresa' && (
+              <div id="quiz-sector-header" className="text-center" style={{marginBottom: '25px', fontWeight: 600, fontSize: '1.1rem', background: 'rgba(59, 130, 246, 0.1)', padding: '10px 20px', borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.2)'}}>
+                <span style={{color: 'var(--accent-color)'}}>Sector:</span> {currentUser.sector === 'privado' ? (language === 'es' || language === 'pt' ? 'Privado' : 'Private') : (language === 'es' || language === 'pt' ? 'Público' : 'Public')} <span style={{margin: '0 10px', color: 'var(--border-color)'}}>|</span> <span style={{color: 'var(--accent-color)'}}>Vertical:</span> {currentUser.subsector || 'N/A'}
+              </div>
+            )}
             <div className="quiz-progress-bar" id="quiz-progress-bar">
               <div className="progress-info">
-                <span id="quiz-pilar-name">{question.pilarName[language]}</span>
+                <span id="quiz-pilar-name">{question.pilarName ? question.pilarName[language] : pilarNames[Math.min(2, Math.floor(step / Math.ceil(currentQuestions.length / 3)))][language]}</span>
                 <span id="quiz-step-text">
-                  {language === 'es' ? `Pregunta ${step + 1} de ${questions.length}` : `Question ${step + 1} of ${questions.length}`}
+                  {language === 'es' ? `Pregunta ${step + 1} de ${currentQuestions.length}` : `Question ${step + 1} of ${currentQuestions.length}`}
                 </span>
               </div>
               <div className="progress-track">
@@ -109,18 +143,19 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
             </div>
 
             <div className="quiz-question-box" id="question-box">
-              <h3 id="question-title">{question.text[language]}</h3>
+              <h3 id="question-title">{question.question ? question.question : question.text[language]}</h3>
               <div className="quiz-options" id="quiz-options">
                 {question.options.map((option) => {
-                  const selected = answers[step]?.score === option.score && answers[step]?.text[language] === option.text[language];
+                  const optionText = option.text[language] || option.text;
+                  const selected = answers[step]?.score === option.score && (answers[step]?.text?.language === optionText || answers[step]?.text === optionText || (answers[step]?.text && answers[step]?.text[language] === optionText));
                   return (
                     <button
                       type="button"
                       className={`option-card ${selected ? 'selected' : ''}`}
-                      key={option.text[language]}
+                      key={optionText}
                       onClick={() => selectOption(option)}
                     >
-                      {option.text[language]}
+                      {optionText}
                     </button>
                   );
                 })}
@@ -255,6 +290,11 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                             <option value="Salud y Farmacia"><FormattedMessage id="SelfDiagnosticSection.034" /></option>
                             <option value="Tecnologia y Software"><FormattedMessage id="SelfDiagnosticSection.035" /></option>
                             <option value="Comercio y Distribucion"><FormattedMessage id="SelfDiagnosticSection.036" /></option>
+                            <option value="Manufactura e Industria">Manufactura e Industria</option>
+                            <option value="Educacion">Educación</option>
+                            <option value="Bienes Raices y Construccion">Bienes Raíces y Construcción</option>
+                            <option value="Energia y Recursos Naturales">Energía y Recursos Naturales</option>
+                            <option value="Entretenimiento, Medios y Turismo">Entretenimiento, Medios y Turismo</option>
                           </select>
                         </div>
                       )}
@@ -282,7 +322,7 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                 <FormattedMessage id="SelfDiagnosticSection.045" />
               </button>
               <button className="btn btn-primary" id="btn-quiz-next" disabled={!answers[step]} onClick={goNext}>
-                {step === questions.length - 1 ? (language === 'es' ? 'Finalizar' : 'Finish') : <FormattedMessage id="SelfDiagnosticSection.046" />}
+                {step === currentQuestions.length - 1 ? (language === 'es' ? 'Finalizar' : 'Finish') : <FormattedMessage id="SelfDiagnosticSection.046" />}
               </button>
             </div>
           </div>
@@ -318,7 +358,7 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
               {results.pillarPercents.map((percent, index) => (
                 <div className="pillar-row" key={index}>
                   <div className="pillar-label">
-                    <span>{questions[index * 5].pilarName[language]}</span>
+                    <span>{pilarNames[index][language]}</span>
                     <span>{percent}%</span>
                   </div>
                   <div className="pillar-bar-track">
@@ -353,21 +393,37 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
   );
 }
 
-function calculateResults(answers, language) {
+function calculateResults(answers, language, currentQuestions) {
   const safeAnswers = answers.map((answer) => answer || { score: 0 });
   const totalScore = safeAnswers.reduce((sum, answer) => sum + answer.score, 0);
-  const globalPercent = Math.round(totalScore / questions.length);
+  
+  // Novedad: cálculo de maxScore (45 para las 15 preguntas, o 100 por defecto para el viejo)
+  const isOldGeneric = currentQuestions === defaultQuestions;
+  const maxScore = isOldGeneric ? currentQuestions.length * 100 : currentQuestions.length * 3; 
+  const globalPercent = maxScore > 0 ? Math.round((totalScore / maxScore) * 100) : 0;
+  
   const pillarScores = [0, 0, 0];
+  const questionsPerPilar = Math.ceil(currentQuestions.length / 3);
 
   safeAnswers.forEach((answer, index) => {
-    pillarScores[questions[index].pilar - 1] += answer.score;
+    let pilarIndex = currentQuestions[index].pilar ? currentQuestions[index].pilar - 1 : Math.min(2, Math.floor(index / questionsPerPilar));
+    pillarScores[pilarIndex] += answer.score;
   });
 
-  const pillarPercents = pillarScores.map((score) => Math.round(score / 5));
-  const recommendations = questions
-    .filter((item, index) => (answers[index]?.score ?? 0) < 100)
+  const pillarPercents = pillarScores.map((score, idx) => {
+    const questionsInThisPilar = idx === 2 ? currentQuestions.length - (2 * questionsPerPilar) : questionsPerPilar;
+    const maxPillarScore = isOldGeneric ? questionsInThisPilar * 100 : questionsInThisPilar * 3;
+    return maxPillarScore > 0 ? Math.round((score / maxPillarScore) * 100) : 0;
+  });
+
+  const recommendations = currentQuestions
+    .filter((item, index) => isOldGeneric ? ((answers[index]?.score ?? 0) < 100) : ((answers[index]?.score ?? 0) < 3))
     .slice(0, 6)
-    .map((item) => item.recommendation[language]);
+    .map((item) => {
+      if (isOldGeneric) return item.recommendation[language];
+      const bestOption = item.options ? item.options.find(o => o.score === 3) : null;
+      return bestOption ? `Mejora recomendada: Implementar "${bestOption.text}"` : '';
+    });
 
   const copy = {
     es: {
@@ -386,7 +442,7 @@ function calculateResults(answers, language) {
   return {
     globalPercent,
     pillarPercents,
-    recommendations: recommendations.length ? recommendations : [language === 'es' ? 'Mantener revision anual y mejora continua.' : 'Keep annual review and continuous improvement.'],
+    recommendations: recommendations.length ? recommendations : [language === 'es' ? 'Excelente puntuacion! Su negocio cumple con todos los parametros. Le sugerimos proceder con la Certificacion.' : 'Excellent score! Your business meets all parameters. Proceed with Certification.'],
     statusTitle: copy[language][level][0],
     statusDesc: copy[language][level][1]
   };
