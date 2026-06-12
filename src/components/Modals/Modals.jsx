@@ -31,12 +31,12 @@ function Modals({ language, activeModal, contactLevel, currentUser, onClose, onO
         printHost.style.color = '#111827';
         printHost.innerHTML = `${parsed.head.innerHTML}${parsed.body.innerHTML}`;
         document.body.appendChild(printHost);
-
+        
         const container = printHost.querySelector('.dossier-page');
         await html2pdf()
           .from(container)
           .set({
-            filename: language === 'es' ? 'Dossier_AgeFriendSeal.pdf' : 'Dossier_AgeFriendSeal_EN.pdf',
+            filename: language === 'es' || language === 'pt' ? 'Dossier_AgeFriendSeal.pdf' : 'Dossier_AgeFriendSeal_EN.pdf',
             margin: 0,
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: {
@@ -53,19 +53,19 @@ function Modals({ language, activeModal, contactLevel, currentUser, onClose, onO
           })
           .save();
       } catch {
-        downloadTextFile(html, language === 'es' ? 'Dossier_AgeFriendSeal.html' : 'Dossier_AgeFriendSeal_EN.html', 'text/html;charset=utf-8');
+        downloadTextFile(html, language === 'es' || language === 'pt' ? 'Dossier_AgeFriendSeal.html' : 'Dossier_AgeFriendSeal_EN.html', 'text/html;charset=utf-8');
       } finally {
         printHost?.remove();
       }
     } else {
-      downloadTextFile(html, language === 'es' ? 'Dossier_AgeFriendSeal.html' : 'Dossier_AgeFriendSeal_EN.html', 'text/html;charset=utf-8');
+      downloadTextFile(html, language === 'es' || language === 'pt' ? 'Dossier_AgeFriendSeal.html' : 'Dossier_AgeFriendSeal_EN.html', 'text/html;charset=utf-8');
     }
     onClose();
   };
 
   const handleContactSubmit = (event) => {
     event.preventDefault();
-    alert(language === 'es' ? 'Solicitud enviada con exito para la demo.' : 'Request sent successfully for the demo.');
+    alert(language === 'es' ? 'Solicitud enviada con exito para la demo.' : (language === 'pt' ? 'Solicitação enviada com sucesso para a demonstração.' : 'Request sent successfully for the demo.'));
     onClose();
   };
 
@@ -109,11 +109,11 @@ function Modals({ language, activeModal, contactLevel, currentUser, onClose, onO
       subsector: form.get('subsector'),
       role: form.get('role')
     });
-    alert(language === 'es' ? 'Cuenta actualizada a empresa.' : 'Account upgraded to company.');
+    alert(language === 'es' ? 'Cuenta actualizada a empresa.' : (language === 'pt' ? 'Conta atualizada para empresa.' : 'Account upgraded to company.'));
   };
 
   const handlePayment = () => {
-    const companyName = currentUser?.name || (language === 'es' ? 'Su Empresa' : 'Your Company');
+    const companyName = currentUser?.name || (language === 'es' ? 'Su Empresa' : (language === 'pt' ? 'Sua Empresa' : 'Your Company'));
     const svg = generateDecalSvg(companyName, language);
     downloadTextFile(svg, `Calcomania_Vitrina_AgeFriendSeal_${companyName.replace(/[^a-z0-9]/gi, '_')}.svg`, 'image/svg+xml;charset=utf-8');
     onClose();
@@ -158,7 +158,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, onClose, onO
           <div className="modal-header">
             <h3 id="modal-title">
               {contactLevel === 'gold'
-                ? (language === 'es' ? 'Solicitar auditoria Premium' : 'Request Premium Audit')
+                ? (language === 'es' ? 'Solicitar auditoria Premium' : (language === 'pt' ? 'Solicitar auditoria Premium' : 'Request Premium Audit'))
                 : <FormattedMessage id="Modals.016" />}
             </h3>
             <p id="modal-subtitle"><FormattedMessage id="Modals.017" /></p>

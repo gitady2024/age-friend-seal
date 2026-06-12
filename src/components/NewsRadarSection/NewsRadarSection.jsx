@@ -64,11 +64,13 @@ function NewsRadarSection({ language }) {
   useEffect(() => {
     let cancelled = false;
 
+    const activeLanguage = feeds[language] ? language : 'es';
+
     async function loadNews() {
       setStatus('loading');
       try {
         const results = await Promise.allSettled(
-          feeds[language].map(async (feed) => {
+          feeds[activeLanguage].map(async (feed) => {
             const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`;
             const response = await fetch(apiUrl);
             if (!response.ok) throw new Error('RSS fetch failed');
@@ -85,12 +87,12 @@ function NewsRadarSection({ language }) {
         );
         const loaded = results.flatMap((result) => result.status === 'fulfilled' ? result.value : []);
         if (!cancelled) {
-          setArticles(loaded.length ? loaded.slice(0, 6) : fallback[language]);
+          setArticles(loaded.length ? loaded.slice(0, 6) : fallback[activeLanguage]);
           setStatus(loaded.length ? 'ready' : 'fallback');
         }
       } catch {
         if (!cancelled) {
-          setArticles(fallback[language]);
+          setArticles(fallback[activeLanguage]);
           setStatus('fallback');
         }
       }
@@ -140,7 +142,7 @@ function NewsRadarSection({ language }) {
                   clickable: true
                 }}
                 a11y={{
-                  paginationBulletMessage: language === 'es' ? 'Ir a noticia {{index}}' : 'Go to article {{index}}'
+                  paginationBulletMessage: language === 'es' ? 'Ir a noticia {{index}}' : (language === 'pt' ? 'Ir para a notícia {{index}}' : 'Go to article {{index}}')
                 }}
                 breakpoints={{
                   720: {
@@ -188,7 +190,8 @@ function cleanDescription(value = '') {
 }
 
 function formatDate(value, language) {
-  return new Intl.DateTimeFormat(language === 'es' ? 'es-419' : 'en-US', {
+  const locale = language === 'es' ? 'es-419' : (language === 'pt' ? 'pt-BR' : 'en-US');
+  return new Intl.DateTimeFormat(locale, {
     month: 'short',
     day: 'numeric',
     year: 'numeric'

@@ -18,13 +18,14 @@ import { messages } from './i18n/messages.js';
 function getInitialLanguage() {
   const params = new URLSearchParams(window.location.search);
   const queryLanguage = params.get('lang');
-  if (queryLanguage === 'en' || queryLanguage === 'es') return queryLanguage;
+  if (queryLanguage === 'en' || queryLanguage === 'es' || queryLanguage === 'pt') return queryLanguage;
 
   const savedLanguage = window.localStorage.getItem('ageFriendLanguage');
-  if (savedLanguage === 'en' || savedLanguage === 'es') return savedLanguage;
+  if (savedLanguage === 'en' || savedLanguage === 'es' || savedLanguage === 'pt') return savedLanguage;
 
   const path = window.location.pathname.toLowerCase();
   if (path.endsWith('/en') || path.endsWith('/en.html')) return 'en';
+  if (path.endsWith('/pt') || path.endsWith('/pt.html')) return 'pt';
   return 'es';
 }
 
