@@ -6,10 +6,26 @@ import { QUESTIONS_BY_SECTOR } from "../../data/questionsBySector.js";
 import { downloadTextFile } from "../../utils/downloads.js";
 
 const pilarNames = [
-  { es: "Pilar 1: Prácticas Internas", en: "Pillar 1: Internal Practices" },
-  { es: "Pilar 2: Prácticas Externas", en: "Pillar 2: External Practices" },
-  { es: "Pilar 3: Ecosistema y Entorno", en: "Pillar 3: Ecosystem and Environment" }
+  { es: "Pilar 1: Prácticas Internas", en: "Pillar 1: Internal Practices", pt: "Pilar 1: Práticas Internas" },
+  { es: "Pilar 2: Prácticas Externas", en: "Pillar 2: External Practices", pt: "Pilar 2: Práticas Externas" },
+  { es: "Pilar 3: Ecosistema y Entorno", en: "Pillar 3: Ecosystem and Environment", pt: "Pilar 3: Ecossistema e Entorno" }
 ];
+
+const getTranslation = (obj, lang) => {
+  if (!obj) return "";
+  if (typeof obj === "string") return obj;
+  if (typeof obj === "object") {
+    if (obj.$$typeof) return obj; // React element
+    if (obj[lang]) return obj[lang];
+    if (obj['es']) return obj['es'];
+    if (obj['en']) return obj['en'];
+    const keys = Object.keys(obj);
+    for (const key of keys) {
+      if (typeof obj[key] === 'string') return obj[key];
+    }
+  }
+  return String(obj);
+};
 
 function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPayment }) {
   const intl = useIntl();
@@ -106,7 +122,7 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
     const rows = [
       ['Question', 'Score', 'Recommendation'],
       ...currentQuestions.map((item, index) => [
-        `"${(item.question || item.text[language]).replace(/"/g, '""')}"`,
+        `"${(item.question || getTranslation(item.text, language)).replace(/"/g, '""')}"`,
         answers[index]?.score ?? '',
         `""`
       ])
@@ -132,9 +148,17 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
             )}
             <div className="quiz-progress-bar" id="quiz-progress-bar">
               <div className="progress-info">
-                <span id="quiz-pilar-name">{question.pilarName ? question.pilarName[language] : pilarNames[Math.min(2, Math.floor(step / Math.ceil(currentQuestions.length / 3)))][language]}</span>
+                <span id="quiz-pilar-name">
+                  {question.pilarName 
+                    ? getTranslation(question.pilarName, language) 
+                    : getTranslation(pilarNames[Math.min(2, Math.floor(step / Math.ceil(currentQuestions.length / 3)))], language)}
+                </span>
                 <span id="quiz-step-text">
-                  {language === 'es' ? `Pregunta ${step + 1} de ${currentQuestions.length}` : `Question ${step + 1} of ${currentQuestions.length}`}
+                  {language === 'es' 
+                    ? `Pregunta ${step + 1} de ${currentQuestions.length}` 
+                    : language === 'pt'
+                      ? `Pergunta ${step + 1} de ${currentQuestions.length}`
+                      : `Question ${step + 1} of ${currentQuestions.length}`}
                 </span>
               </div>
               <div className="progress-track">
@@ -143,11 +167,11 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
             </div>
 
             <div className="quiz-question-box" id="question-box">
-              <h3 id="question-title">{question.question ? question.question : question.text[language]}</h3>
+              <h3 id="question-title">{question.question ? question.question : getTranslation(question.text, language)}</h3>
               <div className="quiz-options" id="quiz-options">
                 {question.options.map((option) => {
-                  const optionText = option.text[language] || option.text;
-                  const selected = answers[step]?.score === option.score && (answers[step]?.text?.language === optionText || answers[step]?.text === optionText || (answers[step]?.text && answers[step]?.text[language] === optionText));
+                  const optionText = getTranslation(option.text, language);
+                  const selected = answers[step] === option;
                   return (
                     <button
                       type="button"
@@ -328,7 +352,9 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                 <FormattedMessage id="SelfDiagnosticSection.045" />
               </button>
               <button className="btn btn-primary" id="btn-quiz-next" disabled={!answers[step]} onClick={goNext}>
-                {step === currentQuestions.length - 1 ? (language === 'es' ? 'Finalizar' : 'Finish') : <FormattedMessage id="SelfDiagnosticSection.046" />}
+                {step === currentQuestions.length - 1 
+                  ? (language === 'es' || language === 'pt' ? 'Finalizar' : 'Finish') 
+                  : <FormattedMessage id="SelfDiagnosticSection.046" />}
               </button>
             </div>
           </div>
@@ -338,7 +364,7 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
           <div className="glass-card results-container" id="results-card">
             <div className="results-header text-center">
               <div className="results-badge"><FormattedMessage id="SelfDiagnosticSection.047" /></div>
-              <h2>{language === 'es' ? 'Analisis de Amigabilidad' : 'Friendliness Analysis'}</h2>
+              <h2>{language === 'es' ? 'Analisis de Amigabilidad' : (language === 'pt' ? 'Análise de Amigabilidade' : 'Friendliness Analysis')}</h2>
               <div className="score-circle-container">
                 <svg className="score-ring" width={160} height={160}>
                   <circle className="score-ring-bg" stroke="#1e293b" strokeWidth={12} fill="transparent" r={70} cx={80} cy={80} />
@@ -364,7 +390,7 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
               {results.pillarPercents.map((percent, index) => (
                 <div className="pillar-row" key={index}>
                   <div className="pillar-label">
-                    <span>{pilarNames[index][language]}</span>
+                    <span>{getTranslation(pilarNames[index], language)}</span>
                     <span>{percent}%</span>
                   </div>
                   <div className="pillar-bar-track">
@@ -426,31 +452,41 @@ function calculateResults(answers, language, currentQuestions) {
     .filter((item, index) => isOldGeneric ? ((answers[index]?.score ?? 0) < 100) : ((answers[index]?.score ?? 0) < 3))
     .slice(0, 6)
     .map((item) => {
-      if (isOldGeneric) return item.recommendation[language];
+      if (isOldGeneric) return getTranslation(item.recommendation, language);
       const bestOption = item.options ? item.options.find(o => o.score === 3) : null;
-      return bestOption ? `Mejora recomendada: Implementar "${bestOption.text}"` : '';
+      const bestOptionText = bestOption ? getTranslation(bestOption.text, language) : '';
+      if (!bestOptionText) return '';
+      if (language === 'es') return `Mejora recomendada: Implementar "${bestOptionText}"`;
+      if (language === 'pt') return `Melhoria recomendada: Implementar "${bestOptionText}"`;
+      return `Recommended improvement: Implement "${bestOptionText}"`;
     });
 
   const copy = {
     es: {
-      basic: ["Camino Iniciado", "Tu organizacion ya tiene una base para avanzar hacia la certificacion total."],
-      medium: ["Certificacion Condicional", "Hay avances significativos y algunas brechas concretas por cerrar."],
-      premium: ["Empresa Certificada", "Excelente desempeno. La organizacion cumple con el estandar esperado."]
+      basic: ["Camino Iniciado", "Tu organización ya tiene una base para avanzar hacia la certificación total."],
+      medium: ["Certificación Condicional", "Hay avances significativos y algunas brechas concretas por cerrar."],
+      premium: ["Empresa Certificada", "Excelente desempeño. La organización cumple con el estándar esperado."]
     },
     en: {
       basic: ["Path Started", "Your organization has a base to advance toward full certification."],
       medium: ["Conditional Certification", "There is meaningful progress and a few concrete gaps to close."],
       premium: ["Certified Company", "Excellent performance. The organization meets the expected standard."]
+    },
+    pt: {
+      basic: ["Caminho Iniciado", "Sua organização já tem uma base para avançar rumo à certificação total."],
+      medium: ["Certificação Condicional", "Há avanços significativos e algumas lacunas concretas para fechar."],
+      premium: ["Empresa Certificada", "Excelente desempenho. A organização cumpre com o padrão esperado."]
     }
   };
 
+  const langKey = copy[language] ? language : 'es';
   const level = globalPercent >= 90 ? 'premium' : globalPercent >= 65 ? 'medium' : 'basic';
   return {
     globalPercent,
     pillarPercents,
-    recommendations: recommendations.length ? recommendations : [language === 'es' ? 'Excelente puntuacion! Su negocio cumple con todos los parametros. Le sugerimos proceder con la Certificacion.' : 'Excellent score! Your business meets all parameters. Proceed with Certification.'],
-    statusTitle: copy[language][level][0],
-    statusDesc: copy[language][level][1]
+    recommendations: recommendations.length ? recommendations : [langKey === 'es' ? 'Excelente puntuación! Su negocio cumple con todos los parámetros. Le sugerimos proceder con la Certificación.' : (langKey === 'pt' ? 'Excelente pontuação! Seu negócio atende a todos os parâmetros. Sugerimos proceder com a Certificação.' : 'Excellent score! Your business meets all parameters. Proceed with Certification.')],
+    statusTitle: copy[langKey][level][0],
+    statusDesc: copy[langKey][level][1]
   };
 }
 

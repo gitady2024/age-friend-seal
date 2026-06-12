@@ -137,6 +137,7 @@ export const ptMessages = {
   "Hero.011": "Maior retenção de colaboradores com mais de 50 anos em comparação a jovens.",
   "language.en": "EN",
   "language.es": "ES",
+  "language.pt": "PT",
   "language.label": "Idioma",
   "Modals.001": "×",
   "Modals.002": "📄",
