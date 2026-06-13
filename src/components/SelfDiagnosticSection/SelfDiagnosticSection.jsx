@@ -192,7 +192,7 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
               </div>
             </div>
 
-            {!currentUser && (
+            {!currentUser && step === 0 && answers[0] !== null && (
               <div className="quiz-register-container" id="quiz-register-view">
                 <div className="register-header text-center">
                   <span className="register-badge"><FormattedMessage id="SelfDiagnosticSection.006" /></span>
@@ -351,7 +351,7 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
               <button className="btn btn-outline" id="btn-quiz-prev" disabled={step === 0} onClick={() => setStep((value) => Math.max(0, value - 1))}>
                 <FormattedMessage id="SelfDiagnosticSection.045" />
               </button>
-              <button className="btn btn-primary" id="btn-quiz-next" disabled={!answers[step]} onClick={goNext}>
+              <button className="btn btn-primary" id="btn-quiz-next" disabled={!answers[step] || (step === 0 && !currentUser)} onClick={goNext}>
                 {step === currentQuestions.length - 1 
                   ? (language === 'es' || language === 'pt' ? 'Finalizar' : 'Finish') 
                   : <FormattedMessage id="SelfDiagnosticSection.046" />}
