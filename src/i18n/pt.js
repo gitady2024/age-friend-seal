@@ -373,7 +373,7 @@ export const ptMessages = {
   "SelfDiagnosticSection.004": "Pregunta 1 de 15",
   "SelfDiagnosticSection.005": "O estabelecimento dispõe de acessos sem degraus ou com rampas antiderrapantes adequadas a pessoas com mobilidade reduzida?",
   "SelfDiagnosticSection.006": "CADASTRO DE USUÁRIO",
-  "SelfDiagnosticSection.007": "Crie sua conta",
+  "SelfDiagnosticSection.007": "Crie sua conta para continuar com o autodiagnóstico",
   "SelfDiagnosticSection.008": "Preencha seus dados para salvar seu progresso e desbloquear as perguntas restantes do questionário.",
   "SelfDiagnosticSection.009": "Tipo de conta",
   "SelfDiagnosticSection.010": "Usuário pessoal",

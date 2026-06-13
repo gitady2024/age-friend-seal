@@ -373,7 +373,7 @@ export const esMessages = {
   "SelfDiagnosticSection.004": "Pregunta 1 de 15",
   "SelfDiagnosticSection.005": "¿El establecimiento dispone de accesos sin escalones o con rampas antideslizantes adecuadas para personas con movilidad reducida?",
   "SelfDiagnosticSection.006": "REGISTRO DE USUARIO",
-  "SelfDiagnosticSection.007": "Cree su cuenta",
+  "SelfDiagnosticSection.007": "Cree su cuenta para continuar con el autodiagnóstico",
   "SelfDiagnosticSection.008": "Complete sus datos para guardar su progreso y desbloquear las preguntas restantes del cuestionario.",
   "SelfDiagnosticSection.009": "Tipo de Cuenta",
   "SelfDiagnosticSection.010": "Usuario Personal",

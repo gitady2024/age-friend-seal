@@ -373,7 +373,7 @@ export const enMessages = {
   "SelfDiagnosticSection.004": "Question 1 of 15",
   "SelfDiagnosticSection.005": "Does the establishment have step-free access or suitable non-slip ramps for people with reduced mobility?",
   "SelfDiagnosticSection.006": "USER REGISTRATION",
-  "SelfDiagnosticSection.007": "Create your account",
+  "SelfDiagnosticSection.007": "Create your account to continue the self-diagnostic",
   "SelfDiagnosticSection.008": "Fill in your details to save your progress and unlock the remaining questions of the diagnostic.",
   "SelfDiagnosticSection.009": "Account Type",
   "SelfDiagnosticSection.010": "Personal User",
