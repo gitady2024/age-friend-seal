@@ -14,6 +14,10 @@ const feeds = {
   en: [
     { name: "Google News", url: "https://news.google.com/rss/search?q=%22silver+economy%22+OR+ageism&hl=en-US&gl=US&ceid=US:en", category: "Market" },
     { name: "SilverEco", url: "https://www.silvereco.org/en/feed/", category: "Innovation" }
+  ],
+  pt: [
+    { name: "Google News", url: "https://news.google.com/rss/search?q=%22economia+prateada%22+OR+idadismo&hl=pt-PT&gl=PT&ceid=PT:pt", category: "Mercado" },
+    { name: "SilverEco", url: "https://www.silvereco.org/en/feed/", category: "Inovação" }
   ]
 };
 
@@ -51,6 +55,24 @@ const fallback = {
       link: "https://www.who.int/news-room/questions-and-answers/item/ageing-ageism",
       source: "WHO",
       category: "Policies",
+      pubDate: new Date().toISOString()
+    }
+  ],
+  pt: [
+    {
+      title: "BID Lab: a oportunidade da economia prateada",
+      description: "As empresas que adaptam serviços físicos e digitais melhoram a competitividade face ao envelhecimento populacional.",
+      link: "https://bidlab.org/es/productos/conocimiento-y-conexiones/economia-plateada",
+      source: "BID Lab",
+      category: "Mercado",
+      pubDate: new Date().toISOString()
+    },
+    {
+      title: "OMS: idadismo e ambientes amigáveis",
+      description: "A redução do idadismo exige um design inclusivo, serviços acessíveis e políticas sustentadas.",
+      link: "https://www.who.int/es/news-room/questions-and-answers/item/ageing-ageism",
+      source: "WHO",
+      category: "Políticas",
       pubDate: new Date().toISOString()
     }
   ]
