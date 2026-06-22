@@ -1,107 +1,107 @@
 export const QUESTIONS_BY_SECTOR = {
     "Finanzas y Seguro": [
         {
-            "question": "Atracci├│n y Selecci├│n de Talento: ┬┐C├│mo gestiona la empresa la contrataci├│n de mayores de 50 a├▒os?",
+            "question": "Atracción y Selección de Talento: ¿Cómo gestiona la empresa la contratación de mayores de 50 años?",
             "options": [
                 {
-                    "text": "Existen l├¡mites de edad impl├¡citos o expl├¡citos y no se contratan perfiles s├®nior.",
+                    "text": "Existen límites de edad implícitos o explícitos y no se contratan perfiles sénior.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "No hay l├¡mites formales, pero no existen pol├¡ticas activas para atraer talento s├®nior.",
+                    "text": "No hay límites formales, pero no existen políticas activas para atraer talento sénior.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Se aplican procesos de selecci├│n neutral (curr├¡culums ciegos) e incentivos para la atracci├│n del talento s├®nior.",
+                    "text": "Se aplican procesos de selección neutral (currículums ciegos) e incentivos para la atracción del talento sénior.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Mentor├¡a y Diversidad Generacional: ┬┐Existen programas estructurados para el intercambio generacional?",
+            "question": "Mentoría y Diversidad Generacional: ¿Existen programas estructurados para el intercambio generacional?",
             "options": [
                 {
-                    "text": "No existen programas formales; el aprendizaje es espont├íneo.",
+                    "text": "No existen programas formales; el aprendizaje es espontáneo.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Existe mentor├¡a tradicional (veteranos ense├▒an a j├│venes).",
+                    "text": "Existe mentoría tradicional (veteranos enseñan a jóvenes).",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Se aplican programas de mentor├¡a inversa, donde los j├│venes capacitan en habilidades digitales y los s├®niores en liderazgo.",
+                    "text": "Se aplican programas de mentoría inversa, donde los jóvenes capacitan en habilidades digitales y los séniores en liderazgo.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Transici├│n a la Jubilaci├│n: ┬┐Qu├® medidas ofrece la empresa a los empleados pr├│ximos al retiro?",
+            "question": "Transición a la Jubilación: ¿Qué medidas ofrece la empresa a los empleados próximos al retiro?",
             "options": [
                 {
-                    "text": "Desvinculaci├│n abrupta al cumplir la edad legal, sin acompa├▒amiento.",
+                    "text": "Desvinculación abrupta al cumplir la edad legal, sin acompañamiento.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Informaci├│n b├ísica sobre planes de pensiones si el empleado lo solicita.",
+                    "text": "Información básica sobre planes de pensiones si el empleado lo solicita.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Esquemas de retiro gradual y planes de preparaci├│n (planificaci├│n financiera y psicosocial).",
+                    "text": "Esquemas de retiro gradual y planes de preparación (planificación financiera y psicosocial).",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Formaci├│n y Reskilling: ┬┐C├│mo se garantiza la actualizaci├│n tecnol├│gica en empleados s├®nior?",
+            "question": "Formación y Reskilling: ¿Cómo se garantiza la actualización tecnológica en empleados sénior?",
             "options": [
                 {
-                    "text": "La formaci├│n tecnol├│gica se dirige principalmente a j├│venes.",
+                    "text": "La formación tecnológica se dirige principalmente a jóvenes.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Todos tienen acceso a la misma formaci├│n, sin adaptar metodolog├¡as.",
+                    "text": "Todos tienen acceso a la misma formación, sin adaptar metodologías.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Se promueve el aprendizaje continuo adaptado pedag├│gicamente para evitar el tecnoestr├®s.",
+                    "text": "Se promueve el aprendizaje continuo adaptado pedagógicamente para evitar el tecnoestrés.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Salud Laboral y Ergonom├¡a: ┬┐Las pol├¡ticas previenen el desgaste por la edad?",
+            "question": "Salud Laboral y Ergonomía: ¿Las políticas previenen el desgaste por la edad?",
             "options": [
                 {
-                    "text": "Solo prevenci├│n est├índar exigida por ley.",
+                    "text": "Solo prevención estándar exigida por ley.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "H├íbitos saludables generales (nutrici├│n, deporte).",
+                    "text": "Hábitos saludables generales (nutrición, deporte).",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Chequeos espec├¡ficos y adaptaci├│n ergon├│mica de los puestos al proceso de envejecimiento.",
+                    "text": "Chequeos específicos y adaptación ergonómica de los puestos al proceso de envejecimiento.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Retenci├│n del Conocimiento Cr├¡tico: ┬┐Qu├® ocurre con el \"saber hacer\" al jubilarse un empleado?",
+            "question": "Retención del Conocimiento Crítico: ¿Qué ocurre con el \"saber hacer\" al jubilarse un empleado?",
             "options": [
                 {
                     "text": "El conocimiento se pierde.",
@@ -109,19 +109,19 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Breve documentaci├│n de tareas antes de la salida.",
+                    "text": "Breve documentación de tareas antes de la salida.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "\"Bancos de Conocimiento\" y transici├│n estructurada usando al s├®nior como asesor interno.",
+                    "text": "\"Bancos de Conocimiento\" y transición estructurada usando al sénior como asesor interno.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Cultura Organizacional y Edadismo: ┬┐Existe compromiso directivo contra la discriminaci├│n por edad?",
+            "question": "Cultura Organizacional y Edadismo: ¿Existe compromiso directivo contra la discriminación por edad?",
             "options": [
                 {
                     "text": "No se aborda la edad como factor de diversidad.",
@@ -129,27 +129,27 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "RRHH realiza campa├▒as aisladas.",
+                    "text": "RRHH realiza campañas aisladas.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "La Alta Direcci├│n integra la inclusi├│n generacional en sus objetivos ESG.\nII. Pr├ícticas Externas (Clientes y Productos)",
+                    "text": "La Alta Dirección integra la inclusión generacional en sus objetivos ESG.\nII. Prácticas Externas (Clientes y Productos)",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Accesibilidad F├¡sica en Sucursales: ┬┐Est├ín dise├▒adas bajo accesibilidad universal?",
+            "question": "Accesibilidad Física en Sucursales: ¿Están diseñadas bajo accesibilidad universal?",
             "options": [
                 {
-                    "text": "Cumplen norma b├ísica pero tienen barreras arquitect├│nicas.",
+                    "text": "Cumplen norma básica pero tienen barreras arquitectónicas.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Rampas y asientos, pero la atenci├│n exige estar de pie.",
+                    "text": "Rampas y asientos, pero la atención exige estar de pie.",
                     "score": 2,
                     "points": 2
                 },
@@ -161,7 +161,7 @@ export const QUESTIONS_BY_SECTOR = {
             ]
         },
         {
-            "question": "Modelo de Atenci├│n al Cliente: ┬┐Existen protocolos para el segmento s├®nior?",
+            "question": "Modelo de Atención al Cliente: ¿Existen protocolos para el segmento sénior?",
             "options": [
                 {
                     "text": "Mismas filas y canales automatizados que el resto.",
@@ -169,22 +169,22 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Personal asiste si hay reclamo, pero los tiempos son id├®nticos.",
+                    "text": "Personal asiste si hay reclamo, pero los tiempos son idénticos.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "L├¡nea telef├│nica directa con humanos y turnos preferenciales presenciales sin estigma.",
+                    "text": "Línea telefónica directa con humanos y turnos preferenciales presenciales sin estigma.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Accesibilidad Digital (UX/UI): ┬┐C├│mo de accesibles son la App y la banca web?",
+            "question": "Accesibilidad Digital (UX/UI): ¿Cómo de accesibles son la App y la banca web?",
             "options": [
                 {
-                    "text": "Versi├│n ├║nica y compleja para todos.",
+                    "text": "Versión única y compleja para todos.",
                     "score": 1,
                     "points": 1
                 },
@@ -194,37 +194,37 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Cuentan con un \"Modo Sencillo\" con letras grandes y acceso directo a operaciones b├ísicas.",
+                    "text": "Cuentan con un \"Modo Sencillo\" con letras grandes y acceso directo a operaciones básicas.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Autenticaci├│n y Seguridad: ┬┐Qu├® m├®todos validan el acceso?",
+            "question": "Autenticación y Seguridad: ¿Qué métodos validan el acceso?",
             "options": [
                 {
-                    "text": "Contrase├▒as complejas que caducan r├ípido.",
+                    "text": "Contraseñas complejas que caducan rápido.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "PIN num├®rico y SMS.",
+                    "text": "PIN numérico y SMS.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Biometr├¡a (reconocimiento facial o de voz) para reducir la carga cognitiva.",
+                    "text": "Biometría (reconocimiento facial o de voz) para reducir la carga cognitiva.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Prevenci├│n de Abuso Financiero: ┬┐Mecanismos para proteger de estafas?",
+            "question": "Prevención de Abuso Financiero: ¿Mecanismos para proteger de estafas?",
             "options": [
                 {
-                    "text": "Correos gen├®ricos de seguridad.",
+                    "text": "Correos genéricos de seguridad.",
                     "score": 1,
                     "points": 1
                 },
@@ -234,14 +234,14 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Protocolos estrictos para detectar coerci├│n y monitoreo de lectura para familiares autorizados.",
+                    "text": "Protocolos estrictos para detectar coerción y monitoreo de lectura para familiares autorizados.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Lenguaje y Comunicaci├│n: ┬┐C├│mo se dirigen a los clientes mayores?",
+            "question": "Lenguaje y Comunicación: ¿Cómo se dirigen a los clientes mayores?",
             "options": [
                 {
                     "text": "Tono paternalista (\"abuelitos\") o complejo.",
@@ -249,27 +249,27 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Lenguaje cordial pero con im├ígenes estereotipadas.",
+                    "text": "Lenguaje cordial pero con imágenes estereotipadas.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Lenguaje libre de edadismo, mostrando a los mayores activos y aut├│nomos.",
+                    "text": "Lenguaje libre de edadismo, mostrando a los mayores activos y autónomos.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Productos Adaptados (Silver Economy): ┬┐Disponen de un portafolio dise├▒ado para la longevidad?",
+            "question": "Productos Adaptados (Silver Economy): ¿Disponen de un portafolio diseñado para la longevidad?",
             "options": [
                 {
-                    "text": "Solo productos gen├®ricos.",
+                    "text": "Solo productos genéricos.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Planes de pensiones est├índar.",
+                    "text": "Planes de pensiones estándar.",
                     "score": 2,
                     "points": 2
                 },
@@ -281,20 +281,20 @@ export const QUESTIONS_BY_SECTOR = {
             ]
         },
         {
-            "question": "Evaluaci├│n de Riesgo Crediticio: ┬┐Impacta la edad en la financiaci├│n?",
+            "question": "Evaluación de Riesgo Crediticio: ¿Impacta la edad en la financiación?",
             "options": [
                 {
-                    "text": "Los sistemas bloquean el cr├®dito por edad autom├íticamente.",
+                    "text": "Los sistemas bloquean el crédito por edad automáticamente.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Se eval├║a manualmente, pero la edad penaliza.",
+                    "text": "Se evalúa manualmente, pero la edad penaliza.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Modelos predictivos (IA) sin sesgo etario basados en el comportamiento de pago hist├│rico.",
+                    "text": "Modelos predictivos (IA) sin sesgo etario basados en el comportamiento de pago histórico.",
                     "score": 3,
                     "points": 3
                 }
@@ -303,10 +303,10 @@ export const QUESTIONS_BY_SECTOR = {
     ],
     "Salud y Farmacia": [
         {
-            "question": "Ergonom├¡a y Carga F├¡sica: ┬┐C├│mo se gestiona el esfuerzo en el personal mayor?",
+            "question": "Ergonomía y Carga Física: ¿Cómo se gestiona el esfuerzo en el personal mayor?",
             "options": [
                 {
-                    "text": "T├®cnicas manuales tradicionales, asumiendo el desgaste.",
+                    "text": "Técnicas manuales tradicionales, asumiendo el desgaste.",
                     "score": 1,
                     "points": 1
                 },
@@ -316,17 +316,17 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Elevadores mec├ínicos, exoesqueletos y auditor├¡as ergon├│micas obligatorias.",
+                    "text": "Elevadores mecánicos, exoesqueletos y auditorías ergonómicas obligatorias.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Retenci├│n del Conocimiento Cl├¡nico: ┬┐Qu├® ocurre cuando el personal experimentado se jubila?",
+            "question": "Retención del Conocimiento Clínico: ¿Qué ocurre cuando el personal experimentado se jubila?",
             "options": [
                 {
-                    "text": "Jubilaci├│n como tr├ímite; se pierde conocimiento.",
+                    "text": "Jubilación como trámite; se pierde conocimiento.",
                     "score": 1,
                     "points": 1
                 },
@@ -336,14 +336,14 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Programas tipo \"Deja tu legado\" para documentar conocimiento cl├¡nico e intangible.",
+                    "text": "Programas tipo \"Deja tu legado\" para documentar conocimiento clínico e intangible.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Turnos y Flexibilidad: ┬┐Qu├® pol├¡ticas horarias aplican al personal s├®nior?",
+            "question": "Turnos y Flexibilidad: ¿Qué políticas horarias aplican al personal sénior?",
             "options": [
                 {
                     "text": "Rotaciones que incluyen guardias de 24h para todos.",
@@ -351,19 +351,19 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Posibilidad de reducir jornada con fuerte penalizaci├│n.",
+                    "text": "Posibilidad de reducir jornada con fuerte penalización.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Exenci├│n de turnos nocturnos para mayores de 55/60 a├▒os.",
+                    "text": "Exención de turnos nocturnos para mayores de 55/60 años.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Capacidad Laboral (Salud Preventiva): ┬┐C├│mo se monitorea la salud?",
+            "question": "Capacidad Laboral (Salud Preventiva): ¿Cómo se monitorea la salud?",
             "options": [
                 {
                     "text": "Solo chequeos legales.",
@@ -371,42 +371,42 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Charlas gen├®ricas de bienestar.",
+                    "text": "Charlas genéricas de bienestar.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Uso del ├ìndice de Capacidad de Trabajo (WAI) para reubicaci├│n preventiva.",
+                    "text": "Uso del Índice de Capacidad de Trabajo (WAI) para reubicación preventiva.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Roles Alternativos: ┬┐Qu├® alternativas tiene un cl├¡nico que no puede asumir el ritmo de primera l├¡nea?",
+            "question": "Roles Alternativos: ¿Qué alternativas tiene un clínico que no puede asumir el ritmo de primera línea?",
             "options": [
                 {
-                    "text": "Baja m├®dica o prejubilaci├│n.",
+                    "text": "Baja médica o prejubilación.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Tareas administrativas b├ísicas.",
+                    "text": "Tareas administrativas básicas.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Roles estrat├®gicos: consultor├¡a, telemedicina o mentor├¡a de residentes.",
+                    "text": "Roles estratégicos: consultoría, telemedicina o mentoría de residentes.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Cultura y Edadismo Interno: ┬┐C├│mo es el clima intergeneracional?",
+            "question": "Cultura y Edadismo Interno: ¿Cómo es el clima intergeneracional?",
             "options": [
                 {
-                    "text": "J├│venes ven a mayores desactualizados y viceversa.",
+                    "text": "Jóvenes ven a mayores desactualizados y viceversa.",
                     "score": 1,
                     "points": 1
                 },
@@ -416,17 +416,17 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Mentor├¡a inversa (tecnolog├¡a vs. ├®tica/trato al paciente).",
+                    "text": "Mentoría inversa (tecnología vs. ética/trato al paciente).",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Contrataci├│n Inclusiva: ┬┐Se contrata talento s├®nior?",
+            "question": "Contratación Inclusiva: ¿Se contrata talento sénior?",
             "options": [
                 {
-                    "text": "Se buscan expl├¡citamente \"reci├®n graduados\".",
+                    "text": "Se buscan explícitamente \"recién graduados\".",
                     "score": 1,
                     "points": 1
                 },
@@ -436,17 +436,17 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Valoraci├│n proactiva de mayores de 50 por su madurez emocional.\nII. Pr├ícticas Externas (Atenci├│n a Pacientes)",
+                    "text": "Valoración proactiva de mayores de 50 por su madurez emocional.\nII. Prácticas Externas (Atención a Pacientes)",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Modelo de Atenci├│n Integral (Las 4M): ┬┐En qu├® basa la atenci├│n al mayor?",
+            "question": "Modelo de Atención Integral (Las 4M): ¿En qué basa la atención al mayor?",
             "options": [
                 {
-                    "text": "Exclusivamente en curar el s├¡ntoma agudo.",
+                    "text": "Exclusivamente en curar el síntoma agudo.",
                     "score": 1,
                     "points": 1
                 },
@@ -456,17 +456,17 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Marco de las 4M (Lo que importa, Medicaci├│n, Mente, Movilidad).",
+                    "text": "Marco de las 4M (Lo que importa, Medicación, Mente, Movilidad).",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Alineaci├│n con \"Lo que importa\": ┬┐C├│mo se toman decisiones cl├¡nicas?",
+            "question": "Alineación con \"Lo que importa\": ¿Cómo se toman decisiones clínicas?",
             "options": [
                 {
-                    "text": "El m├®dico decide sin consultar prioridades.",
+                    "text": "El médico decide sin consultar prioridades.",
                     "score": 1,
                     "points": 1
                 },
@@ -483,10 +483,10 @@ export const QUESTIONS_BY_SECTOR = {
             ]
         },
         {
-            "question": "Polifarmacia y Adherencia: ┬┐C├│mo se maneja la medicaci├│n?",
+            "question": "Polifarmacia y Adherencia: ¿Cómo se maneja la medicación?",
             "options": [
                 {
-                    "text": "Prescripci├│n sin revisi├│n cruzada.",
+                    "text": "Prescripción sin revisión cruzada.",
                     "score": 1,
                     "points": 1
                 },
@@ -496,14 +496,14 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Desprescripci├│n de riesgo y uso de Sistemas Personalizados de Dosificaci├│n (SPD).",
+                    "text": "Desprescripción de riesgo y uso de Sistemas Personalizados de Dosificación (SPD).",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Cuidado Cognitivo (Mente): ┬┐C├│mo se aborda el declive cognitivo?",
+            "question": "Cuidado Cognitivo (Mente): ¿Cómo se aborda el declive cognitivo?",
             "options": [
                 {
                     "text": "Solo ante crisis agudas evidentes.",
@@ -511,19 +511,19 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Derivaci├│n al especialista si la familia avisa.",
+                    "text": "Derivación al especialista si la familia avisa.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Cribado proactivo rutinario para depresi├│n y demencia.",
+                    "text": "Cribado proactivo rutinario para depresión y demencia.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Movilidad y Ca├¡das: ┬┐Garant├¡a de autonom├¡a f├¡sica?",
+            "question": "Movilidad y Caídas: ¿Garantía de autonomía física?",
             "options": [
                 {
                     "text": "Reposo absoluto en cama.",
@@ -536,17 +536,17 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Evaluaci├│n diaria (Timed Up & Go) promoviendo la caminata temprana para no perder masa muscular.",
+                    "text": "Evaluación diaria (Timed Up & Go) promoviendo la caminata temprana para no perder masa muscular.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Arquitectura y Dise├▒o Biof├¡lico: ┬┐C├│mo es el espacio f├¡sico?",
+            "question": "Arquitectura y Diseño Biofílico: ¿Cómo es el espacio físico?",
             "options": [
                 {
-                    "text": "Entorno cl├¡nico fr├¡o y ruidoso.",
+                    "text": "Entorno clínico frío y ruidoso.",
                     "score": 1,
                     "points": 1
                 },
@@ -556,22 +556,22 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Dise├▒o biof├¡lico (luz natural, naturaleza) y circulaciones claras para desorientaci├│n.",
+                    "text": "Diseño biofílico (luz natural, naturaleza) y circulaciones claras para desorientación.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Telemedicina: ┬┐Opciones tecnol├│gicas para acceso a salud?",
+            "question": "Telemedicina: ¿Opciones tecnológicas para acceso a salud?",
             "options": [
                 {
-                    "text": "Todo requiere desplazamiento f├¡sico.",
+                    "text": "Todo requiere desplazamiento físico.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Turnos web y consulta telef├│nica.",
+                    "text": "Turnos web y consulta telefónica.",
                     "score": 2,
                     "points": 2
                 },
@@ -583,20 +583,20 @@ export const QUESTIONS_BY_SECTOR = {
             ]
         },
         {
-            "question": "Uso de AgeTech y Seguridad: ┬┐Integraci├│n de IA o dom├│tica?",
+            "question": "Uso de AgeTech y Seguridad: ¿Integración de IA o domótica?",
             "options": [
                 {
-                    "text": "Ninguna tecnolog├¡a de asistencia.",
+                    "text": "Ninguna tecnología de asistencia.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Botones de p├ínico tradicionales.",
+                    "text": "Botones de pánico tradicionales.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Biosensores invisibles antica├¡das y asistentes de voz sin invadir privacidad.",
+                    "text": "Biosensores invisibles anticaídas y asistentes de voz sin invadir privacidad.",
                     "score": 3,
                     "points": 3
                 }
@@ -605,7 +605,7 @@ export const QUESTIONS_BY_SECTOR = {
     ],
     "Tecnologia e Software": [
         {
-            "question": "Atracci├│n: ┬┐C├│mo se contrata talento tecnol├│gico +50?",
+            "question": "Atracción: ¿Cómo se contrata talento tecnológico +50?",
             "options": [
                 {
                     "text": "Ofertas dirigidas a \"nativos digitales\".",
@@ -613,7 +613,7 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Sin restricciones, pero sin adaptaci├│n de canales.",
+                    "text": "Sin restricciones, pero sin adaptación de canales.",
                     "score": 2,
                     "points": 2
                 },
@@ -625,30 +625,30 @@ export const QUESTIONS_BY_SECTOR = {
             ]
         },
         {
-            "question": "Reskilling en IA: ┬┐Actualizaci├│n de s├®niores?",
+            "question": "Reskilling en IA: ¿Actualización de séniores?",
             "options": [
                 {
-                    "text": "Prioridad a j├│venes.",
+                    "text": "Prioridad a jóvenes.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Cursos est├índar sin pedagog├¡a adulta.",
+                    "text": "Cursos estándar sin pedagogía adulta.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "\"Aprender a aprender\", elevando la autoeficacia para evitar tecnoestr├®s.",
+                    "text": "\"Aprender a aprender\", elevando la autoeficacia para evitar tecnoestrés.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Mentor├¡a Inversa: ┬┐Intercambio de conocimiento?",
+            "question": "Mentoría Inversa: ¿Intercambio de conocimiento?",
             "options": [
                 {
-                    "text": "Jer├írquico (mayores ense├▒an, j├│venes acatan).",
+                    "text": "Jerárquico (mayores enseñan, jóvenes acatan).",
                     "score": 1,
                     "points": 1
                 },
@@ -658,17 +658,17 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "J├│venes ense├▒an tecnolog├¡a, mayores ense├▒an estrategia.",
+                    "text": "Jóvenes enseñan tecnología, mayores enseñan estrategia.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Nuevos Roles: ┬┐Qu├® alternativas tiene un ingeniero s├®nior?",
+            "question": "Nuevos Roles: ¿Qué alternativas tiene un ingeniero sénior?",
             "options": [
                 {
-                    "text": "Desvinculaci├│n si no domina el ├║ltimo lenguaje.",
+                    "text": "Desvinculación si no domina el último lenguaje.",
                     "score": 1,
                     "points": 1
                 },
@@ -678,14 +678,14 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Roles de \"Validador ├®tico de IA\" o mentor.",
+                    "text": "Roles de \"Validador ético de IA\" o mentor.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Ergonom├¡a Cognitiva: ┬┐Condiciones para programadores mayores?",
+            "question": "Ergonomía Cognitiva: ¿Condiciones para programadores mayores?",
             "options": [
                 {
                     "text": "Cultura de altas horas continuas (crunch culture).",
@@ -693,22 +693,22 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Teletrabajo est├índar.",
+                    "text": "Teletrabajo estándar.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Reducci├│n de carga intensiva visual y transiciones graduales.",
+                    "text": "Reducción de carga intensiva visual y transiciones graduales.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Cultura Libre de Edadismo: ┬┐C├│mo se aborda la edad?",
+            "question": "Cultura Libre de Edadismo: ¿Cómo se aborda la edad?",
             "options": [
                 {
-                    "text": "Mito de \"la innovaci├│n es de j├│venes\".",
+                    "text": "Mito de \"la innovación es de jóvenes\".",
                     "score": 1,
                     "points": 1
                 },
@@ -725,7 +725,7 @@ export const QUESTIONS_BY_SECTOR = {
             ]
         },
         {
-            "question": "Retenci├│n T├®cnica: ┬┐Qu├® pasa cuando un ingeniero clave se retira?",
+            "question": "Retención Técnica: ¿Qué pasa cuando un ingeniero clave se retira?",
             "options": [
                 {
                     "text": "El conocimiento de la arquitectura se pierde.",
@@ -733,22 +733,22 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Documentaci├│n b├ísica de ├║ltima hora.",
+                    "text": "Documentación básica de última hora.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Videotutoriales y bancos de conocimiento estructurados.\nII. Pr├ícticas Externas (UX/UI y AgeTech)",
+                    "text": "Videotutoriales y bancos de conocimiento estructurados.\nII. Prácticas Externas (UX/UI y AgeTech)",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Metodolog├¡a de Dise├▒o: ┬┐C├│mo se incluye a los mayores?",
+            "question": "Metodología de Diseño: ¿Cómo se incluye a los mayores?",
             "options": [
                 {
-                    "text": "Dise├▒o basado en estereotipos.",
+                    "text": "Diseño basado en estereotipos.",
                     "score": 1,
                     "points": 1
                 },
@@ -758,22 +758,22 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Co-creaci├│n directa (UCD) con usuarios +50 desde el inicio.",
+                    "text": "Co-creación directa (UCD) con usuarios +50 desde el inicio.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Interfaces Din├ímicas: ┬┐C├│mo es el dise├▒o visual?",
+            "question": "Interfaces Dinámicas: ¿Cómo es el diseño visual?",
             "options": [
                 {
-                    "text": "Letras peque├▒as, bajo contraste.",
+                    "text": "Letras pequeñas, bajo contraste.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Opciones b├ísicas (zoom).",
+                    "text": "Opciones básicas (zoom).",
                     "score": 2,
                     "points": 2
                 },
@@ -785,10 +785,10 @@ export const QUESTIONS_BY_SECTOR = {
             ]
         },
         {
-            "question": "Reducci├│n de Carga Cognitiva: ┬┐Manejo de flujos complejos?",
+            "question": "Reducción de Carga Cognitiva: ¿Manejo de flujos complejos?",
             "options": [
                 {
-                    "text": "Tiempos de sesi├│n estrictos que expiran.",
+                    "text": "Tiempos de sesión estrictos que expiran.",
                     "score": 1,
                     "points": 1
                 },
@@ -798,17 +798,17 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Sin presi├│n de tiempo; dise├▒ado para \"reconocer\" no \"recordar\".",
+                    "text": "Sin presión de tiempo; diseñado para \"reconocer\" no \"recordar\".",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Autenticaci├│n: ┬┐Acceso a plataformas?",
+            "question": "Autenticación: ¿Acceso a plataformas?",
             "options": [
                 {
-                    "text": "Contrase├▒as complejas cambiantes.",
+                    "text": "Contraseñas complejas cambiantes.",
                     "score": 1,
                     "points": 1
                 },
@@ -818,42 +818,42 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Biometr├¡a (facial/voz) para eliminar frustraci├│n.",
+                    "text": "Biometría (facial/voz) para eliminar frustración.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "IA ├ëtica: ┬┐Se audita la discriminaci├│n por edad?",
+            "question": "IA Ética: ¿Se audita la discriminación por edad?",
             "options": [
                 {
-                    "text": "Modelos entrenados solo con datos j├│venes.",
+                    "text": "Modelos entrenados solo con datos jóvenes.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Revisi├│n superficial sin pol├¡ticas ├®ticas.",
+                    "text": "Revisión superficial sin políticas éticas.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Auditor├¡as anti-sesgo etario (des-sesgo adversarial).",
+                    "text": "Auditorías anti-sesgo etario (des-sesgo adversarial).",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "IA Ag├®ntica y Voz: ┬┐Uso de interfaces de voz?",
+            "question": "IA Agéntica y Voz: ¿Uso de interfaces de voz?",
             "options": [
                 {
-                    "text": "Solo pantallas t├íctiles o teclados peque├▒os.",
+                    "text": "Solo pantallas táctiles o teclados pequeños.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Soporte telef├│nico tradicional.",
+                    "text": "Soporte telefónico tradicional.",
                     "score": 2,
                     "points": 2
                 },
@@ -865,10 +865,10 @@ export const QUESTIONS_BY_SECTOR = {
             ]
         },
         {
-            "question": "Soporte T├®cnico: ┬┐Modelo de asistencia?",
+            "question": "Soporte Técnico: ¿Modelo de asistencia?",
             "options": [
                 {
-                    "text": "Foros t├®cnicos o bots r├¡gidos.",
+                    "text": "Foros técnicos o bots rígidos.",
                     "score": 1,
                     "points": 1
                 },
@@ -878,14 +878,14 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Soporte emp├ítico, omnicanal y simuladores sin riesgo.",
+                    "text": "Soporte empático, omnicanal y simuladores sin riesgo.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Marketing Tecnol├│gico: ┬┐Representaci├│n del usuario?",
+            "question": "Marketing Tecnológico: ¿Representación del usuario?",
             "options": [
                 {
                     "text": "No aparecen o se ven torpes.",
@@ -898,56 +898,56 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Silver Surfers utilizando tecnolog├¡a con empoderamiento.",
+                    "text": "Silver Surfers utilizando tecnología con empoderamiento.",
                     "score": 3,
                     "points": 3
                 }
             ]
         }
     ],
-    "Comercio y Distribuci├│n": [
+    "Comercio y Distribución": [
         {
-            "question": "Atracci├│n de Talento y Contrataci├│n S├®nior: ┬┐Existen pol├¡ticas para contrataci├│n de mayores en tiendas?",
+            "question": "Atracción de Talento y Contratación Sénior: ¿Existen políticas para contratación de mayores en tiendas?",
             "options": [
                 {
-                    "text": "Selecci├│n enfocada en j├│venes; sin pol├¡ticas para +45.",
+                    "text": "Selección enfocada en jóvenes; sin políticas para +45.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "No se discrimina, pero no existen campa├▒as espec├¡ficas.",
+                    "text": "No se discrimina, pero no existen campañas específicas.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Metas concretas de contrataci├│n s├®nior en colaboraci├│n con oficinas de empleo.",
+                    "text": "Metas concretas de contratación sénior en colaboración con oficinas de empleo.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Ergonom├¡a en Cajas y Reposici├│n: ┬┐C├│mo se evita lesiones en operarios mayores?",
+            "question": "Ergonomía en Cajas y Reposición: ¿Cómo se evita lesiones en operarios mayores?",
             "options": [
                 {
-                    "text": "Mobiliario est├índar que provoca posturas forzadas.",
+                    "text": "Mobiliario estándar que provoca posturas forzadas.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Cursos gen├®ricos sobre c├│mo levantar peso.",
+                    "text": "Cursos genéricos sobre cómo levantar peso.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Evaluaciones ergon├│micas, adaptaci├│n de altura de cajas y rotaci├│n de puestos.",
+                    "text": "Evaluaciones ergonómicas, adaptación de altura de cajas y rotación de puestos.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Turnos y Horarios: ┬┐Existen pol├¡ticas de flexibilidad?",
+            "question": "Turnos y Horarios: ¿Existen políticas de flexibilidad?",
             "options": [
                 {
                     "text": "Todos realizan turnos rotativos y nocturnos por igual.",
@@ -955,42 +955,42 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Flexibilidad sujeta a aprobaci├│n discrecional.",
+                    "text": "Flexibilidad sujeta a aprobación discrecional.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "\"Horarios isla\", limitaci├│n de turnos nocturnos para +55 y descanso consecutivo.",
+                    "text": "\"Horarios isla\", limitación de turnos nocturnos para +55 y descanso consecutivo.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Transici├│n a la Jubilaci├│n: ┬┐Qu├® alternativas se ofrecen?",
+            "question": "Transición a la Jubilación: ¿Qué alternativas se ofrecen?",
             "options": [
                 {
-                    "text": "Jornada completa hasta el ├║ltimo d├¡a.",
+                    "text": "Jornada completa hasta el último día.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Charlas informativas gen├®ricas.",
+                    "text": "Charlas informativas genéricas.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Jubilaci├│n parcial o jornadas reducidas financiadas por cuentas de \"ahorro-tiempo\".",
+                    "text": "Jubilación parcial o jornadas reducidas financiadas por cuentas de \"ahorro-tiempo\".",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Reasignaci├│n de Tareas: ┬┐Qu├® sucede ante la p├®rdida de capacidad f├¡sica?",
+            "question": "Reasignación de Tareas: ¿Qué sucede ante la pérdida de capacidad física?",
             "options": [
                 {
-                    "text": "Licencia por enfermedad o prejubilaci├│n forzada.",
+                    "text": "Licencia por enfermedad o prejubilación forzada.",
                     "score": 1,
                     "points": 1
                 },
@@ -1000,14 +1000,14 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Cambio a roles de menor exigencia f├¡sica y mayor valor cognitivo (atenci├│n al cliente, supervisi├│n).",
+                    "text": "Cambio a roles de menor exigencia física y mayor valor cognitivo (atención al cliente, supervisión).",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Transmisi├│n del Oficio: ┬┐C├│mo se aprovecha la experiencia?",
+            "question": "Transmisión del Oficio: ¿Cómo se aprovecha la experiencia?",
             "options": [
                 {
                     "text": "El conocimiento se pierde al jubilarse.",
@@ -1015,42 +1015,42 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Acompa├▒amiento informal a nuevos ingresos.",
+                    "text": "Acompañamiento informal a nuevos ingresos.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Programas formales de \"Tutores S├®nior\".",
+                    "text": "Programas formales de \"Tutores Sénior\".",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Prevenci├│n M├®dica: ┬┐Hay seguimientos de salud enfocados en la edad?",
+            "question": "Prevención Médica: ¿Hay seguimientos de salud enfocados en la edad?",
             "options": [
                 {
-                    "text": "Solo ex├ímenes obligatorios.",
+                    "text": "Solo exámenes obligatorios.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Seguro m├®dico est├índar.",
+                    "text": "Seguro médico estándar.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Revisiones espec├¡ficas anuales (riesgo cardiovascular, fatiga).\nII. Pr├ícticas Externas (Accesibilidad y Experiencia de Compra)",
+                    "text": "Revisiones específicas anuales (riesgo cardiovascular, fatiga).\nII. Prácticas Externas (Accesibilidad y Experiencia de Compra)",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Accesibilidad Cognitiva y Se├▒al├®tica: ┬┐C├│mo es la informaci├│n visual?",
+            "question": "Accesibilidad Cognitiva y Señalética: ¿Cómo es la información visual?",
             "options": [
                 {
-                    "text": "Carteler├¡a saturada, letras peque├▒as, reflejos.",
+                    "text": "Cartelería saturada, letras pequeñas, reflejos.",
                     "score": 1,
                     "points": 1
                 },
@@ -1067,10 +1067,10 @@ export const QUESTIONS_BY_SECTOR = {
             ]
         },
         {
-            "question": "Cajas de Pago (\"Cajas Lentas\"): ┬┐M├®todos adaptados al ritmo mayor?",
+            "question": "Cajas de Pago (\"Cajas Lentas\"): ¿Métodos adaptados al ritmo mayor?",
             "options": [
                 {
-                    "text": "Cajas est├índar o autopago que generan estr├®s.",
+                    "text": "Cajas estándar o autopago que generan estrés.",
                     "score": 1,
                     "points": 1
                 },
@@ -1080,14 +1080,14 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "\"Cajas Lentas\" (Kletskassas) para socializar sin prisa y cajas preferenciales se├▒alizadas.",
+                    "text": "\"Cajas Lentas\" (Kletskassas) para socializar sin prisa y cajas preferenciales señalizadas.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Mobiliario de Atenci├│n: ┬┐Altura de mostradores y terminales (POS)?",
+            "question": "Mobiliario de Atención: ¿Altura de mostradores y terminales (POS)?",
             "options": [
                 {
                     "text": "Altos e inalcanzables para sillas de ruedas.",
@@ -1100,14 +1100,14 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Mostradores rebajados (m├íx. 80 cm) y POS inal├ímbricos.",
+                    "text": "Mostradores rebajados (máx. 80 cm) y POS inalámbricos.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Zonas de Descanso: ┬┐Espacios para evitar fatiga?",
+            "question": "Zonas de Descanso: ¿Espacios para evitar fatiga?",
             "options": [
                 {
                     "text": "Ninguno.",
@@ -1120,14 +1120,14 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Asientos con apoyabrazos estrat├®gicamente distribuidos en el local.",
+                    "text": "Asientos con apoyabrazos estratégicamente distribuidos en el local.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Formato de Productos: ┬┐Est├ín adaptados a la Silver Economy?",
+            "question": "Formato de Productos: ¿Están adaptados a la Silver Economy?",
             "options": [
                 {
                     "text": "Envases familiares en estantes muy altos o bajos.",
@@ -1135,59 +1135,59 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Hay variedad, pero sin ergonom├¡a de ubicaci├│n.",
+                    "text": "Hay variedad, pero sin ergonomía de ubicación.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Envases f├íciles de abrir, acercamiento frontal garantizado para andadores.",
+                    "text": "Envases fáciles de abrir, acercamiento frontal garantizado para andadores.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Probadores y Ba├▒os: ┬┐C├│mo es la accesibilidad ├¡ntima?",
+            "question": "Probadores y Baños: ¿Cómo es la accesibilidad íntima?",
             "options": [
                 {
-                    "text": "Ba├▒os cerrados o probadores estrechos.",
+                    "text": "Baños cerrados o probadores estrechos.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Ba├▒o accesible pero usado como dep├│sito.",
+                    "text": "Baño accesible pero usado como depósito.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Probadores amplios con barras de apoyo y ba├▒os familiares universales abiertos.",
+                    "text": "Probadores amplios con barras de apoyo y baños familiares universales abiertos.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Se├▒alizaci├│n sin Edadismo: ┬┐C├│mo se indica la prioridad?",
+            "question": "Señalización sin Edadismo: ¿Cómo se indica la prioridad?",
             "options": [
                 {
-                    "text": "R├│tulos paternalistas (\"abuelos\", \"discapacitados\").",
+                    "text": "Rótulos paternalistas (\"abuelos\", \"discapacitados\").",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "R├│tulos correctos pero con im├ígenes pasivas.",
+                    "text": "Rótulos correctos pero con imágenes pasivas.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "S├¡mbolo Internacional de Accesibilidad (SIA) y lenguaje transformador.",
+                    "text": "Símbolo Internacional de Accesibilidad (SIA) y lenguaje transformador.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Entorno Sensorial: ┬┐Ambiente del local?",
+            "question": "Entorno Sensorial: ¿Ambiente del local?",
             "options": [
                 {
                     "text": "Ruido alto, luces intermitentes.",
@@ -1195,12 +1195,12 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Nivel est├índar.",
+                    "text": "Nivel estándar.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Entorno tranquilo, predecible y con iluminaci├│n ├│ptima sin estr├®s cognitivo.",
+                    "text": "Entorno tranquilo, predecible y con iluminación óptima sin estrés cognitivo.",
                     "score": 3,
                     "points": 3
                 }
@@ -1209,10 +1209,10 @@ export const QUESTIONS_BY_SECTOR = {
     ],
     "Manufactura e Industria": [
         {
-            "question": "Ergonom├¡a Avanzada: ┬┐Herramientas para proteger a operarios mayores?",
+            "question": "Ergonomía Avanzada: ¿Herramientas para proteger a operarios mayores?",
             "options": [
                 {
-                    "text": "T├®cnicas manuales, asumiendo sobrecarga.",
+                    "text": "Técnicas manuales, asumiendo sobrecarga.",
                     "score": 1,
                     "points": 1
                 },
@@ -1222,34 +1222,34 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Exoesqueletos ligeros, herramientas de baja vibraci├│n y polipastos.",
+                    "text": "Exoesqueletos ligeros, herramientas de baja vibración y polipastos.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Dise├▒o del Puesto: ┬┐Evaluaci├│n de riesgos por edad?",
+            "question": "Diseño del Puesto: ¿Evaluación de riesgos por edad?",
             "options": [
                 {
-                    "text": "Evaluaci├│n est├índar sin discriminar.",
+                    "text": "Evaluación estándar sin discriminar.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Reevaluaci├│n solo ante queja formal.",
+                    "text": "Reevaluación solo ante queja formal.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Clasificaci├│n de puestos (\"suaves, medios, pesados\") protegiendo a los +50.",
+                    "text": "Clasificación de puestos (\"suaves, medios, pesados\") protegiendo a los +50.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Trabajo Nocturno: ┬┐Pol├¡ticas de horarios en planta?",
+            "question": "Trabajo Nocturno: ¿Políticas de horarios en planta?",
             "options": [
                 {
                     "text": "Rotaciones y turnos nocturnos para todos.",
@@ -1262,57 +1262,57 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Exenci├│n voluntaria de turnos nocturnos para +55.",
+                    "text": "Exención voluntaria de turnos nocturnos para +55.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Equipos de Protecci├│n (EPP): ┬┐Gesti├│n de indumentaria?",
+            "question": "Equipos de Protección (EPP): ¿Gestión de indumentaria?",
             "options": [
                 {
-                    "text": "Unisex y talla est├índar.",
+                    "text": "Unisex y talla estándar.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Varias tallas, sin adaptaciones espec├¡ficas.",
+                    "text": "Varias tallas, sin adaptaciones específicas.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "EPP adaptados (materiales ligeros, calzado con extra amortiguaci├│n).",
+                    "text": "EPP adaptados (materiales ligeros, calzado con extra amortiguación).",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Rotaci├│n de Tareas: ┬┐Manejo de repetitividad?",
+            "question": "Rotación de Tareas: ¿Manejo de repetitividad?",
             "options": [
                 {
-                    "text": "Movimiento id├®ntico toda la jornada.",
+                    "text": "Movimiento idéntico toda la jornada.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Rotaci├│n ocasional por bajas.",
+                    "text": "Rotación ocasional por bajas.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Ciclos de rotaci├│n obligatorios combinando tareas f├¡sicas y visuales.",
+                    "text": "Ciclos de rotación obligatorios combinando tareas físicas y visuales.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "├ìndice de Capacidad: ┬┐Seguimiento m├®dico?",
+            "question": "Índice de Capacidad: ¿Seguimiento médico?",
             "options": [
                 {
-                    "text": "Reconocimiento b├ísico.",
+                    "text": "Reconocimiento básico.",
                     "score": 1,
                     "points": 1
                 },
@@ -1322,42 +1322,42 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "├ìndice de Capacidad de Trabajo (WAI), fisioterapia in situ y calentamiento.",
+                    "text": "Índice de Capacidad de Trabajo (WAI), fisioterapia in situ y calentamiento.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Transici├│n a la Jubilaci├│n: ┬┐Esquemas de retiro?",
+            "question": "Transición a la Jubilación: ¿Esquemas de retiro?",
             "options": [
                 {
-                    "text": "Trabajo al 100% hasta el ├║ltimo d├¡a.",
+                    "text": "Trabajo al 100% hasta el último día.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Reducci├│n de jornada con p├®rdida econ├│mica total.",
+                    "text": "Reducción de jornada con pérdida económica total.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Modelos 80-90-100 (jubilaci├│n parcial apoyada).\nII. Pr├ícticas Externas (Industria 4.0 y Conocimiento)",
+                    "text": "Modelos 80-90-100 (jubilación parcial apoyada).\nII. Prácticas Externas (Industria 4.0 y Conocimiento)",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Reasignaci├│n Estrat├®gica: ┬┐Qu├® ocurre ante p├®rdida de capacidad f├¡sica?",
+            "question": "Reasignación Estratégica: ¿Qué ocurre ante pérdida de capacidad física?",
             "options": [
                 {
-                    "text": "Despido o prejubilaci├│n forzada.",
+                    "text": "Despido o prejubilación forzada.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Reasignaci├│n a limpieza/administraci├│n.",
+                    "text": "Reasignación a limpieza/administración.",
                     "score": 2,
                     "points": 2
                 },
@@ -1369,7 +1369,7 @@ export const QUESTIONS_BY_SECTOR = {
             ]
         },
         {
-            "question": "Retenci├│n del \"Saber Hacer\": ┬┐Transferencia t├®cnica?",
+            "question": "Retención del \"Saber Hacer\": ¿Transferencia técnica?",
             "options": [
                 {
                     "text": "El conocimiento se pierde.",
@@ -1377,39 +1377,39 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Transici├│n r├ípida de 2 semanas.",
+                    "text": "Transición rápida de 2 semanas.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Mentoring y canal de videotutoriales corporativos grabados por s├®niores.",
+                    "text": "Mentoring y canal de videotutoriales corporativos grabados por séniores.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Entorno de Planta: ┬┐Acondicionamiento f├¡sico?",
+            "question": "Entorno de Planta: ¿Acondicionamiento físico?",
             "options": [
                 {
-                    "text": "Ruido, mala luz, estr├®s t├®rmico.",
+                    "text": "Ruido, mala luz, estrés térmico.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Normativa b├ísica cumplida.",
+                    "text": "Normativa básica cumplida.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Iluminaci├│n optimizada, amortiguadores de vibraci├│n y contrastes visuales.",
+                    "text": "Iluminación optimizada, amortiguadores de vibración y contrastes visuales.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Cobots e Industria 4.0: ┬┐Impacto de la automatizaci├│n?",
+            "question": "Cobots e Industria 4.0: ¿Impacto de la automatización?",
             "options": [
                 {
                     "text": "Reemplazo de trabajadores mayores.",
@@ -1417,27 +1417,27 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Maquinaria compleja que genera tecnoestr├®s.",
+                    "text": "Maquinaria compleja que genera tecnoestrés.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "\"Cobots\" (robots colaborativos) guiados por el s├®nior para evitar carga pesada.",
+                    "text": "\"Cobots\" (robots colaborativos) guiados por el sénior para evitar carga pesada.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Realidad Virtual (VR): ┬┐Entrenamiento en nueva maquinaria?",
+            "question": "Realidad Virtual (VR): ¿Entrenamiento en nueva maquinaria?",
             "options": [
                 {
-                    "text": "Prioridad a j├│venes.",
+                    "text": "Prioridad a jóvenes.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Manuales t├®cnicos complejos.",
+                    "text": "Manuales técnicos complejos.",
                     "score": 2,
                     "points": 2
                 },
@@ -1449,7 +1449,7 @@ export const QUESTIONS_BY_SECTOR = {
             ]
         },
         {
-            "question": "Sensibilizaci├│n: ┬┐Combate al edadismo industrial?",
+            "question": "Sensibilización: ¿Combate al edadismo industrial?",
             "options": [
                 {
                     "text": "Mito del operario \"lento o enfermo\".",
@@ -1462,14 +1462,14 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Talleres intergeneracionales valorando la precisi├│n del trabajo s├®nior.",
+                    "text": "Talleres intergeneracionales valorando la precisión del trabajo sénior.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Desplazamientos Internos: ┬┐Movilidad en planta?",
+            "question": "Desplazamientos Internos: ¿Movilidad en planta?",
             "options": [
                 {
                     "text": "Caminatas largas con carga.",
@@ -1482,17 +1482,17 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Rutas cortas y veh├¡culos el├®ctricos (carritos) provistos.",
+                    "text": "Rutas cortas y vehículos eléctricos (carritos) provistos.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Atracci├│n Externa: ┬┐Contrataci├│n t├®cnica +50?",
+            "question": "Atracción Externa: ¿Contratación técnica +50?",
             "options": [
                 {
-                    "text": "Solo perfiles j├│venes \"para moldear\".",
+                    "text": "Solo perfiles jóvenes \"para moldear\".",
                     "score": 1,
                     "points": 1
                 },
@@ -1502,16 +1502,16 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Convocatorias para s├®niores valorando su nula curva de aprendizaje.",
+                    "text": "Convocatorias para séniores valorando su nula curva de aprendizaje.",
                     "score": 3,
                     "points": 3
                 }
             ]
         }
     ],
-    "Educaci├│n": [
+    "Educación": [
         {
-            "question": "Retenci├│n de Talento S├®nior: ┬┐Pol├¡tica para docentes en edad de jubilaci├│n?",
+            "question": "Retención de Talento Sénior: ¿Política para docentes en edad de jubilación?",
             "options": [
                 {
                     "text": "Retiro obligatorio inmediato.",
@@ -1524,17 +1524,17 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Contratos flexibles o roles de \"Profesor Em├®rito\".",
+                    "text": "Contratos flexibles o roles de \"Profesor Emérito\".",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Retenci├│n del Conocimiento Pedag├│gico: ┬┐Traspaso al retirarse?",
+            "question": "Retención del Conocimiento Pedagógico: ¿Traspaso al retirarse?",
             "options": [
                 {
-                    "text": "P├®rdida de conocimiento y metodolog├¡as.",
+                    "text": "Pérdida de conocimiento y metodologías.",
                     "score": 1,
                     "points": 1
                 },
@@ -1544,34 +1544,34 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Programas de tutorizaci├│n (profesor s├®nior como mentor de junior).",
+                    "text": "Programas de tutorización (profesor sénior como mentor de junior).",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Reskilling Tecnol├│gico: ┬┐Capacitaci├│n en EdTech/IA?",
+            "question": "Reskilling Tecnológico: ¿Capacitación en EdTech/IA?",
             "options": [
                 {
-                    "text": "Enfocada a j├│venes.",
+                    "text": "Enfocada a jóvenes.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Cursos est├índar sin adaptaci├│n.",
+                    "text": "Cursos estándar sin adaptación.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Mentor├¡a inversa institucionalizada.",
+                    "text": "Mentoría inversa institucionalizada.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Dise├▒o del Puesto (Job Design): ┬┐Gesti├│n de carga laboral?",
+            "question": "Diseño del Puesto (Job Design): ¿Gestión de carga laboral?",
             "options": [
                 {
                     "text": "Misma carga de horas de aula.",
@@ -1579,39 +1579,39 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Reducci├│n con p├®rdida de carrera.",
+                    "text": "Reducción con pérdida de carrera.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Transici├│n a investigaci├│n, dise├▒o curricular o tutor├¡as.",
+                    "text": "Transición a investigación, diseño curricular o tutorías.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Ergonom├¡a en el Campus: ┬┐Adaptaci├│n f├¡sica?",
+            "question": "Ergonomía en el Campus: ¿Adaptación física?",
             "options": [
                 {
-                    "text": "Mobiliario est├índar, desgaste vocal.",
+                    "text": "Mobiliario estándar, desgaste vocal.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Mejoras solo ante quejas m├®dicas.",
+                    "text": "Mejoras solo ante quejas médicas.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Micr├│fonos, atriles ajustables, iluminaci├│n antirreflejos.",
+                    "text": "Micrófonos, atriles ajustables, iluminación antirreflejos.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Cultura Inclusiva: ┬┐Clima intergeneracional?",
+            "question": "Cultura Inclusiva: ¿Clima intergeneracional?",
             "options": [
                 {
                     "text": "Fricciones y edadismo.",
@@ -1619,19 +1619,19 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Respeto sin pol├¡ticas formales.",
+                    "text": "Respeto sin políticas formales.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "\"Simbiosis de Talento\": equipos de investigaci├│n mixtos.",
+                    "text": "\"Simbiosis de Talento\": equipos de investigación mixtos.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Transici├│n a la Jubilaci├│n: ┬┐Apoyo institucional?",
+            "question": "Transición a la Jubilación: ¿Apoyo institucional?",
             "options": [
                 {
                     "text": "Corte abrupto.",
@@ -1639,22 +1639,22 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Informaci├│n administrativa b├ísica.",
+                    "text": "Información administrativa básica.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Planificaci├│n financiera, psicol├│gica y voluntariado acad├®mico.\nII. Pr├ícticas Externas (Dise├▒o Curricular y Comunidad)",
+                    "text": "Planificación financiera, psicológica y voluntariado académico.\nII. Prácticas Externas (Diseño Curricular y Comunidad)",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Aprendizaje a lo Largo de la Vida: ┬┐Oferta para mayores?",
+            "question": "Aprendizaje a lo Largo de la Vida: ¿Oferta para mayores?",
             "options": [
                 {
-                    "text": "Solo para j├│venes.",
+                    "text": "Solo para jóvenes.",
                     "score": 1,
                     "points": 1
                 },
@@ -1664,17 +1664,17 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Programas acad├®micos rigurosos (\"Universidades de la 3era Edad\").",
+                    "text": "Programas académicos rigurosos (\"Universidades de la 3era Edad\").",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Dise├▒o Universal para el Aprendizaje (DUA): ┬┐Formato de materiales?",
+            "question": "Diseño Universal para el Aprendizaje (DUA): ¿Formato de materiales?",
             "options": [
                 {
-                    "text": "Formato ├║nico (texto denso).",
+                    "text": "Formato único (texto denso).",
                     "score": 1,
                     "points": 1
                 },
@@ -1684,14 +1684,14 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "M├║ltiples formas de representaci├│n, acci├│n y motivaci├│n (DUA estricto).",
+                    "text": "Múltiples formas de representación, acción y motivación (DUA estricto).",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Aulas Intergeneracionales: ┬┐Interacci├│n de edades?",
+            "question": "Aulas Intergeneracionales: ¿Interacción de edades?",
             "options": [
                 {
                     "text": "Totalmente segregadas.",
@@ -1699,7 +1699,7 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Coincidencia espor├ídica en eventos.",
+                    "text": "Coincidencia esporádica en eventos.",
                     "score": 2,
                     "points": 2
                 },
@@ -1711,50 +1711,50 @@ export const QUESTIONS_BY_SECTOR = {
             ]
         },
         {
-            "question": "Alfabetizaci├│n Digital: ┬┐Ense├▒anza tecnol├│gica?",
+            "question": "Alfabetización Digital: ¿Enseñanza tecnológica?",
             "options": [
                 {
-                    "text": "Enfoque paternalista b├ísico.",
+                    "text": "Enfoque paternalista básico.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Ofim├ítica sin pedagog├¡a adulta.",
+                    "text": "Ofimática sin pedagogía adulta.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Ense├▒anza de IA y empoderamiento digital avanzado.",
+                    "text": "Enseñanza de IA y empoderamiento digital avanzado.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Entornos F├¡sicos (AFU GN): ┬┐Accesibilidad del campus?",
+            "question": "Entornos Físicos (AFU GN): ¿Accesibilidad del campus?",
             "options": [
                 {
-                    "text": "Barreras arquitect├│nicas y ac├║sticas.",
+                    "text": "Barreras arquitectónicas y acústicas.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Rampas, pero espacios institucionales fr├¡os.",
+                    "text": "Rampas, pero espacios institucionales fríos.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Dise├▒o amigable: ac├║stica, iluminaci├│n, se├▒al├®tica (pictogramas), asientos.",
+                    "text": "Diseño amigable: acústica, iluminación, señalética (pictogramas), asientos.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Campus Online (LMS): ┬┐Accesibilidad virtual?",
+            "question": "Campus Online (LMS): ¿Accesibilidad virtual?",
             "options": [
                 {
-                    "text": "Plataformas complejas con tiempo de sesi├│n corto.",
+                    "text": "Plataformas complejas con tiempo de sesión corto.",
                     "score": 1,
                     "points": 1
                 },
@@ -1764,14 +1764,14 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Interfaz din├ímica, alto contraste, opciones de audio y cero carga cognitiva.",
+                    "text": "Interfaz dinámica, alto contraste, opciones de audio y cero carga cognitiva.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Participaci├│n e Investigaci├│n: ┬┐Rol del alumno mayor?",
+            "question": "Participación e Investigación: ¿Rol del alumno mayor?",
             "options": [
                 {
                     "text": "Receptor pasivo.",
@@ -1779,19 +1779,19 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Opini├│n v├¡a encuestas finales.",
+                    "text": "Opinión vía encuestas finales.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Gobernanza participativa e investigaci├│n comunitaria.",
+                    "text": "Gobernanza participativa e investigación comunitaria.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Compromiso Estrat├®gico: ┬┐Pol├¡tica institucional?",
+            "question": "Compromiso Estratégico: ¿Política institucional?",
             "options": [
                 {
                     "text": "Edadismo ignorado.",
@@ -1804,16 +1804,16 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Adhesi├│n a la Red Global de Universidades Amigables (AFU GN) con metas.",
+                    "text": "Adhesión a la Red Global de Universidades Amigables (AFU GN) con metas.",
                     "score": 3,
                     "points": 3
                 }
             ]
         }
     ],
-    "Energ├¡a y Recursos Naturales": [
+    "Energía y Recursos Naturales": [
         {
-            "question": "Reubicaci├│n Operativa: ┬┐Qu├® ocurre con la p├®rdida de capacidad f├¡sica en campo?",
+            "question": "Reubicación Operativa: ¿Qué ocurre con la pérdida de capacidad física en campo?",
             "options": [
                 {
                     "text": "Misma exigencia o despido.",
@@ -1821,39 +1821,39 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Reubicaci├│n administrativa informal.",
+                    "text": "Reubicación administrativa informal.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Roles proactivos de supervisi├│n/formaci├│n para +55.",
+                    "text": "Roles proactivos de supervisión/formación para +55.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Transici├│n a la Jubilaci├│n: ┬┐Modelos de retiro?",
+            "question": "Transición a la Jubilación: ¿Modelos de retiro?",
             "options": [
                 {
-                    "text": "Obligatoria sin reducci├│n.",
+                    "text": "Obligatoria sin reducción.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Informaci├│n legal meses antes.",
+                    "text": "Información legal meses antes.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Modelo 80-90-100 u esquemas de reducci├│n progresiva.",
+                    "text": "Modelo 80-90-100 u esquemas de reducción progresiva.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Retenci├│n de Conocimiento T├®cnico: ┬┐Frente a jubilaci├│n de boomers?",
+            "question": "Retención de Conocimiento Técnico: ¿Frente a jubilación de boomers?",
             "options": [
                 {
                     "text": "Fuga de conocimiento masiva.",
@@ -1861,79 +1861,79 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Manual de transici├│n breve.",
+                    "text": "Manual de transición breve.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Senior Resource Pools (consultor├¡a interna).",
+                    "text": "Senior Resource Pools (consultoría interna).",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Reskilling Digital: ┬┐Formaci├│n en renovables/IA?",
+            "question": "Reskilling Digital: ¿Formación en renovables/IA?",
             "options": [
                 {
-                    "text": "Dirigida a j├│venes.",
+                    "text": "Dirigida a jóvenes.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Plataforma virtual gen├®rica.",
+                    "text": "Plataforma virtual genérica.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Mentor├¡a inversa institucional.",
+                    "text": "Mentoría inversa institucional.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Voluntariado y Prop├│sito: ┬┐V├¡nculo post-retiro?",
+            "question": "Voluntariado y Propósito: ¿Vínculo post-retiro?",
             "options": [
                 {
-                    "text": "V├¡nculo roto totalmente.",
+                    "text": "Vínculo roto totalmente.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Invitaci├│n a evento de fin de a├▒o.",
+                    "text": "Invitación a evento de fin de año.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Voluntariado corporativo en divulgaci├│n cient├¡fica/social.",
+                    "text": "Voluntariado corporativo en divulgación científica/social.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Edadismo y ESG: ┬┐Inclusi├│n en estrategia?",
+            "question": "Edadismo y ESG: ¿Inclusión en estrategia?",
             "options": [
                 {
-                    "text": "La \"innovaci├│n\" desplaza a los mayores.",
+                    "text": "La \"innovación\" desplaza a los mayores.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Pol├¡ticas sin metas medibles.",
+                    "text": "Políticas sin metas medibles.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Diversidad intergeneracional en el C├│digo ├ëtico.",
+                    "text": "Diversidad intergeneracional en el Código Ético.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Atracci├│n y Reinserci├│n: ┬┐Contrataci├│n +50?",
+            "question": "Atracción y Reinserción: ¿Contratación +50?",
             "options": [
                 {
                     "text": "Algoritmos descartan candidatos.",
@@ -1946,14 +1946,14 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Alianzas de reinserci├│n valorando seguridad industrial s├®nior.\nII. Pr├ícticas Externas (Servicios y Consumo)",
+                    "text": "Alianzas de reinserción valorando seguridad industrial sénior.\nII. Prácticas Externas (Servicios y Consumo)",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Pobreza Energ├®tica: ┬┐Manejo de vulnerabilidad?",
+            "question": "Pobreza Energética: ¿Manejo de vulnerabilidad?",
             "options": [
                 {
                     "text": "Cortes automatizados por impago.",
@@ -1961,7 +1961,7 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Bono social con tr├ímite burocr├ítico complejo.",
+                    "text": "Bono social con trámite burocrático complejo.",
                     "score": 2,
                     "points": 2
                 },
@@ -1973,47 +1973,47 @@ export const QUESTIONS_BY_SECTOR = {
             ]
         },
         {
-            "question": "Accesibilidad de Factura: ┬┐Comprensi├│n cognitiva?",
+            "question": "Accesibilidad de Factura: ¿Comprensión cognitiva?",
             "options": [
                 {
-                    "text": "Letra peque├▒a, tecnicismos.",
+                    "text": "Letra pequeña, tecnicismos.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Estandarizaci├│n legal.",
+                    "text": "Estandarización legal.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "\"Lectura F├ícil\", gr├íficos de alto contraste y l├¡nea de explicaci├│n telef├│nica.",
+                    "text": "\"Lectura Fácil\", gráficos de alto contraste y línea de explicación telefónica.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Digitalizaci├│n Inclusiva: ┬┐Gesti├│n comercial?",
+            "question": "Digitalización Inclusiva: ¿Gestión comercial?",
             "options": [
                 {
-                    "text": "Tr├ímites 100% online forzados.",
+                    "text": "Trámites 100% online forzados.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Bots telef├│nicos laber├¡nticos.",
+                    "text": "Bots telefónicos laberínticos.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Modo simplificado y agente humano sin barrera rob├│tica.",
+                    "text": "Modo simplificado y agente humano sin barrera robótica.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "IA Preventiva (Smart Home): ┬┐Monitoreo de bienestar?",
+            "question": "IA Preventiva (Smart Home): ¿Monitoreo de bienestar?",
             "options": [
                 {
                     "text": "Solo venta de recursos.",
@@ -2021,39 +2021,39 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Enchufes inteligentes gen├®ricos.",
+                    "text": "Enchufes inteligentes genéricos.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "An├ílisis de anomal├¡as de consumo para alertar a teleasistencia (ca├¡das, inactividad).",
+                    "text": "Análisis de anomalías de consumo para alertar a teleasistencia (caídas, inactividad).",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Autoconsumo: ┬┐Paneles solares para la Silver Economy?",
+            "question": "Autoconsumo: ¿Paneles solares para la Silver Economy?",
             "options": [
                 {
-                    "text": "Publicidad solo para j├│venes; l├¡mite de edad crediticio.",
+                    "text": "Publicidad solo para jóvenes; límite de edad crediticio.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Inversi├│n inicial alta que asusta al pensionado.",
+                    "text": "Inversión inicial alta que asusta al pensionado.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "\"Comunidades Energ├®ticas\" o pago por uso sin descapitalizaci├│n.",
+                    "text": "\"Comunidades Energéticas\" o pago por uso sin descapitalización.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Accesibilidad de Oficinas: ┬┐Espacios f├¡sicos?",
+            "question": "Accesibilidad de Oficinas: ¿Espacios físicos?",
             "options": [
                 {
                     "text": "Ruidosos, sin asientos, con escalones.",
@@ -2061,22 +2061,22 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Rampas, pero atenci├│n de pie.",
+                    "text": "Rampas, pero atención de pie.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Asientos con apoyabrazos y atenci├│n ergon├│mica individualizada.",
+                    "text": "Asientos con apoyabrazos y atención ergonómica individualizada.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Marketing Libre de Estereotipos: ┬┐Representaci├│n en sostenibilidad?",
+            "question": "Marketing Libre de Estereotipos: ¿Representación en sostenibilidad?",
             "options": [
                 {
-                    "text": "V├¡ctimas pasivas.",
+                    "text": "Víctimas pasivas.",
                     "score": 1,
                     "points": 1
                 },
@@ -2086,14 +2086,14 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Inversores activos y l├¡deres de la transici├│n ecol├│gica.",
+                    "text": "Inversores activos y líderes de la transición ecológica.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Prevenci├│n de Fraudes: ┬┐Venta \"puerta a puerta\"?",
+            "question": "Prevención de Fraudes: ¿Venta \"puerta a puerta\"?",
             "options": [
                 {
                     "text": "Venta agresiva permitida.",
@@ -2101,12 +2101,12 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Cl├íusulas de desistimiento est├índar.",
+                    "text": "Cláusulas de desistimiento estándar.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Consentimiento reforzado obligatorio para proteger de enga├▒os o coerci├│n.",
+                    "text": "Consentimiento reforzado obligatorio para proteger de engaños o coerción.",
                     "score": 3,
                     "points": 3
                 }
@@ -2115,90 +2115,90 @@ export const QUESTIONS_BY_SECTOR = {
     ],
     "Entretenimiento, Medios y Turismo": [
         {
-            "question": "Contrataci├│n y Est├®tica: ┬┐Edad frente a la c├ímara o p├║blico?",
+            "question": "Contratación y Estética: ¿Edad frente a la cámara o público?",
             "options": [
                 {
-                    "text": "Edadismo visual; perfiles exclusivamente j├│venes.",
+                    "text": "Edadismo visual; perfiles exclusivamente jóvenes.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Sin prohibici├│n, pero no en roles protag├│nicos.",
+                    "text": "Sin prohibición, pero no en roles protagónicos.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Se valora la madurez, rigor y empat├¡a en primera l├¡nea.",
+                    "text": "Se valora la madurez, rigor y empatía en primera línea.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Revisiones a Mitad de Carrera: ┬┐Para evitar estancamiento (+45)?",
+            "question": "Revisiones a Mitad de Carrera: ¿Para evitar estancamiento (+45)?",
             "options": [
                 {
-                    "text": "Desvinculaci├│n ante obsolescencia.",
+                    "text": "Desvinculación ante obsolescencia.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Cursos gen├®ricos si se piden.",
+                    "text": "Cursos genéricos si se piden.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Evaluaciones proactivas para redise├▒ar trayectorias y nuevos roles (formadores).",
+                    "text": "Evaluaciones proactivas para rediseñar trayectorias y nuevos roles (formadores).",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Formaci├│n Tecnol├│gica: ┬┐Reskilling en IA o reservas?",
+            "question": "Formación Tecnológica: ¿Reskilling en IA o reservas?",
             "options": [
                 {
-                    "text": "Solo para j├│venes.",
+                    "text": "Solo para jóvenes.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Manuales sin adaptaci├│n pedag├│gica.",
+                    "text": "Manuales sin adaptación pedagógica.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Mentor├¡a inversa (tecnolog├¡a vs. inteligencia emocional).",
+                    "text": "Mentoría inversa (tecnología vs. inteligencia emocional).",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Formaci├│n en Empat├¡a: ┬┐Personal capacitado para turistas mayores?",
+            "question": "Formación en Empatía: ¿Personal capacitado para turistas mayores?",
             "options": [
                 {
-                    "text": "Atenci├│n al cliente est├índar.",
+                    "text": "Atención al cliente estándar.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Pautas b├ísicas de movilidad (sillas de ruedas).",
+                    "text": "Pautas básicas de movilidad (sillas de ruedas).",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Formaci├│n profunda en empat├¡a, tiempos y seguridad emocional.",
+                    "text": "Formación profunda en empatía, tiempos y seguridad emocional.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Ergonom├¡a y Salud: ┬┐Cuidado f├¡sico del personal (camareras, t├®cnicos)?",
+            "question": "Ergonomía y Salud: ¿Cuidado físico del personal (camareras, técnicos)?",
             "options": [
                 {
-                    "text": "Mismo ritmo f├¡sico sin importar la edad.",
+                    "text": "Mismo ritmo físico sin importar la edad.",
                     "score": 1,
                     "points": 1
                 },
@@ -2208,17 +2208,17 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Herramientas de asistencia (camas elevables) y reubicaci├│n a menor exigencia.",
+                    "text": "Herramientas de asistencia (camas elevables) y reubicación a menor exigencia.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Transmisi├│n de Conocimiento: ┬┐Retiro de periodistas/productores?",
+            "question": "Transmisión de Conocimiento: ¿Retiro de periodistas/productores?",
             "options": [
                 {
-                    "text": "P├®rdida de contactos e industria.",
+                    "text": "Pérdida de contactos e industria.",
                     "score": 1,
                     "points": 1
                 },
@@ -2228,14 +2228,14 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "\"Tutores S├®nior\" formales.",
+                    "text": "\"Tutores Sénior\" formales.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "IA y Factor Humano: ┬┐Rol de la tecnolog├¡a?",
+            "question": "IA y Factor Humano: ¿Rol de la tecnología?",
             "options": [
                 {
                     "text": "Reemplazar personal.",
@@ -2243,19 +2243,19 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Empleado como supervisor de la m├íquina.",
+                    "text": "Empleado como supervisor de la máquina.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Tecnolog├¡a asume tareas mec├ínicas; el humano brinda cuidado emocional personalizado.\nII. Pr├ícticas Externas (Turismo, Medios y Publicidad)",
+                    "text": "Tecnología asume tareas mecánicas; el humano brinda cuidado emocional personalizado.\nII. Prácticas Externas (Turismo, Medios y Publicidad)",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Edadismo Visual: ┬┐Representaci├│n en medios?",
+            "question": "Edadismo Visual: ¿Representación en medios?",
             "options": [
                 {
                     "text": "Omitidos, o como enfermos dependientes.",
@@ -2275,15 +2275,15 @@ export const QUESTIONS_BY_SECTOR = {
             ]
         },
         {
-            "question": "Contenidos a Medida: ┬┐Espacios dedicados?",
+            "question": "Contenidos a Medida: ¿Espacios dedicados?",
             "options": [
                 {
-                    "text": "Todo enfocado a j├│venes.",
+                    "text": "Todo enfocado a jóvenes.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Programas de salud m├®dica b├ísica o nostalgia.",
+                    "text": "Programas de salud médica básica o nostalgia.",
                     "score": 2,
                     "points": 2
                 },
@@ -2295,10 +2295,10 @@ export const QUESTIONS_BY_SECTOR = {
             ]
         },
         {
-            "question": "Influencers y Marketing: ┬┐A qui├®n acuden?",
+            "question": "Influencers y Marketing: ¿A quién acuden?",
             "options": [
                 {
-                    "text": "Solo j├│venes.",
+                    "text": "Solo jóvenes.",
                     "score": 1,
                     "points": 1
                 },
@@ -2315,10 +2315,10 @@ export const QUESTIONS_BY_SECTOR = {
             ]
         },
         {
-            "question": "Producto Tur├¡stico: ┬┐Desestacionalizaci├│n?",
+            "question": "Producto Turístico: ¿Desestacionalización?",
             "options": [
                 {
-                    "text": "Paquetes est├índar iguales para todos.",
+                    "text": "Paquetes estándar iguales para todos.",
                     "score": 1,
                     "points": 1
                 },
@@ -2328,37 +2328,37 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Dise├▒o desde cero para el s├®nior, fomentando viajes todo el a├▒o (gastronom├¡a, confort).",
+                    "text": "Diseño desde cero para el sénior, fomentando viajes todo el año (gastronomía, confort).",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Accesibilidad Cognitiva: ┬┐Instalaciones hoteleras/ocio?",
+            "question": "Accesibilidad Cognitiva: ¿Instalaciones hoteleras/ocio?",
             "options": [
                 {
-                    "text": "Letra peque├▒a en men├║s y amenidades.",
+                    "text": "Letra pequeña en menús y amenidades.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Ley f├¡sica cumplida (rampas).",
+                    "text": "Ley física cumplida (rampas).",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Contraste visual, men├║s f├íciles, duchas a ras de suelo y ac├║stica controlada.",
+                    "text": "Contraste visual, menús fáciles, duchas a ras de suelo y acústica controlada.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Inclusi├│n Intergeneracional: ┬┐Convivencia en destinos?",
+            "question": "Inclusión Intergeneracional: ¿Convivencia en destinos?",
             "options": [
                 {
-                    "text": "Segregaci├│n total.",
+                    "text": "Segregación total.",
                     "score": 1,
                     "points": 1
                 },
@@ -2375,10 +2375,10 @@ export const QUESTIONS_BY_SECTOR = {
             ]
         },
         {
-            "question": "Turismo de Realidad Virtual: ┬┐Para movilidad reducida?",
+            "question": "Turismo de Realidad Virtual: ¿Para movilidad reducida?",
             "options": [
                 {
-                    "text": "Turismo es solo f├¡sico.",
+                    "text": "Turismo es solo físico.",
                     "score": 1,
                     "points": 1
                 },
@@ -2388,14 +2388,14 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Experiencias inmersivas VR 360┬║ (\"viajar sin viajar\") para combatir la soledad.",
+                    "text": "Experiencias inmersivas VR 360º (\"viajar sin viajar\") para combatir la soledad.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Comunidad: ┬┐Fidelidad de la marca?",
+            "question": "Comunidad: ¿Fidelidad de la marca?",
             "options": [
                 {
                     "text": "Mailing masivo.",
@@ -2408,19 +2408,19 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Comunidades colaborativas Peer-to-Peer gestionadas por los propios viajeros s├®nior.",
+                    "text": "Comunidades colaborativas Peer-to-Peer gestionadas por los propios viajeros sénior.",
                     "score": 3,
                     "points": 3
                 }
             ]
         }
     ],
-    "P├ÜBLICO": [
+    "PÚBLICO": [
         {
-            "question": "Relevo Generacional: ┬┐Gesti├│n del envejecimiento en el Estado?",
+            "question": "Relevo Generacional: ¿Gestión del envejecimiento en el Estado?",
             "options": [
                 {
-                    "text": "Jubilaci├│n y p├®rdida de conocimiento cr├¡tico.",
+                    "text": "Jubilación y pérdida de conocimiento crítico.",
                     "score": 1,
                     "points": 1
                 },
@@ -2437,87 +2437,87 @@ export const QUESTIONS_BY_SECTOR = {
             ]
         },
         {
-            "question": "Formaci├│n en Gerontolog├¡a: ┬┐Trato humanizado?",
+            "question": "Formación en Gerontología: ¿Trato humanizado?",
             "options": [
                 {
-                    "text": "Nula capacitaci├│n.",
+                    "text": "Nula capacitación.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Directrices espor├ídicas.",
+                    "text": "Directrices esporádicas.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Escuelas de funcionarios y atenci├│n con enfoque de derechos.",
+                    "text": "Escuelas de funcionarios y atención con enfoque de derechos.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Jubilaci├│n en el Estado: ┬┐Apoyo al funcionario?",
+            "question": "Jubilación en el Estado: ¿Apoyo al funcionario?",
             "options": [
                 {
-                    "text": "Tr├ímite burocr├ítico abrupto.",
+                    "text": "Trámite burocrático abrupto.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Charlas gen├®ricas de pensi├│n.",
+                    "text": "Charlas genéricas de pensión.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Preparaci├│n integral (financiera, psicol├│gica, nuevo proyecto).",
+                    "text": "Preparación integral (financiera, psicológica, nuevo proyecto).",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Alfabetizaci├│n Tecnol├│gica (e-Government): ┬┐Reskilling interno?",
+            "question": "Alfabetización Tecnológica (e-Government): ¿Reskilling interno?",
             "options": [
                 {
-                    "text": "Imposici├│n de sistemas (brecha interna).",
+                    "text": "Imposición de sistemas (brecha interna).",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Cursos de ofim├ítica gen├®ricos.",
+                    "text": "Cursos de ofimática genéricos.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Mentor├¡a inversa garantizando liderazgo s├®nior en digitalizaci├│n.",
+                    "text": "Mentoría inversa garantizando liderazgo sénior en digitalización.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Salud Laboral y Ergonom├¡a: ┬┐Para ├íreas operativas p├║blicas?",
+            "question": "Salud Laboral y Ergonomía: ¿Para áreas operativas públicas?",
             "options": [
                 {
-                    "text": "Alta carga f├¡sica, alto ausentismo.",
+                    "text": "Alta carga física, alto ausentismo.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "Prevenci├│n de riesgos b├ísica.",
+                    "text": "Prevención de riesgos básica.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Evaluaciones ergon├│micas y reasignaci├│n preventiva.",
+                    "text": "Evaluaciones ergonómicas y reasignación preventiva.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Perspectiva de Edad: ┬┐Objetivo de gobierno?",
+            "question": "Perspectiva de Edad: ¿Objetivo de gobierno?",
             "options": [
                 {
                     "text": "No existe enfoque generacional interno.",
@@ -2530,7 +2530,7 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Integrado en planificaci├│n estrat├®gica y presupuesto.",
+                    "text": "Integrado en planificación estratégica y presupuesto.",
                     "score": 3,
                     "points": 3
                 }
@@ -2540,24 +2540,24 @@ export const QUESTIONS_BY_SECTOR = {
             "question": "Accesibilidad de Edificios Gubernamentales:",
             "options": [
                 {
-                    "text": "Barreras arquitect├│nicas.",
+                    "text": "Barreras arquitectónicas.",
                     "score": 1,
                     "points": 1
                 },
                 {
-                    "text": "M├¡nimo legal (rampas).",
+                    "text": "Mínimo legal (rampas).",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Auditor├¡as t├®cnicas de accesibilidad universal peri├│dicas.\nII. Pr├ícticas Externas (Ciudadan├¡a y Pol├¡ticas P├║blicas)",
+                    "text": "Auditorías técnicas de accesibilidad universal periódicas.\nII. Prácticas Externas (Ciudadanía y Políticas Públicas)",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Participaci├│n C├¡vica: ┬┐Liderazgo en decisiones?",
+            "question": "Participación Cívica: ¿Liderazgo en decisiones?",
             "options": [
                 {
                     "text": "Receptor pasivo de asistencia.",
@@ -2565,22 +2565,22 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Consultas espor├ídicas.",
+                    "text": "Consultas esporádicas.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Escuelas de dirigentes, cabildos y co-creaci├│n de pol├¡ticas.",
+                    "text": "Escuelas de dirigentes, cabildos y co-creación de políticas.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Ciudades Amigables (OMS): ┬┐Modelo urbano?",
+            "question": "Ciudades Amigables (OMS): ¿Modelo urbano?",
             "options": [
                 {
-                    "text": "Prioridad a veh├¡culos, sin rampas.",
+                    "text": "Prioridad a vehículos, sin rampas.",
                     "score": 1,
                     "points": 1
                 },
@@ -2590,17 +2590,17 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Adhesi├│n a la Red OMS, evaluaci├│n transversal y planes de mejora.",
+                    "text": "Adhesión a la Red OMS, evaluación transversal y planes de mejora.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Inclusi├│n Digital Ciudadana: ┬┐Frente a tr├ímites online?",
+            "question": "Inclusión Digital Ciudadana: ¿Frente a trámites online?",
             "options": [
                 {
-                    "text": "Exclusi├│n por obligatoriedad web.",
+                    "text": "Exclusión por obligatoriedad web.",
                     "score": 1,
                     "points": 1
                 },
@@ -2610,14 +2610,14 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 2
                 },
                 {
-                    "text": "Canales preferenciales y alfabetizaci├│n digital comunitaria sostenida.",
+                    "text": "Canales preferenciales y alfabetización digital comunitaria sostenida.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Sistemas Nacionales de Cuidados: ┬┐Pol├¡ticas a largo plazo?",
+            "question": "Sistemas Nacionales de Cuidados: ¿Políticas a largo plazo?",
             "options": [
                 {
                     "text": "Cuidado recae solo en familias (mujeres).",
@@ -2637,7 +2637,7 @@ export const QUESTIONS_BY_SECTOR = {
             ]
         },
         {
-            "question": "Educaci├│n Previsional: ┬┐Informaci├│n financiera p├║blica?",
+            "question": "Educación Previsional: ¿Información financiera pública?",
             "options": [
                 {
                     "text": "Jerga incomprensible.",
@@ -2645,19 +2645,19 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Informaci├│n web pasiva.",
+                    "text": "Información web pasiva.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Programas de formaci├│n masiva sobre derechos y prevenci├│n de abuso.",
+                    "text": "Programas de formación masiva sobre derechos y prevención de abuso.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Articulaci├│n Sociosanitaria: ┬┐Salud + Social?",
+            "question": "Articulación Sociosanitaria: ¿Salud + Social?",
             "options": [
                 {
                     "text": "Compartimentos estancos.",
@@ -2665,19 +2665,19 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "Coordinaci├│n informal en papel.",
+                    "text": "Coordinación informal en papel.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Gobernanza con interoperabilidad de datos y detecci├│n proactiva de fragilidad.",
+                    "text": "Gobernanza con interoperabilidad de datos y detección proactiva de fragilidad.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Infraestructura Comunitaria: ┬┐Envejecimiento activo territorial?",
+            "question": "Infraestructura Comunitaria: ¿Envejecimiento activo territorial?",
             "options": [
                 {
                     "text": "Sin espacios de esparcimiento seguros.",
@@ -2685,19 +2685,19 @@ export const QUESTIONS_BY_SECTOR = {
                     "points": 1
                 },
                 {
-                    "text": "├üreas verdes gen├®ricas.",
+                    "text": "Áreas verdes genéricas.",
                     "score": 2,
                     "points": 2
                 },
                 {
-                    "text": "Plazas ergon├│micas, veredas reparadas y dise├▒o universal.",
+                    "text": "Plazas ergonómicas, veredas reparadas y diseño universal.",
                     "score": 3,
                     "points": 3
                 }
             ]
         },
         {
-            "question": "Comunicaci├│n Gubernamental: ┬┐Libre de edadismo?",
+            "question": "Comunicación Gubernamental: ¿Libre de edadismo?",
             "options": [
                 {
                     "text": "Paternalista (\"abuelos\", \"pasivos\").",
