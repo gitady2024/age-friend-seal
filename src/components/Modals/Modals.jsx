@@ -281,10 +281,57 @@ function Modals({ language, activeModal, contactLevel, currentUser, onClose, onO
                     <option value="publico"><FormattedMessage id="Modals.103" /></option>
                   </select>
                 </div>
-                {upgradeSector && (
+                {upgradeSector === 'publico' && (
                   <div className="form-group">
-                    <label htmlFor="upg-subsector">{upgradeSector === 'publico' ? <FormattedMessage id="Modals.104" /> : <FormattedMessage id="Modals.109" />}</label>
-                    <input id="upg-subsector" name="subsector" required />
+                    <label htmlFor="upg-subsector">
+                      {language === 'es' ? 'Vertical Sector Público' : language === 'pt' ? 'Vertical Setor Público' : 'Public Sector Vertical'}
+                    </label>
+                    <select id="upg-subsector" name="subsector" required>
+                      <option value="PÚBLICO">
+                        {language === 'es' || language === 'pt'
+                          ? "Relacionado con el desarrollo de 'Ciudades Amigables con las Personas Mayores', la creación de Sistemas Nacionales de Cuidados y la inclusión digital ciudadana (e-Government)"
+                          : "Related to the development of 'Age-Friendly Cities', the creation of National Care Systems, and citizen digital inclusion (e-Government)"}
+                      </option>
+                    </select>
+                  </div>
+                )}
+                {upgradeSector === 'privado' && (
+                  <div className="form-group">
+                    <label htmlFor="upg-subsector">
+                      {language === 'es' ? 'Vertical Sector Privado' : language === 'pt' ? 'Vertical Setor Privado' : 'Private Sector Vertical'}
+                    </label>
+                    <select id="upg-subsector" name="subsector" required>
+                      <option value="">
+                        {language === 'es' ? 'Seleccionar vertical...' : language === 'pt' ? 'Selecionar vertical...' : 'Select vertical...'}
+                      </option>
+                      <option value="Finanzas y Seguro">
+                        {language === 'es' ? 'Finanzas y Seguros' : language === 'pt' ? 'Finanças e Seguros' : 'Finance and Insurance'}
+                      </option>
+                      <option value="Salud y Farmacia">
+                        {language === 'es' ? 'Salud, Farmacia y Sociosanitario' : language === 'pt' ? 'Saúde, Farmácia e Sociossanitário' : 'Health, Pharmacy, and Social Care'}
+                      </option>
+                      <option value="Tecnologia e Software">
+                        {language === 'es' ? 'Tecnología y Software (AgeTech)' : language === 'pt' ? 'Tecnologia e Software (AgeTech)' : 'Technology and Software (AgeTech)'}
+                      </option>
+                      <option value="Comercio y Distribución">
+                        {language === 'es' ? 'Comercio y Distribución (Retail)' : language === 'pt' ? 'Comércio e Distribuição (Retail)' : 'Retail and Distribution'}
+                      </option>
+                      <option value="Manufactura e Industria">
+                        {language === 'es' ? 'Manufactura e Industria' : language === 'pt' ? 'Manufatura e Indústria' : 'Manufacturing and Industry'}
+                      </option>
+                      <option value="Educación">
+                        {language === 'es' ? 'Educación y Formación Continua' : language === 'pt' ? 'Educação e Formação Contínua' : 'Education and Continuing Education'}
+                      </option>
+                      <option value="Bienes Raíces, Urbanismo y Vivienda (Senior Living)">
+                        {language === 'es' ? 'Bienes Raíces, Urbanismo y Vivienda (Senior Living)' : language === 'pt' ? 'Bens Raízes, Urbanismo e Habitação (Senior Living)' : 'Real Estate, Urbanism, and Housing (Senior Living)'}
+                      </option>
+                      <option value="Energía y Recursos Naturales">
+                        {language === 'es' ? 'Energía, Agua y Servicios Básicos' : language === 'pt' ? 'Energia, Água e Serviços Básicos' : 'Energy, Water, and Basic Services'}
+                      </option>
+                      <option value="Entretenimiento, Medios y Turismo">
+                        {language === 'es' ? 'Ocio, Entretenimiento, Medios y Turismo Silver' : language === 'pt' ? 'Lazer, Entretenimento, Mídia e Turismo Silver' : 'Leisure, Entertainment, Media, and Silver Tourism'}
+                      </option>
+                    </select>
                   </div>
                 )}
                 <div className="form-group">
@@ -318,20 +365,111 @@ function Modals({ language, activeModal, contactLevel, currentUser, onClose, onO
   );
 }
 
-function CompanyFields() {
+function CompanyFields({ prefix = 'auth-reg', intl, language }) {
+  const [sectorType, setSectorType] = useState('');
+  const [privateVertical, setPrivateVertical] = useState('');
+
   return (
     <>
-      <div className="form-group" id="field-company-sector">
-        <label htmlFor="auth-reg-sector">Sector</label>
-        <input id="auth-reg-sector" name="sector" required />
+      <div className="form-group" id={`${prefix}-company-sector`}>
+        <label htmlFor={`${prefix}-sector`}>
+          {language === 'es' ? 'Sector' : language === 'pt' ? 'Setor' : 'Sector'}
+        </label>
+        <select
+          id={`${prefix}-sector`}
+          name="sector"
+          required
+          value={sectorType}
+          onChange={(event) => setSectorType(event.target.value)}
+        >
+          <option value="">
+            {language === 'es' ? 'Seleccionar sector...' : language === 'pt' ? 'Selecionar setor...' : 'Select sector...'}
+          </option>
+          <option value="privado">
+            {language === 'es' ? 'Sector Privado' : language === 'pt' ? 'Setor Privado' : 'Private Sector'}
+          </option>
+          <option value="publico">
+            {language === 'es' ? 'Sector Público' : language === 'pt' ? 'Setor Público' : 'Public Sector'}
+          </option>
+        </select>
       </div>
-      <div className="form-group" id="field-private-vertical">
-        <label htmlFor="auth-reg-subsector">Detalle del sector</label>
-        <input id="auth-reg-subsector" name="subsector" required />
-      </div>
-      <div className="form-group" id="field-company-role">
-        <label htmlFor="auth-reg-role">Cargo</label>
-        <input type="text" id="auth-reg-role" name="role" required />
+
+      {sectorType === 'publico' && (
+        <div className="form-group" id={`${prefix}-public-vertical`}>
+          <label htmlFor={`${prefix}-subsector`}>
+            {language === 'es' ? 'Vertical Sector Público' : language === 'pt' ? 'Vertical Setor Público' : 'Public Sector Vertical'}
+          </label>
+          <select
+            id={`${prefix}-subsector`}
+            name="subsector"
+            required
+          >
+            <option value="PÚBLICO">
+              {language === 'es' || language === 'pt'
+                ? "Relacionado con el desarrollo de 'Ciudades Amigables con las Personas Mayores', la creación de Sistemas Nacionales de Cuidados y la inclusión digital ciudadana (e-Government)"
+                : "Related to the development of 'Age-Friendly Cities', the creation of National Care Systems, and citizen digital inclusion (e-Government)"}
+            </option>
+          </select>
+        </div>
+      )}
+
+      {sectorType === 'privado' && (
+        <div className="form-group" id={`${prefix}-private-vertical`}>
+          <label htmlFor={`${prefix}-subsector`}>
+            {language === 'es' ? 'Vertical Sector Privado' : language === 'pt' ? 'Vertical Setor Privado' : 'Private Sector Vertical'}
+          </label>
+          <select
+            id={`${prefix}-subsector`}
+            name="subsector"
+            required
+            value={privateVertical}
+            onChange={(event) => setPrivateVertical(event.target.value)}
+          >
+            <option value="">
+              {language === 'es' ? 'Seleccionar vertical...' : language === 'pt' ? 'Selecionar vertical...' : 'Select vertical...'}
+            </option>
+            <option value="Finanzas y Seguro">
+              {language === 'es' ? 'Finanzas y Seguros' : language === 'pt' ? 'Finanças e Seguros' : 'Finance and Insurance'}
+            </option>
+            <option value="Salud y Farmacia">
+              {language === 'es' ? 'Salud, Farmacia y Sociosanitario' : language === 'pt' ? 'Saúde, Farmácia e Sociossanitário' : 'Health, Pharmacy, and Social Care'}
+            </option>
+            <option value="Tecnologia e Software">
+              {language === 'es' ? 'Tecnología y Software (AgeTech)' : language === 'pt' ? 'Tecnologia e Software (AgeTech)' : 'Technology and Software (AgeTech)'}
+            </option>
+            <option value="Comercio y Distribución">
+              {language === 'es' ? 'Comercio y Distribución (Retail)' : language === 'pt' ? 'Comércio e Distribuição (Retail)' : 'Retail and Distribution'}
+            </option>
+            <option value="Manufactura e Industria">
+              {language === 'es' ? 'Manufactura e Industria' : language === 'pt' ? 'Manufatura e Indústria' : 'Manufacturing and Industry'}
+            </option>
+            <option value="Educación">
+              {language === 'es' ? 'Educación y Formación Continua' : language === 'pt' ? 'Educação e Formação Contínua' : 'Education and Continuing Education'}
+            </option>
+            <option value="Bienes Raíces, Urbanismo y Vivienda (Senior Living)">
+              {language === 'es' ? 'Bienes Raíces, Urbanismo y Vivienda (Senior Living)' : language === 'pt' ? 'Bens Raízes, Urbanismo e Habitação (Senior Living)' : 'Real Estate, Urbanism, and Housing (Senior Living)'}
+            </option>
+            <option value="Energía y Recursos Naturales">
+              {language === 'es' ? 'Energía, Agua y Servicios Básicos' : language === 'pt' ? 'Energia, Água e Serviços Básicos' : 'Energy, Water, and Basic Services'}
+            </option>
+            <option value="Entretenimiento, Medios y Turismo">
+              {language === 'es' ? 'Ocio, Entretenimiento, Medios y Turismo Silver' : language === 'pt' ? 'Lazer, Entretenimento, Mídia e Turismo Silver' : 'Leisure, Entertainment, Media, and Silver Tourism'}
+            </option>
+          </select>
+        </div>
+      )}
+
+      <div className="form-group" id={`${prefix}-company-role`}>
+        <label htmlFor={`${prefix}-role`}>
+          {language === 'es' ? 'Cargo' : language === 'pt' ? 'Cargo' : 'Role'}
+        </label>
+        <input
+          type="text"
+          id={`${prefix}-role`}
+          name="role"
+          required
+          placeholder={language === 'es' ? 'Ej. Director de RRHH' : language === 'pt' ? 'Ex. Diretor de RH' : 'e.g. HR Director'}
+        />
       </div>
     </>
   );

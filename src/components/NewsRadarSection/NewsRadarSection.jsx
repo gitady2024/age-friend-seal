@@ -38,6 +38,30 @@ const fallback = {
       source: "WHO",
       category: "Politicas",
       pubDate: new Date().toISOString()
+    },
+    {
+      title: "El impacto económico del envejecimiento activo",
+      description: "Fomentar el empleo sénior y adaptar los puestos de trabajo incrementa el PIB de los países de la OCDE.",
+      link: "https://www.oecd.org",
+      source: "OCDE",
+      category: "Economía",
+      pubDate: new Date().toISOString()
+    },
+    {
+      title: "Diseño inclusivo para interfaces digitales",
+      description: "El desarrollo de aplicaciones adaptadas para mayores de 60 años mejora un 40% la retención y facilidad de uso.",
+      link: "https://www.w3.org/WAI/",
+      source: "W3C WAI",
+      category: "Innovacion",
+      pubDate: new Date().toISOString()
+    },
+    {
+      title: "Ciudades amigables: el nuevo estándar urbano",
+      description: "La Red Global de la OMS promueve espacios públicos sin barreras físicas y con transporte accesible.",
+      link: "https://extranet.who.int/agefriendlyworld/",
+      source: "WHO",
+      category: "Ecosistema",
+      pubDate: new Date().toISOString()
     }
   ],
   en: [
@@ -56,6 +80,30 @@ const fallback = {
       source: "WHO",
       category: "Policies",
       pubDate: new Date().toISOString()
+    },
+    {
+      title: "The economic impact of active ageing",
+      description: "Promoting senior employment and adapting workplace ergonomics boosts GDP across OECD nations.",
+      link: "https://www.oecd.org",
+      source: "OECD",
+      category: "Economy",
+      pubDate: new Date().toISOString()
+    },
+    {
+      title: "Inclusive design for digital interfaces",
+      description: "Developing software applications tailored for adults over 60 increases retention and usability by 40%.",
+      link: "https://www.w3.org/WAI/",
+      source: "W3C WAI",
+      category: "Innovation",
+      pubDate: new Date().toISOString()
+    },
+    {
+      title: "Age-friendly cities: the new urban standard",
+      description: "WHO's Global Network promotes public spaces with zero physical barriers and accessible public transit.",
+      link: "https://extranet.who.int/agefriendlyworld/",
+      source: "WHO",
+      category: "Ecosystem",
+      pubDate: new Date().toISOString()
     }
   ],
   pt: [
@@ -73,6 +121,30 @@ const fallback = {
       link: "https://www.who.int/es/news-room/questions-and-answers/item/ageing-ageism",
       source: "WHO",
       category: "Políticas",
+      pubDate: new Date().toISOString()
+    },
+    {
+      title: "O impacto económico do envelhecimento ativo",
+      description: "Fomentar o emprego sénior e adaptar os postos de trabalho aumenta o PIB dos países da OCDE.",
+      link: "https://www.oecd.org",
+      source: "OCDE",
+      category: "Economia",
+      pubDate: new Date().toISOString()
+    },
+    {
+      title: "Design inclusivo para interfaces digitais",
+      description: "O desenvolvimento de aplicações adaptadas para idosos com mais de 60 anos melhora em 40% a retenção.",
+      link: "https://www.w3.org/WAI/",
+      source: "W3C WAI",
+      category: "Inovação",
+      pubDate: new Date().toISOString()
+    },
+    {
+      title: "Cidades amigáveis: o novo padrão urbano",
+      description: "A Rede Global da OMS promove espaços públicos sem barreiras físicas e com transporte acessível.",
+      link: "https://extranet.who.int/agefriendlyworld/",
+      source: "WHO",
+      category: "Ecossistema",
       pubDate: new Date().toISOString()
     }
   ]

@@ -27,6 +27,21 @@ const getTranslation = (obj, lang) => {
   return String(obj);
 };
 
+const mapSectorKey = (subsector) => {
+  if (!subsector) return "Comercio y Distribución";
+  const normalized = subsector.toLowerCase();
+  if (normalized.includes("finanz")) return "Finanzas y Seguro";
+  if (normalized.includes("salud") || normalized.includes("farmac")) return "Salud y Farmacia";
+  if (normalized.includes("tecnolog") || normalized.includes("software")) return "Tecnologia e Software";
+  if (normalized.includes("comercio") || normalized.includes("retail")) return "Comercio y Distribución";
+  if (normalized.includes("manufactura") || normalized.includes("industria")) return "Manufactura e Industria";
+  if (normalized.includes("educac")) return "Educación";
+  if (normalized.includes("energia") || normalized.includes("agua") || normalized.includes("recursos")) return "Energía y Recursos Naturales";
+  if (normalized.includes("ocio") || normalized.includes("entretenimiento") || normalized.includes("turismo")) return "Entretenimiento, Medios y Turismo";
+  if (normalized.includes("público") || normalized.includes("publico")) return "PÚBLICO";
+  return "Comercio y Distribución";
+};
+
 function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPayment }) {
   const intl = useIntl();
   const sectionRef = useRef(null);
@@ -51,13 +66,8 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
   useEffect(() => {
     let newQuestions = defaultQuestions;
     if (currentUser && currentUser.type === 'empresa') {
-      let sector = currentUser.sector === 'publico' ? 'Sector Público' : (currentUser.subsector || "Finanzas y Seguro");
-      if (sector === 'Sector Público') {
-        sector = Object.keys(QUESTIONS_BY_SECTOR).find(k => k.includes('BLICO')) || "Comercio y Distribución";
-      } else if (!QUESTIONS_BY_SECTOR[sector]) {
-        sector = Object.keys(QUESTIONS_BY_SECTOR).find(k => k.includes(currentUser.subsector)) || "Comercio y Distribución";
-      }
-      newQuestions = QUESTIONS_BY_SECTOR[sector] || defaultQuestions;
+      const sectorKey = mapSectorKey(currentUser.sector === 'publico' ? 'PÚBLICO' : currentUser.subsector);
+      newQuestions = QUESTIONS_BY_SECTOR[sectorKey] || defaultQuestions;
     }
     
     if (newQuestions !== currentQuestions) {
@@ -100,7 +110,7 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
   const handleRegister = (event) => {
     event.preventDefault();
     const sector = sectorType || '';
-    const subsector = sector === 'publico' ? registrationForm.publicLevel : registrationForm.privateVertical;
+    const subsector = sector === 'publico' ? 'PÚBLICO' : registrationForm.privateVertical;
     onUserChange({
       type: registrationType,
       name: registrationForm.name,
@@ -290,24 +300,29 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                       </div>
                       {sectorType === 'publico' && (
                         <div className="form-group" id="quiz-field-public-level">
-                          <label htmlFor="quiz-reg-public-level"><FormattedMessage id="SelfDiagnosticSection.026" /></label>
+                          <label htmlFor="quiz-reg-public-level">
+                            {language === 'es' ? 'Vertical Sector Público' : language === 'pt' ? 'Vertical Setor Público' : 'Public Sector Vertical'}
+                          </label>
                           <select
                             id="quiz-reg-public-level"
                             name="publicLevel"
                             required
-                            value={registrationForm.publicLevel}
+                            value={registrationForm.publicLevel || 'PÚBLICO'}
                             onChange={(event) => updateRegistrationField('publicLevel', event.target.value)}
                           >
-                            <option value=""><FormattedMessage id="SelfDiagnosticSection.027" /></option>
-                            <option value="municipal"><FormattedMessage id="SelfDiagnosticSection.028" /></option>
-                            <option value="provincial"><FormattedMessage id="SelfDiagnosticSection.029" /></option>
-                            <option value="nacional"><FormattedMessage id="SelfDiagnosticSection.030" /></option>
+                            <option value="PÚBLICO">
+                              {language === 'es' || language === 'pt'
+                                ? "Relacionado con el desarrollo de 'Ciudades Amigables con las Personas Mayores', la creación de Sistemas Nacionales de Cuidados y la inclusión digital ciudadana (e-Government)"
+                                : "Related to the development of 'Age-Friendly Cities', the creation of National Care Systems, and citizen digital inclusion (e-Government)"}
+                            </option>
                           </select>
                         </div>
                       )}
                       {sectorType === 'privado' && (
                         <div className="form-group" id="quiz-field-private-vertical">
-                          <label htmlFor="quiz-reg-private-vertical"><FormattedMessage id="SelfDiagnosticSection.031" /></label>
+                          <label htmlFor="quiz-reg-private-vertical">
+                            {language === 'es' ? 'Vertical Sector Privado' : language === 'pt' ? 'Vertical Setor Privado' : 'Private Sector Vertical'}
+                          </label>
                           <select
                             id="quiz-reg-private-vertical"
                             name="privateVertical"
@@ -315,16 +330,36 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                             value={registrationForm.privateVertical}
                             onChange={(event) => updateRegistrationField('privateVertical', event.target.value)}
                           >
-                            <option value=""><FormattedMessage id="SelfDiagnosticSection.032" /></option>
-                            <option value="Finanzas y Seguro"><FormattedMessage id="SelfDiagnosticSection.033" /></option>
-                            <option value="Salud y Farmacia"><FormattedMessage id="SelfDiagnosticSection.034" /></option>
-                            <option value="Tecnologia y Software"><FormattedMessage id="SelfDiagnosticSection.035" /></option>
-                            <option value="Comercio y Distribucion"><FormattedMessage id="SelfDiagnosticSection.036" /></option>
-                            <option value="Manufactura e Industria">Manufactura e Industria</option>
-                            <option value="Educacion">Educación</option>
-                            <option value="Bienes Raices y Construccion">Bienes Raíces y Construcción</option>
-                            <option value="Energia y Recursos Naturales">Energía y Recursos Naturales</option>
-                            <option value="Entretenimiento, Medios y Turismo">Entretenimiento, Medios y Turismo</option>
+                            <option value="">
+                              {language === 'es' ? 'Seleccionar vertical...' : language === 'pt' ? 'Selecionar vertical...' : 'Select vertical...'}
+                            </option>
+                            <option value="Finanzas y Seguro">
+                              {language === 'es' ? 'Finanzas y Seguros' : language === 'pt' ? 'Finanças e Seguros' : 'Finance and Insurance'}
+                            </option>
+                            <option value="Salud y Farmacia">
+                              {language === 'es' ? 'Salud, Farmacia y Sociosanitario' : language === 'pt' ? 'Saúde, Farmácia e Sociossanitário' : 'Health, Pharmacy, and Social Care'}
+                            </option>
+                            <option value="Tecnologia e Software">
+                              {language === 'es' ? 'Tecnología y Software (AgeTech)' : language === 'pt' ? 'Tecnologia e Software (AgeTech)' : 'Technology and Software (AgeTech)'}
+                            </option>
+                            <option value="Comercio y Distribución">
+                              {language === 'es' ? 'Comercio y Distribución (Retail)' : language === 'pt' ? 'Comércio e Distribuição (Retail)' : 'Retail and Distribution'}
+                            </option>
+                            <option value="Manufactura e Industria">
+                              {language === 'es' ? 'Manufactura e Industria' : language === 'pt' ? 'Manufatura e Indústria' : 'Manufacturing and Industry'}
+                            </option>
+                            <option value="Educación">
+                              {language === 'es' ? 'Educación y Formación Continua' : language === 'pt' ? 'Educação e Formação Contínua' : 'Education and Continuing Education'}
+                            </option>
+                            <option value="Bienes Raíces, Urbanismo y Vivienda (Senior Living)">
+                              {language === 'es' ? 'Bienes Raíces, Urbanismo y Vivienda (Senior Living)' : language === 'pt' ? 'Bens Raízes, Urbanismo e Habitação (Senior Living)' : 'Real Estate, Urbanism, and Housing (Senior Living)'}
+                            </option>
+                            <option value="Energía y Recursos Naturales">
+                              {language === 'es' ? 'Energía, Agua y Servicios Básicos' : language === 'pt' ? 'Energia, Água e Serviços Básicos' : 'Energy, Water, and Basic Services'}
+                            </option>
+                            <option value="Entretenimiento, Medios y Turismo">
+                              {language === 'es' ? 'Ocio, Entretenimiento, Medios y Turismo Silver' : language === 'pt' ? 'Lazer, Entretenimento, Mídia e Turismo Silver' : 'Leisure, Entertainment, Media, and Silver Tourism'}
+                            </option>
                           </select>
                         </div>
                       )}
