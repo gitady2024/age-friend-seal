@@ -122,7 +122,7 @@ export const ptMessages = {
   "Footer.010": "Termos e Condições",
   "Footer.011": "|",
   "Footer.012": "English (EN)",
-  "Footer.013": "© 2026 Instituto de Certificação Internacional Age-Friendly. Todos os direitos reservados.",
+  "Footer.013": "© 2026 Age Friendly Seal Certification. Todos os direitos reservados.",
   "Footer.014": "Desenvolvido no âmbito da Norma ISO 25550 e das melhores práticas intergeracionais.",
   "Hero.001": "ECONOMIA GLOBAL DE PRATA",
   "Hero.002": "Capture a Oportunidade Oculta do Mercado Sênior",
