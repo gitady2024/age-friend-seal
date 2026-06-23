@@ -98,7 +98,7 @@ function App() {
         onOpenAccount={() => setActiveModal('account')}
         onUserChange={setCurrentUser}
       />
-      <Footer language={language} />
+      <Footer language={language} onLanguageChange={setLanguage} />
       <AccessibilityWidget language={language} />
     </IntlProvider>
   );

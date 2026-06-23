@@ -113,7 +113,7 @@ export const esMessages = {
   "Footer.001": "Age Friend Seal Logo",
   "Footer.002": "Age",
   "Footer.003": "Friend Seal",
-  "Footer.004": "Economía Plateada",
+  "Footer.004": "Inicio",
   "Footer.005": "|",
   "Footer.006": "Alianzas",
   "Footer.007": "|",

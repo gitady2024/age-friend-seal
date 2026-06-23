@@ -113,7 +113,7 @@ export const ptMessages = {
   "Footer.001": "Age Friend Seal Logo",
   "Footer.002": "Age",
   "Footer.003": "Friend Seal",
-  "Footer.004": "Economia Prateada",
+  "Footer.004": "Início",
   "Footer.005": "|",
   "Footer.006": "Alianças",
   "Footer.007": "|",

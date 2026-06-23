@@ -113,7 +113,7 @@ export const enMessages = {
   "Footer.001": "Age Friend Seal Logo",
   "Footer.002": "Age",
   "Footer.003": "Friend Seal",
-  "Footer.004": "Silver Economy",
+  "Footer.004": "Home",
   "Footer.005": "|",
   "Footer.006": "Alliances",
   "Footer.007": "|",
