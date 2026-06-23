@@ -15,11 +15,11 @@ function Footer({ language, onLanguageChange }) {
   };
 
   const getPrivacidadLink = () => {
-    return language === 'en' ? 'info/privacidad_en.html' : 'info/privacidad.html';
+    return language === 'en' ? '/info/privacidad_en.html' : '/info/privacidad.html';
   };
 
   const getTerminosLink = () => {
-    return language === 'en' ? 'info/terminos_en.html' : 'info/terminos.html';
+    return language === 'en' ? '/info/terminos_en.html' : '/info/terminos.html';
   };
 
   return (
@@ -66,29 +66,59 @@ function Footer({ language, onLanguageChange }) {
               transition: 'var(--transition-smooth)'
             }} onMouseOver={(e) => { e.currentTarget.style.color='var(--text-primary)' }} onMouseOut={(e) => { e.currentTarget.style.color='var(--text-muted)' }}><FormattedMessage id="Footer.010" /></a>
             <FormattedMessage id="Footer.011" />
-            <a href="?lang=es" onClick={(e) => handleLangChange(e, 'es')} style={{
-              color: language === 'es' ? 'var(--text-primary)' : 'var(--text-muted)',
-              textDecoration: 'none',
-              margin: '0 5px',
-              transition: 'var(--transition-smooth)',
-              fontWeight: 'bold'
-            }} onMouseOver={(e) => { e.currentTarget.style.color='var(--text-primary)' }} onMouseOut={(e) => { e.currentTarget.style.color = language === 'es' ? 'var(--text-primary)' : 'var(--text-muted)' }}>Español (ES)</a>
-            <span style={{ color: 'var(--text-muted)', margin: '0 2px' }}>|</span>
-            <a href="?lang=en" onClick={(e) => handleLangChange(e, 'en')} style={{
-              color: language === 'en' ? 'var(--text-primary)' : 'var(--text-muted)',
-              textDecoration: 'none',
-              margin: '0 5px',
-              transition: 'var(--transition-smooth)',
-              fontWeight: 'bold'
-            }} onMouseOver={(e) => { e.currentTarget.style.color='var(--text-primary)' }} onMouseOut={(e) => { e.currentTarget.style.color = language === 'en' ? 'var(--text-primary)' : 'var(--text-muted)' }}>English (EN)</a>
-            <span style={{ color: 'var(--text-muted)', margin: '0 2px' }}>|</span>
-            <a href="?lang=pt" onClick={(e) => handleLangChange(e, 'pt')} style={{
-              color: language === 'pt' ? 'var(--text-primary)' : 'var(--text-muted)',
-              textDecoration: 'none',
-              margin: '0 5px',
-              transition: 'var(--transition-smooth)',
-              fontWeight: 'bold'
-            }} onMouseOver={(e) => { e.currentTarget.style.color='var(--text-primary)' }} onMouseOut={(e) => { e.currentTarget.style.color = language === 'pt' ? 'var(--text-primary)' : 'var(--text-muted)' }}>Português (PT)</a>
+            <div className="footer-lang-dropdown" style={{ marginLeft: '10px' }}>
+              <a href="#" className="nav-dropdown-toggle lang-switch-btn" onClick={(e) => e.preventDefault()} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 'bold' }}>
+                {language === 'es' ? (
+                  <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2" style={{ width: '16px', height: '11px', borderRadius: '1px', margin: 0 }} width="16" height="11">
+                    <rect width="3" height="2" fill="#c60b1e" />
+                    <rect width="3" height="1" y="0.5" fill="#ffc400" />
+                  </svg>
+                ) : language === 'pt' ? (
+                  <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" style={{ width: '16px', height: '11px', borderRadius: '1px', margin: 0 }} width="16" height="11">
+                    <rect width="600" height="400" fill="#006600"/>
+                    <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
+                    <circle cx="300" cy="200" r="100" fill="#003399"/>
+                  </svg>
+                ) : (
+                  <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" style={{ width: '16px', height: '11px', borderRadius: '1px', margin: 0 }} width="16" height="11">
+                    <rect width="60" height="30" fill="#012169" />
+                    <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6" />
+                    <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" strokeWidth="2" />
+                    <path d="M30,0 V30 M0,15 H60" stroke="#fff" strokeWidth="10" />
+                    <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" strokeWidth="6" />
+                  </svg>
+                )}
+                {intl.formatMessage({ id: `language.${language}` })}
+                <span style={{ fontSize: '0.7em', marginLeft: 4 }}>▼</span>
+              </a>
+              <div className="footer-dropdown-menu">
+                <a href="?lang=es" onClick={(e) => handleLangChange(e, 'es')} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2" style={{ width: '16px', height: '11px', borderRadius: '1px', margin: 0 }} width="16" height="11">
+                    <rect width="3" height="2" fill="#c60b1e" />
+                    <rect width="3" height="1" y="0.5" fill="#ffc400" />
+                  </svg>
+                  Español
+                </a>
+                <a href="?lang=en" onClick={(e) => handleLangChange(e, 'en')} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" style={{ width: '16px', height: '11px', borderRadius: '1px', margin: 0 }} width="16" height="11">
+                    <rect width="60" height="30" fill="#012169" />
+                    <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6" />
+                    <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" strokeWidth="2" />
+                    <path d="M30,0 V30 M0,15 H60" stroke="#fff" strokeWidth="10" />
+                    <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" strokeWidth="6" />
+                  </svg>
+                  English
+                </a>
+                <a href="?lang=pt" onClick={(e) => handleLangChange(e, 'pt')} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" style={{ width: '16px', height: '11px', borderRadius: '1px', margin: 0 }} width="16" height="11">
+                    <rect width="600" height="400" fill="#006600"/>
+                    <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
+                    <circle cx="300" cy="200" r="100" fill="#003399"/>
+                  </svg>
+                  Português
+                </a>
+              </div>
+            </div>
           </p>
           <p><FormattedMessage id="Footer.013" /></p>
           <p className="footer-note"><FormattedMessage id="Footer.014" /></p>

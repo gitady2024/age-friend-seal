@@ -9,25 +9,25 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/info/styles.css">
 </head>
 <body>
 
     <!-- Navegación -->
     <header class="navbar">
         <div class="container nav-container">
-            <a href="index.html" class="logo">
-                <img src="public/assets/logo_age_friend_seal.png" alt="Age Friend Seal Logo" class="logo-img">
+            <a href="/" class="logo">
+                <img src="/assets/logo_age_friend_seal.png" alt="Age Friend Seal Logo" class="logo-img">
                 <span class="logo-text"><span class="logo-accent">Age</span> Friend Seal</span>
             </a>
             <nav class="nav-links">
-                <a href="index.html#oportunidad">Economía Plateada</a>
-                <a href="index.html#escalera">Certificaciones</a>
-                <a href="index.html#normativas">Fundamentos Globales</a>
-                <a href="index.html#radar-noticias">Radar de Longevidad</a>
-                <a href="index.html#autodiagnostico" class="btn btn-primary">Autodiagnóstico MVP</a>
+                <a href="/#oportunidad">Economía Plateada</a>
+                <a href="/#escalera">Certificaciones</a>
+                <a href="/#normativas">Fundamentos Globales</a>
+                <a href="/#radar-noticias">Radar de Longevidad</a>
+                <a href="/#autodiagnostico" class="btn btn-primary">Autodiagnóstico MVP</a>
                 <a href="privacidad_en.html" class="lang-switch-btn">
-                    <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+                    <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" width="20" height="12" style="width: 20px; height: 12px; display: inline-block;">
                         <rect width="60" height="30" fill="#012169"/>
                         <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
                         <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="2"/>
@@ -116,14 +116,49 @@
     <footer class="footer">
         <div class="container footer-container text-center">
             <div class="logo" style="justify-content: center; margin-bottom: 16px;">
-                <img src="public/assets/logo_age_friend_seal.png" alt="Age Friend Seal Logo" class="logo-img">
+                <img src="/assets/logo_age_friend_seal.png" alt="Age Friend Seal Logo" class="logo-img">
                 <span class="logo-text"><span class="logo-accent">Age</span> Friend Seal</span>
             </div>
             <p class="footer-links" style="margin-bottom: 16px;">
-                <a href="privacidad.html" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Política de Privacidad</a> | 
-                <a href="terminos.html" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Términos y Condiciones</a> |
-                <a href="privacidad_en.html" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth); font-weight: bold;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">English (EN)</a>
-            </p>
+                <a href="/info/privacidad.html" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Política de Privacidad</a> | 
+                <a href="/info/terminos.html" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Términos y Condiciones</a> |
+                <span class="footer-lang-dropdown">
+                    <a href="#" class="lang-switch-btn" onclick="event.preventDefault()" style="display: inline-flex; align-items: center; gap: 6px; color: var(--text-primary); text-decoration: none; margin: 0 5px; font-weight: bold; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">
+                        <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2" style="width: 16px; height: 11px; border-radius: 1px; margin: 0;" width="16" height="11">
+                            <rect width="3" height="2" fill="#c60b1e" />
+                            <rect width="3" height="1" y="0.5" fill="#ffc400" />
+                        </svg>
+                        Español
+                        <span style="font-size: 0.7em; margin-left: 2px;">▼</span>
+                    </a>
+                    <span class="footer-dropdown-menu">
+                        <a href="/info/privacidad.html">
+                            <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2" style="width: 16px; height: 11px; border-radius: 1px; margin: 0;" width="16" height="11">
+                                <rect width="3" height="2" fill="#c60b1e" />
+                                <rect width="3" height="1" y="0.5" fill="#ffc400" />
+                            </svg>
+                            Español
+                        </a>
+                        <a href="/info/privacidad_en.html">
+                            <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" style="width: 16px; height: 11px; border-radius: 1px; margin: 0;" width="16" height="11">
+                                <rect width="60" height="30" fill="#012169" />
+                                <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6" />
+                                <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="2" />
+                                <path d="M30,0 V30 M0,15 H60" stroke="#fff" stroke-width="10" />
+                                <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" stroke-width="6" />
+                            </svg>
+                            English
+                        </a>
+                        <a href="/?lang=pt">
+                            <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" style="width: 16px; height: 11px; border-radius: 1px; margin: 0;" width="16" height="11">
+                                <rect width="600" height="400" fill="#006600"/>
+                                <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
+                                <circle cx="300" cy="200" r="100" fill="#003399"/>
+                            </svg>
+                            Português
+                        </a>
+                    </span>
+                </span>
             <p>&copy; 2026 Instituto Certificador Age-Friendly Internacional. Todos los derechos reservados.</p>
             <p class="footer-note">Desarrollado bajo el marco de la Norma ISO 25550 y mejores prácticas intergeneracionales.</p>
         </div>

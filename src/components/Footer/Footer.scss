@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    Sección Footer
    ========================================================================== */
 
@@ -20,5 +20,69 @@
 .footer-note {
     font-size: 0.85rem !important;
     opacity: 0.6;
+}
+
+/* Footer Language Dropdown */
+.footer-lang-dropdown {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.footer-dropdown-menu {
+    position: absolute;
+    bottom: 100%;
+    top: auto;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: rgba(11, 15, 25, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px 0;
+    min-width: 150px;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: var(--transition-smooth);
+    box-shadow: var(--shadow-premium);
+    z-index: 100;
+}
+
+.footer-lang-dropdown::after {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: 0;
+    width: 100%;
+    height: 15px;
+}
+
+.footer-lang-dropdown:hover .footer-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+.footer-dropdown-menu a {
+    padding: 10px 20px !important;
+    font-size: 0.9rem !important;
+    color: var(--text-secondary) !important;
+    text-align: left;
+    width: 100%;
+    transition: background 0.2s, color 0.2s;
+    text-decoration: none !important;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-dropdown-menu a:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary) !important;
 }
 
