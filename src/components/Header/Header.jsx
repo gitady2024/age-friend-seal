@@ -1,12 +1,30 @@
 import './Header.scss';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useIntl } from 'react-intl';
 
 function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAccount }) {
   const intl = useIntl();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+  const langDropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (langDropdownRef.current && !langDropdownRef.current.contains(event.target)) {
+        setLangDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const nextLanguage = language === 'en' ? 'es' : 'en';
-  const closeMenu = () => setMenuOpen(false);
+  const closeMenu = () => {
+    setMenuOpen(false);
+    setLangDropdownOpen(false);
+  };
 
   return (
     <header className="navbar">
@@ -69,8 +87,8 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
             {currentUser ? (language === 'es' ? 'Mi Cuenta' : (language === 'pt' ? 'Minha Conta' : 'My Account')) : intl.formatMessage({ id: 'nav.access' })}
           </button>
 
-          <div className="nav-dropdown" style={{ marginLeft: '10px' }}>
-            <a href="#" className="nav-dropdown-toggle lang-switch-btn" onClick={(e) => e.preventDefault()} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className={`nav-dropdown ${langDropdownOpen ? 'active' : ''}`} ref={langDropdownRef} style={{ marginLeft: '10px' }}>
+            <a href="#" className="nav-dropdown-toggle lang-switch-btn" onClick={(e) => { e.preventDefault(); setLangDropdownOpen(!langDropdownOpen); }} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               {language === 'es' ? (
                 <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2">
                   <rect width="3" height="2" fill="#c60b1e" />
@@ -95,14 +113,14 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
               <span style={{ fontSize: '0.7em', marginLeft: 4 }}>▼</span>
             </a>
             <div className="nav-dropdown-menu" style={{ minWidth: '150px' }}>
-              <a href="#" onClick={(e) => { e.preventDefault(); onLanguageChange('es'); closeMenu(); }} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <a href="#" onClick={(e) => { e.preventDefault(); onLanguageChange('es'); setLangDropdownOpen(false); closeMenu(); }} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2" style={{ margin: 0 }}>
                   <rect width="3" height="2" fill="#c60b1e" />
                   <rect width="3" height="1" y="0.5" fill="#ffc400" />
                 </svg>
                 Español
               </a>
-              <a href="#" onClick={(e) => { e.preventDefault(); onLanguageChange('en'); closeMenu(); }} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <a href="#" onClick={(e) => { e.preventDefault(); onLanguageChange('en'); setLangDropdownOpen(false); closeMenu(); }} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" style={{ margin: 0 }}>
                   <rect width="60" height="30" fill="#012169" />
                   <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6" />
@@ -112,7 +130,7 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
                 </svg>
                 English
               </a>
-              <a href="#" onClick={(e) => { e.preventDefault(); onLanguageChange('pt'); closeMenu(); }} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <a href="#" onClick={(e) => { e.preventDefault(); onLanguageChange('pt'); setLangDropdownOpen(false); closeMenu(); }} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" style={{ margin: 0 }}>
                   <rect width="600" height="400" fill="#006600"/>
                   <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>

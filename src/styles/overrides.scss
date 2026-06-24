@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    CORRECCIONES MÓVILES (Menú Hamburguesa y Hero Section)
    ========================================================================== */
 
@@ -428,8 +428,9 @@
     height: 15px;
 }
 
-/* Activar en hover (Escritorio) */
-.nav-dropdown:hover .nav-dropdown-menu {
+/* Activar en hover (Escritorio) o active */
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown.active .nav-dropdown-menu {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;

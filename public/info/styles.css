@@ -285,7 +285,8 @@ body {
     height: 15px;
 }
 
-.footer-lang-dropdown:hover .footer-dropdown-menu {
+.footer-lang-dropdown:hover .footer-dropdown-menu,
+.footer-lang-dropdown.active .footer-dropdown-menu {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;

@@ -1,7 +1,21 @@
-import "./Footer.scss";
+import { useState, useEffect, useRef } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 function Footer({ language, onLanguageChange }) {
   const intl = useIntl();
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+  const langDropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (langDropdownRef.current && !langDropdownRef.current.contains(event.target)) {
+        setLangDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleLangChange = (e, lang) => {
     e.preventDefault();
@@ -35,7 +49,7 @@ function Footer({ language, onLanguageChange }) {
             })} className="logo-img" />
             <span className="logo-text"><span className="logo-accent"><FormattedMessage id="Footer.002" /></span> <FormattedMessage id="Footer.003" /></span>
           </a>
-          <p className="footer-links" style={{
+          <div className="footer-links" style={{
             marginBottom: 16
           }}>
             <a href="#" style={{
@@ -66,8 +80,8 @@ function Footer({ language, onLanguageChange }) {
               transition: 'var(--transition-smooth)'
             }} onMouseOver={(e) => { e.currentTarget.style.color='var(--text-primary)' }} onMouseOut={(e) => { e.currentTarget.style.color='var(--text-muted)' }}><FormattedMessage id="Footer.010" /></a>
             <FormattedMessage id="Footer.011" />
-            <div className="footer-lang-dropdown" style={{ marginLeft: '10px' }}>
-              <a href="#" className="nav-dropdown-toggle lang-switch-btn" onClick={(e) => e.preventDefault()} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 'bold' }}>
+            <div className={`footer-lang-dropdown ${langDropdownOpen ? 'active' : ''}`} ref={langDropdownRef} style={{ marginLeft: '10px' }}>
+              <a href="#" className="nav-dropdown-toggle lang-switch-btn" onClick={(e) => { e.preventDefault(); setLangDropdownOpen(!langDropdownOpen); }} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 'bold' }}>
                 {language === 'es' ? (
                   <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2" style={{ width: '16px', height: '11px', borderRadius: '1px', margin: 0 }} width="16" height="11">
                     <rect width="3" height="2" fill="#c60b1e" />
@@ -92,24 +106,24 @@ function Footer({ language, onLanguageChange }) {
                 <span style={{ fontSize: '0.7em', marginLeft: 4 }}>▼</span>
               </a>
               <div className="footer-dropdown-menu">
-                <a href="?lang=es" onClick={(e) => handleLangChange(e, 'es')} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <a href="?lang=es" onClick={(e) => { handleLangChange(e, 'es'); setLangDropdownOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2" style={{ width: '16px', height: '11px', borderRadius: '1px', margin: 0 }} width="16" height="11">
                     <rect width="3" height="2" fill="#c60b1e" />
                     <rect width="3" height="1" y="0.5" fill="#ffc400" />
                   </svg>
                   Español
                 </a>
-                <a href="?lang=en" onClick={(e) => handleLangChange(e, 'en')} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <a href="?lang=en" onClick={(e) => { handleLangChange(e, 'en'); setLangDropdownOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" style={{ width: '16px', height: '11px', borderRadius: '1px', margin: 0 }} width="16" height="11">
                     <rect width="60" height="30" fill="#012169" />
                     <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6" />
                     <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" strokeWidth="2" />
                     <path d="M30,0 V30 M0,15 H60" stroke="#fff" strokeWidth="10" />
-                    <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" strokeWidth="6" />
+                    <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" stroke-width="6" />
                   </svg>
                   English
                 </a>
-                <a href="?lang=pt" onClick={(e) => handleLangChange(e, 'pt')} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <a href="?lang=pt" onClick={(e) => { handleLangChange(e, 'pt'); setLangDropdownOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" style={{ width: '16px', height: '11px', borderRadius: '1px', margin: 0 }} width="16" height="11">
                     <rect width="600" height="400" fill="#006600"/>
                     <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
@@ -119,7 +133,7 @@ function Footer({ language, onLanguageChange }) {
                 </a>
               </div>
             </div>
-          </p>
+          </div>
           <p><FormattedMessage id="Footer.013" /></p>
           <p className="footer-note"><FormattedMessage id="Footer.014" /></p>
         </div>

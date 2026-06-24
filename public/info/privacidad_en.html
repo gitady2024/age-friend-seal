@@ -116,13 +116,13 @@
                 <img src="/assets/logo_age_friend_seal.png" alt="Age Friend Seal Logo" class="logo-img">
                 <span class="logo-text"><span class="logo-accent">Age</span> Friend Seal</span>
             </div>
-            <p class="footer-links" style="margin-bottom: 16px;">
+            <div class="footer-links" style="margin-bottom: 16px;">
                 <a href="/?lang=en" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Home</a> | 
                 <a href="/?lang=en#alianzas" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Alliances</a> | 
                 <a href="/info/privacidad_en.html" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Privacy Policy</a> | 
                 <a href="/info/terminos_en.html" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Terms and Conditions</a> |
                 <span class="footer-lang-dropdown">
-                    <a href="#" class="lang-switch-btn" onclick="event.preventDefault()" style="display: inline-flex; align-items: center; gap: 6px; color: var(--text-primary); text-decoration: none; margin: 0 5px; font-weight: bold; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">
+                    <a href="#" class="lang-switch-btn" onclick="event.preventDefault(); event.stopPropagation(); this.parentElement.classList.toggle('active');" style="display: inline-flex; align-items: center; gap: 6px; color: var(--text-primary); text-decoration: none; margin: 0 5px; font-weight: bold; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">
                         <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" style="width: 16px; height: 11px; border-radius: 1px; margin: 0;" width="16" height="11">
                             <rect width="60" height="30" fill="#012169" />
                             <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6" />
@@ -161,12 +161,19 @@
                         </a>
                     </span>
                 </span>
-            </p>
+            </div>
             <p>&copy; 2026 Age Friendly Seal Certification. All rights reserved.</p>
             <p class="footer-note">Developed under the framework of the ISO 25550 standard and intergenerational best practices.</p>
         </div>
     </footer>
 
+    <script>
+        document.addEventListener('click', function() {
+            document.querySelectorAll('.footer-lang-dropdown').forEach(function(el) {
+                el.classList.remove('active');
+            });
+        });
+    </script>
 </body>
 </html>
 
