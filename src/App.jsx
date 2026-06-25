@@ -47,6 +47,7 @@ function App() {
   const [latestDiagnostic, setLatestDiagnostic] = useState(null);
 
   useEffect(() => {
+    if (!auth) return;
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setCurrentUser(curr => {

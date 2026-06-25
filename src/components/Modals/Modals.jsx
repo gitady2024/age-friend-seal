@@ -121,6 +121,14 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     
     // Guardar diagnóstico en Firestore si existen resultados
     if (latestDiagnostic && currentUser) {
+      if (!db || !auth) {
+        console.warn("Firebase is not initialized in this environment. Skipping database write.");
+        alert(language === 'es'
+          ? "¡Pago Simulado! El distintivo se ha descargado. (El informe Excel no pudo enviarse porque Firebase no está configurado en este entorno)."
+          : "Payment Simulated! The decal has been downloaded. (The Excel report could not be sent because Firebase is not configured in this environment).");
+        onClose();
+        return;
+      }
       try {
         const uid = currentUser.uid || auth.currentUser?.uid;
         if (!uid) {
