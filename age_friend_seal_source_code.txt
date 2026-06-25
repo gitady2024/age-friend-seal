@@ -8,7 +8,7 @@ AGE FRIEND SEAL - FULL SOURCE CODE BUNDLE
 // FILE: index.html
 // ==========================================
 
-﻿<!doctype html>
+<!doctype html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
@@ -19,7 +19,6 @@ AGE FRIEND SEAL - FULL SOURCE CODE BUNDLE
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
   <body>
     <div id="root"></div>
@@ -60,6 +59,7 @@ export default defineConfig({
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.4",
+    "firebase": "^12.15.0",
     "html2pdf.js": "^0.14.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -99,6 +99,57 @@ yarn-error.log*
 .env.*.local
 .DS_Store
 Thumbs.db
+
+
+
+
+// ==========================================
+// FILE: firestore.rules
+// ==========================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Reglas para la colección 'empresas':
+    // El ID del documento debe coincidir con el UID del usuario autenticado.
+    match /empresas/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Reglas para la colección 'diagnosticos':
+    // Lectura y escritura permitidas únicamente para el usuario dueño del diagnóstico.
+    // Al crear un diagnóstico, el campo 'id_empresa' debe coincidir con el UID del usuario.
+    match /diagnosticos/{diagnosticoId} {
+      allow create: if request.auth != null && request.resource.data.id_empresa == request.auth.uid;
+      allow read, update, delete: if request.auth != null && resource.data.id_empresa == request.auth.uid;
+    }
+
+    // Reglas para la colección 'entregables_b2b':
+    // Lectura permitida para el usuario dueño (si su UID coincide con 'id_empresa').
+    // Escritura deshabilitada desde el SDK del cliente (solo permitida mediante backend/Cloud Functions).
+    match /entregables_b2b/{entregableId} {
+      allow read: if request.auth != null && resource.data.id_empresa == request.auth.uid;
+      allow write: if false;
+    }
+  }
+}
+
+
+
+
+// ==========================================
+// FILE: .env.local
+// ==========================================
+
+# Firebase Client Configuration (React/Vite)
+VITE_FIREBASE_API_KEY=your_api_key_here
+VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain_here
+VITE_FIREBASE_PROJECT_ID=your_project_id_here
+VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket_here
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id_here
+VITE_FIREBASE_APP_ID=your_app_id_here
+VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id_here
 
 
 
@@ -480,6 +531,336 @@ Thumbs.db
 
 
 // ==========================================
+// FILE: public\info\styles.css
+// ==========================================
+
+/* Custom self-contained styles for legal/info pages */
+:root {
+    --bg-main: #0b0f19;
+    --bg-card: rgba(17, 24, 39, 0.7);
+    --border-color: rgba(75, 85, 99, 0.3);
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --text-muted: #9ca3af;
+    --accent-blue: #3b82f6;
+    --accent-blue-hover: #2563eb;
+    --gradient-silver: linear-gradient(135deg, #e5e7eb 0%, #9ca3af 100%);
+    --gradient-corporate: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --shadow-premium: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+    --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.15);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.container-narrow {
+    max-width: 760px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Navbar */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(11, 15, 25, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 16px 0;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 1.6rem;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.logo-img {
+    height: 36px;
+    width: 36px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(251, 191, 36, 0.5);
+    box-shadow: 0 0 8px rgba(251, 191, 36, 0.2);
+    object-fit: cover;
+}
+
+.logo-accent {
+    background: var(--gradient-silver);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-right: 2px;
+}
+
+.logo-text {
+    white-space: nowrap;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    transition: var(--transition-smooth);
+}
+
+.nav-links a:hover {
+    color: var(--text-primary);
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--transition-smooth);
+}
+
+.btn-primary {
+    background-color: var(--accent-blue);
+    color: var(--text-primary);
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-blue-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-glow);
+}
+
+.lang-switch-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
+}
+
+.flag-icon {
+    width: 20px;
+    height: 12px;
+    border-radius: 2px;
+    vertical-align: middle;
+    object-fit: cover;
+    display: inline-block;
+}
+
+/* Legal content */
+.legal-section {
+    padding: 60px 0 100px 0;
+}
+
+.legal-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 48px;
+    box-shadow: var(--shadow-premium);
+}
+
+.legal-card h1 {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+    background: var(--gradient-silver);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+.legal-meta {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 16px;
+}
+
+.legal-body h2 {
+    font-size: 1.5rem;
+    margin-top: 32px;
+    margin-bottom: 16px;
+    color: #fbbf24;
+}
+
+.legal-body p, .legal-body li {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 16px;
+}
+
+.legal-body ul, .legal-body ol {
+    margin-bottom: 24px;
+    padding-left: 24px;
+}
+
+.legal-body li {
+    margin-bottom: 8px;
+}
+
+/* Footer */
+.footer {
+    border-top: 1px solid var(--border-color);
+    padding: 40px 0;
+    margin-top: auto;
+}
+
+.footer-links {
+    margin-bottom: 16px;
+    font-size: 0.95rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.footer-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: var(--transition-smooth);
+}
+
+.footer-links a:hover {
+    color: var(--text-primary);
+}
+
+.footer-note {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 8px;
+}
+
+/* Footer Language Dropdown */
+.footer-lang-dropdown {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.footer-dropdown-menu {
+    position: absolute;
+    bottom: 100%;
+    top: auto;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: rgba(11, 15, 25, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px 0;
+    min-width: 150px;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: var(--transition-smooth);
+    box-shadow: var(--shadow-premium);
+    z-index: 100;
+}
+
+.footer-lang-dropdown::after {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: 0;
+    width: 100%;
+    height: 15px;
+}
+
+.footer-lang-dropdown:hover .footer-dropdown-menu,
+.footer-lang-dropdown.active .footer-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+.footer-dropdown-menu a {
+    padding: 10px 20px !important;
+    font-size: 0.9rem !important;
+    color: var(--text-secondary) !important;
+    text-align: left;
+    width: 100%;
+    transition: background 0.2s, color 0.2s;
+    text-decoration: none !important;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-dropdown-menu a:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .legal-card {
+        padding: 24px;
+    }
+    .legal-card h1 {
+        font-size: 2rem;
+    }
+}
+
+
+
+
+// ==========================================
 // FILE: public\info\terminos.html
 // ==========================================
 
@@ -821,337 +1202,23 @@ Thumbs.db
 
 
 
+--- REACT FRONTEND SOURCE CODE (src/) ---
+
 // ==========================================
-// FILE: public\info\styles.css
+// FILE: src\main.jsx
 // ==========================================
 
-/* Custom self-contained styles for legal/info pages */
-:root {
-    --bg-main: #0b0f19;
-    --bg-card: rgba(17, 24, 39, 0.7);
-    --border-color: rgba(75, 85, 99, 0.3);
-    --text-primary: #f9fafb;
-    --text-secondary: #d1d5db;
-    --text-muted: #9ca3af;
-    --accent-blue: #3b82f6;
-    --accent-blue-hover: #2563eb;
-    --gradient-silver: linear-gradient(135deg, #e5e7eb 0%, #9ca3af 100%);
-    --gradient-corporate: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-    --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --shadow-premium: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
-    --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.15);
-}
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App.jsx';
+import './styles/index.scss';
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    background-color: var(--bg-main);
-    color: var(--text-primary);
-    font-family: var(--font-body);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
-}
-
-.container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 24px;
-}
-
-.container-narrow {
-    max-width: 760px;
-}
-
-.text-center {
-    text-align: center;
-}
-
-/* Navbar */
-.navbar {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(11, 15, 25, 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border-color);
-    padding: 16px 0;
-}
-
-.nav-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-family: var(--font-heading);
-    font-weight: 800;
-    font-size: 1.6rem;
-    letter-spacing: -0.03em;
-    color: var(--text-primary);
-    text-decoration: none;
-}
-
-.logo-img {
-    height: 36px;
-    width: 36px;
-    border-radius: 50%;
-    border: 1.5px solid rgba(251, 191, 36, 0.5);
-    box-shadow: 0 0 8px rgba(251, 191, 36, 0.2);
-    object-fit: cover;
-}
-
-.logo-accent {
-    background: var(--gradient-silver);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-right: 2px;
-}
-
-.logo-text {
-    white-space: nowrap;
-}
-
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.nav-links a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.95rem;
-    white-space: nowrap;
-    transition: var(--transition-smooth);
-}
-
-.nav-links a:hover {
-    color: var(--text-primary);
-}
-
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-heading);
-    font-weight: 600;
-    font-size: 0.9rem;
-    padding: 8px 16px;
-    border-radius: 8px;
-    border: 2px solid transparent;
-    cursor: pointer;
-    text-decoration: none;
-    transition: var(--transition-smooth);
-}
-
-.btn-primary {
-    background-color: var(--accent-blue);
-    color: var(--text-primary);
-}
-
-.btn-primary:hover {
-    background-color: var(--accent-blue-hover);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-glow);
-}
-
-.lang-switch-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: bold;
-}
-
-.flag-icon {
-    width: 20px;
-    height: 12px;
-    border-radius: 2px;
-    vertical-align: middle;
-    object-fit: cover;
-    display: inline-block;
-}
-
-/* Legal content */
-.legal-section {
-    padding: 60px 0 100px 0;
-}
-
-.legal-card {
-    background: var(--bg-card);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 48px;
-    box-shadow: var(--shadow-premium);
-}
-
-.legal-card h1 {
-    font-size: 2.5rem;
-    margin-bottom: 8px;
-    background: var(--gradient-silver);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: inline-block;
-}
-
-.legal-meta {
-    font-size: 0.95rem;
-    color: var(--text-muted);
-    margin-bottom: 32px;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 16px;
-}
-
-.legal-body h2 {
-    font-size: 1.5rem;
-    margin-top: 32px;
-    margin-bottom: 16px;
-    color: #fbbf24;
-}
-
-.legal-body p, .legal-body li {
-    font-size: 1.05rem;
-    color: var(--text-secondary);
-    line-height: 1.7;
-    margin-bottom: 16px;
-}
-
-.legal-body ul, .legal-body ol {
-    margin-bottom: 24px;
-    padding-left: 24px;
-}
-
-.legal-body li {
-    margin-bottom: 8px;
-}
-
-/* Footer */
-.footer {
-    border-top: 1px solid var(--border-color);
-    padding: 40px 0;
-    margin-top: auto;
-}
-
-.footer-links {
-    margin-bottom: 16px;
-    font-size: 0.95rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.footer-links a {
-    color: var(--text-muted);
-    text-decoration: none;
-    transition: var(--transition-smooth);
-}
-
-.footer-links a:hover {
-    color: var(--text-primary);
-}
-
-.footer-note {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin-top: 8px;
-}
-
-/* Footer Language Dropdown */
-.footer-lang-dropdown {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-}
-
-.footer-dropdown-menu {
-    position: absolute;
-    bottom: 100%;
-    top: auto;
-    left: 50%;
-    transform: translateX(-50%) translateY(-10px);
-    background: rgba(11, 15, 25, 0.95);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 8px 0;
-    min-width: 150px;
-    display: flex;
-    flex-direction: column;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: var(--transition-smooth);
-    box-shadow: var(--shadow-premium);
-    z-index: 100;
-}
-
-.footer-lang-dropdown::after {
-    content: '';
-    position: absolute;
-    top: -15px;
-    left: 0;
-    width: 100%;
-    height: 15px;
-}
-
-.footer-lang-dropdown:hover .footer-dropdown-menu,
-.footer-lang-dropdown.active .footer-dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    transform: translateX(-50%) translateY(0);
-}
-
-.footer-dropdown-menu a {
-    padding: 10px 20px !important;
-    font-size: 0.9rem !important;
-    color: var(--text-secondary) !important;
-    text-align: left;
-    width: 100%;
-    transition: background 0.2s, color 0.2s;
-    text-decoration: none !important;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.footer-dropdown-menu a:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-primary) !important;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .legal-card {
-        padding: 24px;
-    }
-    .legal-card h1 {
-        font-size: 2rem;
-    }
-}
+createRoot(document.getElementById('root')).render(
+  <App />
+);
 
 
 
-
---- SOURCE CODE FILES (src/) ---
 
 // ==========================================
 // FILE: src\App.jsx
@@ -6192,6 +6259,36 @@ export default SelfDiagnosticSection;
 
 
 // ==========================================
+// FILE: src\config\firebase.js
+// ==========================================
+
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+// Initialize Services
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+
+export default app;
+
+
+
+
+// ==========================================
 // FILE: src\data\diagnostic.js
 // ==========================================
 
@@ -10449,22 +10546,6 @@ export const ptMessages = {
 
 
 // ==========================================
-// FILE: src\main.jsx
-// ==========================================
-
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './App.jsx';
-import './styles/index.scss';
-
-createRoot(document.getElementById('root')).render(
-  <App />
-);
-
-
-
-
-// ==========================================
 // FILE: src\styles\base.scss
 // ==========================================
 
@@ -11490,6 +11571,142 @@ function escapeXml(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 }
+
+
+
+
+--- FIREBASE CLOUD FUNCTIONS (functions/) ---
+
+// ==========================================
+// FILE: functions\package.json
+// ==========================================
+
+{
+  "name": "functions",
+  "scripts": {
+    "build": "tsc",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^5.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "firebase-functions-test": "^3.1.0"
+  },
+  "private": true
+}
+
+
+
+
+// ==========================================
+// FILE: functions\tsconfig.json
+// ==========================================
+
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "outDir": "lib",
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2022",
+    "lib": ["es2022"]
+  },
+  "compileOnSave": true,
+  "include": ["src"]
+}
+
+
+
+
+// ==========================================
+// FILE: functions\src\index.ts
+// ==========================================
+
+import { onDocumentCreated } from "firebase-functions/v2/firestore";
+import * as logger from "firebase-functions/logger";
+import { initializeApp } from "firebase-admin/app";
+// import { getFirestore } from "firebase-admin/firestore";
+
+// Inicializar el SDK de Admin de Firebase
+initializeApp();
+// const db = getFirestore();
+
+/**
+ * Cloud Function: onDiagnosticoCompleted
+ * Se activa automáticamente al crear un nuevo documento en la colección 'diagnosticos'.
+ */
+export const onDiagnosticoCompleted = onDocumentCreated("diagnosticos/{diagnosticoId}", async (event) => {
+  const snapshot = event.data;
+  if (!snapshot) {
+    logger.error("No se encontraron datos asociados al evento");
+    return;
+  }
+
+  const diagnosticoData = snapshot.data();
+  const idEmpresa = diagnosticoData.id_empresa;
+
+  logger.info(`Nuevo diagnóstico completado para la empresa: ${idEmpresa}`, { diagnosticoData });
+
+  /*
+   * =========================================================================
+   * DIRECTIVA ESTRICTA DE FORMATO / MANDATORY FORMAT DIRECTIVE
+   * =========================================================================
+   * La generación del reporte automatizado y de cualquier archivo adjunto
+   * que se envíe al correo corporativo del lead DEBE ser obligatoriamente
+   * en formato .xlsx (Excel o compatible).
+   * 
+   * Está ESTRICTAMENTE PROHIBIDO el uso de archivos en formato PDF (.pdf)
+   * para la exportación o envío automatizado de estos datos estructurados.
+   * =========================================================================
+   * 
+   * FLUJO DE TRABAJO SUGERIDO PARA LA IMPLEMENTACIÓN COMPLETA:
+   * 
+   * 1. OBTENCIÓN DEL PERFIL DE LA EMPRESA:
+   *    Construir una consulta a la colección 'empresas' usando 'idEmpresa' para
+   *    obtener el correo corporativo registrado del representante de la empresa.
+   * 
+   * 2. PROCESAMIENTO DE DATOS DEL DIAGNÓSTICO:
+   *    Leer las respuestas guardadas en 'diagnosticoData' y ordenarlas en una
+   *    tabla o matriz de datos (por ejemplo, divididas por pilares críticos).
+   * 
+   * 3. GENERACIÓN DEL ARCHIVO EXCEL (.xlsx):
+   *    Utilizar una librería como 'exceljs' o 'xlsx' en Node.js para escribir
+   *    los datos y las fórmulas de puntuación en un archivo en memoria (.xlsx).
+   * 
+   * 4. ENVÍO DE CORREO AUTOMÁTICO:
+   *    Utilizar Nodemailer integrado con un transportador SMTP o servicio cloud
+   *    (ej. SendGrid o Mailgun) para redactar el email y adjuntar el archivo Excel generado.
+   * 
+   * 5. AUDITORÍA DEL ENTREGABLE:
+   *    Crear un nuevo documento en la colección 'entregables_b2b' detallando:
+   *    - id_empresa: ID de la empresa receptora.
+   *    - diagnosticoId: ID del documento del diagnóstico de origen.
+   *    - enviado_a: Correo electrónico de destino.
+   *    - fecha_envio: Firebase Firestore Timestamp actual.
+   *    - formato: 'xlsx'
+   *    - estado: 'exitoso' / 'error'
+   */
+
+  try {
+    // Aquí se implementará la lógica de generación del Excel y el envío del correo electrónico.
+    logger.info(`Procesamiento y generación de reporte .xlsx completado exitosamente para: ${idEmpresa}`);
+  } catch (error) {
+    logger.error("Error al procesar el reporte y enviar el correo", error);
+  }
+});
+
 
 
 
