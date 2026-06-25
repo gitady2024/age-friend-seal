@@ -42,7 +42,7 @@ const mapSectorKey = (subsector) => {
   return "Comercio y Distribución";
 };
 
-function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPayment }) {
+function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPayment, onDiagnosticComplete }) {
   const intl = useIntl();
   const sectionRef = useRef(null);
   
@@ -82,6 +82,24 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
   const progress = ((step + 1) / currentQuestions.length) * 100;
 
   const results = useMemo(() => calculateResults(answers, language, currentQuestions), [answers, language, currentQuestions]);
+
+  useEffect(() => {
+    if (showResults && onDiagnosticComplete) {
+      onDiagnosticComplete({
+        respuestas: currentQuestions.map((item, index) => {
+          const scoreVal = answers[index]?.score ?? 0;
+          return {
+            pilar: item.pilar || 1,
+            pregunta: item.question || getTranslation(item.text, language),
+            opcion_seleccionada: getTranslation(answers[index]?.text, language),
+            puntuacion: scoreVal,
+            recomendacion: getTranslation(item.recommendation, language)
+          };
+        }),
+        score: results.globalPercent
+      });
+    }
+  }, [showResults, answers, results.globalPercent, currentQuestions, language]);
 
   const selectOption = (option) => {
     setAnswers((current) => {

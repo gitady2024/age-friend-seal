@@ -2,8 +2,10 @@ import "./Modals.scss";
 import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { buildDossierHtml, downloadTextFile, generateDecalSvg } from "../../utils/downloads.js";
+import { db, auth } from "../../config/firebase.js";
+import { collection, addDoc, doc, setDoc } from "firebase/firestore";
 
-function Modals({ language, activeModal, contactLevel, currentUser, onClose, onOpenAuth, onOpenAccount, onUserChange }) {
+function Modals({ language, activeModal, contactLevel, currentUser, latestDiagnostic, onClose, onOpenAuth, onOpenAccount, onUserChange }) {
   const intl = useIntl();
   const [authView, setAuthView] = useState('login');
   const [registerType, setRegisterType] = useState('personal');
@@ -112,10 +114,63 @@ function Modals({ language, activeModal, contactLevel, currentUser, onClose, onO
     alert(language === 'es' ? 'Cuenta actualizada a empresa.' : (language === 'pt' ? 'Conta atualizada para empresa.' : 'Account upgraded to company.'));
   };
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     const companyName = currentUser?.name || (language === 'es' ? 'Su Empresa' : (language === 'pt' ? 'Sua Empresa' : 'Your Company'));
     const svg = generateDecalSvg(companyName, language);
     downloadTextFile(svg, `Calcomania_Vitrina_AgeFriendSeal_${companyName.replace(/[^a-z0-9]/gi, '_')}.svg`, 'image/svg+xml;charset=utf-8');
+    
+    // Guardar diagnóstico en Firestore si existen resultados
+    if (latestDiagnostic && currentUser) {
+      try {
+        const uid = currentUser.uid || auth.currentUser?.uid;
+        if (!uid) {
+          throw new Error(language === 'es' ? 'No se encontró sesión activa de Firebase Auth.' : 'No active Firebase Auth session.');
+        }
+
+        // 1. Asegurar perfil en la colección 'empresas' para cumplir con RLS
+        const empresaRef = doc(db, "empresas", uid);
+        await setDoc(empresaRef, {
+          name: companyName,
+          email: currentUser.email || "",
+          username: currentUser.username || "",
+          country: currentUser.country || "",
+          sector: currentUser.sector || "",
+          subsector: currentUser.subsector || "",
+          role: currentUser.role || "",
+          uid: uid
+        }, { merge: true });
+
+        // 2. Guardar diagnóstico en la colección 'diagnosticos'
+        const diagnosticoDoc = {
+          id_empresa: uid,
+          email: currentUser.email || "",
+          score: latestDiagnostic.score,
+          respuestas: latestDiagnostic.respuestas,
+          fecha: new Date().toISOString()
+        };
+        
+        await addDoc(collection(db, "diagnosticos"), diagnosticoDoc);
+
+        // 3. Informar al usuario
+        const successMsg = language === 'es'
+          ? `¡Pago Simulado! El distintivo se ha descargado y el informe Excel (.xlsx) fue enviado a: ${currentUser.email}`
+          : language === 'pt'
+            ? `¡Pagamento Simulado! O distintivo foi baixado e o relatório Excel (.xlsx) foi enviado para: ${currentUser.email}`
+            : `Payment Simulated! The decal has been downloaded and the Excel report (.xlsx) was sent to: ${currentUser.email}`;
+        
+        alert(successMsg);
+      } catch (error) {
+        console.error("Error saving diagnostic to Firestore:", error);
+        alert(language === 'es' 
+          ? `Ocurrió un error al guardar o enviar el informe: ${error.message}` 
+          : `An error occurred while saving or sending the report: ${error.message}`);
+      }
+    } else {
+      alert(language === 'es' 
+        ? 'No se encontraron resultados de diagnóstico activos para enviar.' 
+        : 'No active diagnostic results found to send.');
+    }
+
     onClose();
   };
 

@@ -152,11 +152,11 @@ VITE_FIREBASE_APP_ID="1:300795146883:web:6a969bbfd83e3432f0a1b6"
 VITE_FIREBASE_MEASUREMENT_ID="G-KNDPRV44M1"
 
 # SMTP Mail Server Configuration (Cloud Functions / Node.js)
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your_smtp_user_here
-SMTP_PASS=your_smtp_password_here
-SMTP_SECURE=false
+SMTP_HOST="smtp.gmail.com"
+SMTP_PORT="465"
+SMTP_USER="hola@agefriendseal.com"
+SMTP_PASS="lviywqsnhesxugmw"
+SMTP_SECURE="true"
 
 
 
@@ -1247,6 +1247,8 @@ import Modals from './components/Modals/Modals.jsx';
 import Footer from './components/Footer/Footer.jsx';
 import AccessibilityWidget from './components/AccessibilityWidget/AccessibilityWidget.jsx';
 import { messages } from './i18n/messages.js';
+import { signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+import { auth } from './config/firebase.js';
 
 function getInitialLanguage() {
   const params = new URLSearchParams(window.location.search);
@@ -1275,6 +1277,28 @@ function App() {
   const [activeModal, setActiveModal] = useState(null);
   const [contactLevel, setContactLevel] = useState('silver');
   const [currentUser, setCurrentUser] = useState(getSavedUser);
+  const [latestDiagnostic, setLatestDiagnostic] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUser(curr => {
+          if (curr && !curr.uid) {
+            return { ...curr, uid: user.uid };
+          }
+          if (!curr) {
+            return { uid: user.uid };
+          }
+          return curr;
+        });
+      } else {
+        signInAnonymously(auth).catch((error) => {
+          console.error("Error signing in anonymously to Firebase Auth:", error);
+        });
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     document.documentElement.lang = language;
@@ -1319,6 +1343,7 @@ function App() {
         currentUser={currentUser}
         onUserChange={setCurrentUser}
         onOpenPayment={() => setActiveModal('payment')}
+        onDiagnosticComplete={setLatestDiagnostic}
       />
       <AlliancesSection language={language} onOpenPitch={() => setActiveModal(currentUser ? 'pitch' : 'auth')} />
       <Modals
@@ -1326,6 +1351,7 @@ function App() {
         activeModal={activeModal}
         contactLevel={contactLevel}
         currentUser={currentUser}
+        latestDiagnostic={latestDiagnostic}
         onClose={() => setActiveModal(null)}
         onOpenAuth={() => setActiveModal('auth')}
         onOpenAccount={() => setActiveModal('account')}
@@ -2639,7 +2665,7 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
             }}
           >
             <span style={{ fontSize: '1.2rem', marginRight: 4 }}>👤</span>
-            {currentUser ? (language === 'es' ? 'Mi Cuenta' : (language === 'pt' ? 'Minha Conta' : 'My Account')) : intl.formatMessage({ id: 'nav.access' })}
+            {currentUser && currentUser.email ? (language === 'es' ? 'Mi Cuenta' : (language === 'pt' ? 'Minha Conta' : 'My Account')) : intl.formatMessage({ id: 'nav.access' })}
           </button>
 
           <div className={`nav-dropdown ${langDropdownOpen ? 'active' : ''}`} ref={langDropdownRef} style={{ marginLeft: '10px' }}>
@@ -3095,8 +3121,10 @@ import "./Modals.scss";
 import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { buildDossierHtml, downloadTextFile, generateDecalSvg } from "../../utils/downloads.js";
+import { db, auth } from "../../config/firebase.js";
+import { collection, addDoc, doc, setDoc } from "firebase/firestore";
 
-function Modals({ language, activeModal, contactLevel, currentUser, onClose, onOpenAuth, onOpenAccount, onUserChange }) {
+function Modals({ language, activeModal, contactLevel, currentUser, latestDiagnostic, onClose, onOpenAuth, onOpenAccount, onUserChange }) {
   const intl = useIntl();
   const [authView, setAuthView] = useState('login');
   const [registerType, setRegisterType] = useState('personal');
@@ -3205,10 +3233,63 @@ function Modals({ language, activeModal, contactLevel, currentUser, onClose, onO
     alert(language === 'es' ? 'Cuenta actualizada a empresa.' : (language === 'pt' ? 'Conta atualizada para empresa.' : 'Account upgraded to company.'));
   };
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     const companyName = currentUser?.name || (language === 'es' ? 'Su Empresa' : (language === 'pt' ? 'Sua Empresa' : 'Your Company'));
     const svg = generateDecalSvg(companyName, language);
     downloadTextFile(svg, `Calcomania_Vitrina_AgeFriendSeal_${companyName.replace(/[^a-z0-9]/gi, '_')}.svg`, 'image/svg+xml;charset=utf-8');
+    
+    // Guardar diagnóstico en Firestore si existen resultados
+    if (latestDiagnostic && currentUser) {
+      try {
+        const uid = currentUser.uid || auth.currentUser?.uid;
+        if (!uid) {
+          throw new Error(language === 'es' ? 'No se encontró sesión activa de Firebase Auth.' : 'No active Firebase Auth session.');
+        }
+
+        // 1. Asegurar perfil en la colección 'empresas' para cumplir con RLS
+        const empresaRef = doc(db, "empresas", uid);
+        await setDoc(empresaRef, {
+          name: companyName,
+          email: currentUser.email || "",
+          username: currentUser.username || "",
+          country: currentUser.country || "",
+          sector: currentUser.sector || "",
+          subsector: currentUser.subsector || "",
+          role: currentUser.role || "",
+          uid: uid
+        }, { merge: true });
+
+        // 2. Guardar diagnóstico en la colección 'diagnosticos'
+        const diagnosticoDoc = {
+          id_empresa: uid,
+          email: currentUser.email || "",
+          score: latestDiagnostic.score,
+          respuestas: latestDiagnostic.respuestas,
+          fecha: new Date().toISOString()
+        };
+        
+        await addDoc(collection(db, "diagnosticos"), diagnosticoDoc);
+
+        // 3. Informar al usuario
+        const successMsg = language === 'es'
+          ? `¡Pago Simulado! El distintivo se ha descargado y el informe Excel (.xlsx) fue enviado a: ${currentUser.email}`
+          : language === 'pt'
+            ? `¡Pagamento Simulado! O distintivo foi baixado e o relatório Excel (.xlsx) foi enviado para: ${currentUser.email}`
+            : `Payment Simulated! The decal has been downloaded and the Excel report (.xlsx) was sent to: ${currentUser.email}`;
+        
+        alert(successMsg);
+      } catch (error) {
+        console.error("Error saving diagnostic to Firestore:", error);
+        alert(language === 'es' 
+          ? `Ocurrió un error al guardar o enviar el informe: ${error.message}` 
+          : `An error occurred while saving or sending the report: ${error.message}`);
+      }
+    } else {
+      alert(language === 'es' 
+        ? 'No se encontraron resultados de diagnóstico activos para enviar.' 
+        : 'No active diagnostic results found to send.');
+    }
+
     onClose();
   };
 
@@ -5392,7 +5473,7 @@ const mapSectorKey = (subsector) => {
   return "Comercio y Distribución";
 };
 
-function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPayment }) {
+function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPayment, onDiagnosticComplete }) {
   const intl = useIntl();
   const sectionRef = useRef(null);
   
@@ -5432,6 +5513,24 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
   const progress = ((step + 1) / currentQuestions.length) * 100;
 
   const results = useMemo(() => calculateResults(answers, language, currentQuestions), [answers, language, currentQuestions]);
+
+  useEffect(() => {
+    if (showResults && onDiagnosticComplete) {
+      onDiagnosticComplete({
+        respuestas: currentQuestions.map((item, index) => {
+          const scoreVal = answers[index]?.score ?? 0;
+          return {
+            pilar: item.pilar || 1,
+            pregunta: item.question || getTranslation(item.text, language),
+            opcion_seleccionada: getTranslation(answers[index]?.text, language),
+            puntuacion: scoreVal,
+            recomendacion: getTranslation(item.recommendation, language)
+          };
+        }),
+        score: results.globalPercent
+      });
+    }
+  }, [showResults, answers, results.globalPercent, currentQuestions, language]);
 
   const selectOption = (option) => {
     setAnswers((current) => {

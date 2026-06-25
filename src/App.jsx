@@ -14,6 +14,8 @@ import Modals from './components/Modals/Modals.jsx';
 import Footer from './components/Footer/Footer.jsx';
 import AccessibilityWidget from './components/AccessibilityWidget/AccessibilityWidget.jsx';
 import { messages } from './i18n/messages.js';
+import { signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+import { auth } from './config/firebase.js';
 
 function getInitialLanguage() {
   const params = new URLSearchParams(window.location.search);
@@ -42,6 +44,28 @@ function App() {
   const [activeModal, setActiveModal] = useState(null);
   const [contactLevel, setContactLevel] = useState('silver');
   const [currentUser, setCurrentUser] = useState(getSavedUser);
+  const [latestDiagnostic, setLatestDiagnostic] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUser(curr => {
+          if (curr && !curr.uid) {
+            return { ...curr, uid: user.uid };
+          }
+          if (!curr) {
+            return { uid: user.uid };
+          }
+          return curr;
+        });
+      } else {
+        signInAnonymously(auth).catch((error) => {
+          console.error("Error signing in anonymously to Firebase Auth:", error);
+        });
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     document.documentElement.lang = language;
@@ -86,6 +110,7 @@ function App() {
         currentUser={currentUser}
         onUserChange={setCurrentUser}
         onOpenPayment={() => setActiveModal('payment')}
+        onDiagnosticComplete={setLatestDiagnostic}
       />
       <AlliancesSection language={language} onOpenPitch={() => setActiveModal(currentUser ? 'pitch' : 'auth')} />
       <Modals
@@ -93,6 +118,7 @@ function App() {
         activeModal={activeModal}
         contactLevel={contactLevel}
         currentUser={currentUser}
+        latestDiagnostic={latestDiagnostic}
         onClose={() => setActiveModal(null)}
         onOpenAuth={() => setActiveModal('auth')}
         onOpenAccount={() => setActiveModal('account')}

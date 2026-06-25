@@ -84,7 +84,7 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
             }}
           >
             <span style={{ fontSize: '1.2rem', marginRight: 4 }}>👤</span>
-            {currentUser ? (language === 'es' ? 'Mi Cuenta' : (language === 'pt' ? 'Minha Conta' : 'My Account')) : intl.formatMessage({ id: 'nav.access' })}
+            {currentUser && currentUser.email ? (language === 'es' ? 'Mi Cuenta' : (language === 'pt' ? 'Minha Conta' : 'My Account')) : intl.formatMessage({ id: 'nav.access' })}
           </button>
 
           <div className={`nav-dropdown ${langDropdownOpen ? 'active' : ''}`} ref={langDropdownRef} style={{ marginLeft: '10px' }}>
