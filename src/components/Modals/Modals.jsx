@@ -156,10 +156,38 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
           respuestas: latestDiagnostic.respuestas,
           fecha: new Date().toISOString()
         };
-        
+
         await addDoc(collection(db, "diagnosticos"), diagnosticoDoc);
 
-        // 3. Informar al usuario
+        // 3. Enviar el informe en Excel llamando a la API Serverless de Vercel
+        try {
+          const response = await fetch("/api/send-email", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              email: currentUser.email || "",
+              enterpriseName: companyName,
+              score: latestDiagnostic.score,
+              respuestas: latestDiagnostic.respuestas
+            })
+          });
+
+          if (!response.ok) {
+            const errData = await response.json();
+            throw new Error(errData.error || "Error al enviar el correo.");
+          }
+        } catch (emailErr) {
+          console.error("Error al enviar el reporte por correo:", emailErr);
+          alert(language === 'es'
+            ? `Se guardó el autodiagnóstico en tu cuenta, pero hubo una dificultad al despachar el correo: ${emailErr.message}`
+            : `Autodiagnostic saved, but there was an issue sending the email: ${emailErr.message}`);
+          onClose();
+          return;
+        }
+
+        // 4. Informar al usuario
         const successMsg = language === 'es'
           ? `¡Pago Simulado! El distintivo se ha descargado y el informe Excel (.xlsx) fue enviado a: ${currentUser.email}`
           : language === 'pt'
