@@ -82,10 +82,24 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
         country: '',
         sector: '',
         subsector: '',
-        role: ''
+        role: '',
+        website: ''
       });
     } else {
       const type = form.get('type');
+      let website = '';
+      if (type === 'empresa') {
+        website = form.get('website') || '';
+        const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
+        if (!urlPattern.test(website)) {
+          alert(language === 'es' 
+            ? 'Por favor, ingrese una dirección web válida (ej. miempresa.com o https://miempresa.com).' 
+            : language === 'pt'
+              ? 'Por favor, insira um endereço web válido (ex. minhaempresa.com).'
+              : 'Please enter a valid website address (e.g. mycompany.com or https://mycompany.com).');
+          return;
+        }
+      }
       onUserChange({
         type,
         name: form.get('name'),
@@ -94,7 +108,8 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
         country: form.get('country') || '',
         sector: form.get('sector') || '',
         subsector: form.get('subsector') || '',
-        role: form.get('role') || ''
+        role: form.get('role') || '',
+        website: website
       });
     }
     onClose();
@@ -104,12 +119,23 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const handleUpgrade = (event) => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    const website = form.get('website') || '';
+    const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
+    if (!urlPattern.test(website)) {
+      alert(language === 'es' 
+        ? 'Por favor, ingrese una dirección web válida (ej. miempresa.com o https://miempresa.com).' 
+        : language === 'pt'
+          ? 'Por favor, insira um endereço web válido (ex. minhaempresa.com).'
+          : 'Please enter a valid website address (e.g. mycompany.com or https://mycompany.com).');
+      return;
+    }
     onUserChange({
       ...currentUser,
       type: 'empresa',
       sector: form.get('sector'),
       subsector: form.get('subsector'),
-      role: form.get('role')
+      role: form.get('role'),
+      website: website
     });
     alert(language === 'es' ? 'Cuenta actualizada a empresa.' : (language === 'pt' ? 'Conta atualizada para empresa.' : 'Account upgraded to company.'));
   };
@@ -145,6 +171,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
           sector: currentUser.sector || "",
           subsector: currentUser.subsector || "",
           role: currentUser.role || "",
+          website: currentUser.website || "",
           uid: uid
         }, { merge: true });
 
@@ -313,6 +340,20 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                   <option value="empresa"><FormattedMessage id="Modals.050" /></option>
                 </select>
               </div>
+              {registerType === 'empresa' && (
+                <div className="form-group" id="field-company-website">
+                  <label htmlFor="auth-reg-website">
+                    {language === 'es' ? 'Web de la Empresa' : language === 'pt' ? 'Site da Empresa' : 'Company Website'}
+                  </label>
+                  <input
+                    type="text"
+                    id="auth-reg-website"
+                    name="website"
+                    required
+                    placeholder={language === 'es' ? 'Ej. https://miempresa.com' : language === 'pt' ? 'Ex. https://minhaempresa.com' : 'e.g. https://mycompany.com'}
+                  />
+                </div>
+              )}
               <div className="form-group">
                 <label htmlFor="auth-reg-name"><FormattedMessage id="Modals.051" /></label>
                 <input type="text" id="auth-reg-name" name="name" required placeholder={intl.formatMessage({ id: "Modals.052" })} />
@@ -353,6 +394,12 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
           </div>
           <div className="account-details-list" style={{ textAlign: 'left', marginBottom: 24 }}>
             <div className="account-detail-item"><strong><FormattedMessage id="Modals.088" /></strong> <span id="account-detail-email">{currentUser?.email || '-'}</span></div>
+            {currentUser?.type === 'empresa' && (
+              <div className="account-detail-item" id="detail-item-website">
+                <strong>{language === 'es' ? 'Web de la Empresa:' : language === 'pt' ? 'Site da Empresa:' : 'Company Website:'}</strong>{' '}
+                <span id="account-detail-website">{currentUser?.website || '-'}</span>
+              </div>
+            )}
             <div className="account-detail-item" id="detail-item-country"><strong><FormattedMessage id="Modals.090" /></strong> <span id="account-detail-country">{currentUser?.country || '-'}</span></div>
             <div className="account-detail-item" id="detail-item-sector"><strong><FormattedMessage id="Modals.092" /></strong> <span id="account-detail-sector">{currentUser?.sector || '-'}</span></div>
             <div className="account-detail-item" id="detail-item-subsector"><strong><FormattedMessage id="Modals.094" /></strong> <span id="account-detail-subsector">{currentUser?.subsector || '-'}</span></div>
@@ -364,6 +411,18 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
               <h4 style={{ color: 'var(--accent-blue)', marginBottom: 8 }}><FormattedMessage id="Modals.098" /></h4>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 16 }}><FormattedMessage id="Modals.099" /></p>
               <form id="form-upgrade" className="modal-form" onSubmit={handleUpgrade}>
+                <div className="form-group" id="field-upgrade-website">
+                  <label htmlFor="upg-website">
+                    {language === 'es' ? 'Web de la Empresa' : language === 'pt' ? 'Site da Empresa' : 'Company Website'}
+                  </label>
+                  <input
+                    type="text"
+                    id="upg-website"
+                    name="website"
+                    required
+                    placeholder={language === 'es' ? 'Ej. https://miempresa.com' : language === 'pt' ? 'Ex. https://minhaempresa.com' : 'e.g. https://mycompany.com'}
+                  />
+                </div>
                 <div className="form-group">
                   <label htmlFor="upg-sector-type"><FormattedMessage id="Modals.100" /></label>
                   <select id="upg-sector-type" name="sector" required value={upgradeSector} onChange={(event) => setUpgradeSector(event.target.value)}>
