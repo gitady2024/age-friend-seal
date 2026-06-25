@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
+import "./Footer.scss";
 function Footer({ language, onLanguageChange }) {
   const intl = useIntl();
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
