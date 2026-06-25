@@ -143,13 +143,13 @@ service cloud.firestore {
 // ==========================================
 
 # Firebase Client Configuration (React/Vite)
-VITE_FIREBASE_API_KEY=your_api_key_here
-VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain_here
-VITE_FIREBASE_PROJECT_ID=your_project_id_here
-VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket_here
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id_here
-VITE_FIREBASE_APP_ID=your_app_id_here
-VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id_here
+VITE_FIREBASE_API_KEY="AIzaSyAboR39gkixLd5jsoCbjsZ2Dlcpqqh0uSo"
+VITE_FIREBASE_AUTH_DOMAIN="age-friend-seal.firebaseapp.com"
+VITE_FIREBASE_PROJECT_ID="age-friend-seal"
+VITE_FIREBASE_STORAGE_BUCKET="age-friend-seal.firebasestorage.app"
+VITE_FIREBASE_MESSAGING_SENDER_ID="300795146883"
+VITE_FIREBASE_APP_ID="1:300795146883:web:6a969bbfd83e3432f0a1b6"
+VITE_FIREBASE_MEASUREMENT_ID="G-KNDPRV44M1"
 
 
 
