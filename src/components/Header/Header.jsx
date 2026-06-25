@@ -80,7 +80,7 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
             id="btn-nav-auth"
             onClick={() => {
               closeMenu();
-              currentUser ? onOpenAccount() : onOpenAuth();
+              (currentUser && currentUser.email) ? onOpenAccount() : onOpenAuth();
             }}
           >
             <span style={{ fontSize: '1.2rem', marginRight: 4 }}>👤</span>

@@ -54,9 +54,6 @@ function App() {
           if (curr && !curr.uid) {
             return { ...curr, uid: user.uid };
           }
-          if (!curr) {
-            return { uid: user.uid };
-          }
           return curr;
         });
       } else {
