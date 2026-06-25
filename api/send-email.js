@@ -1,7 +1,7 @@
-const ExcelJS = require("exceljs");
-const nodemailer = require("nodemailer");
+import ExcelJS from "exceljs";
+import nodemailer from "nodemailer";
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   // Configurar cabeceras CORS
   res.setHeader("Access-Control-Allow-Credentials", true);
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -200,4 +200,4 @@ module.exports = async (req, res) => {
     console.error("Error al procesar el reporte o enviar el correo por SMTP:", error);
     return res.status(500).json({ error: error.message });
   }
-};
+}
