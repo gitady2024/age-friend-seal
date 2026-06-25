@@ -26,16 +26,43 @@
                 <a href="/#normativas">Fundamentos Globales</a>
                 <a href="/#radar-noticias">Radar de Longevidad</a>
                 <a href="/#autodiagnostico" class="btn btn-primary">Autodiagnóstico MVP</a>
-                <a href="privacidad_en.html" class="lang-switch-btn">
-                    <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" width="20" height="12" style="width: 20px; height: 12px; display: inline-block;">
-                        <rect width="60" height="30" fill="#012169"/>
-                        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
-                        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="2"/>
-                        <path d="M30,0 V30 M0,15 H60" stroke="#fff" stroke-width="10"/>
-                        <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" stroke-width="6"/>
-                    </svg>
-                    EN
-                </a>
+                <div class="nav-dropdown" style="margin-left: 10px;">
+                    <a href="#" class="nav-dropdown-toggle lang-switch-btn" onclick="event.preventDefault(); event.stopPropagation(); this.parentElement.classList.toggle('active');">
+                        <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2">
+                            <rect width="3" height="2" fill="#c60b1e" />
+                            <rect width="3" height="1" y="0.5" fill="#ffc400" />
+                        </svg>
+                        ES
+                        <span style="font-size: 0.7em; margin-left: 2px;">▼</span>
+                    </a>
+                    <div class="nav-dropdown-menu">
+                        <a href="privacidad.html">
+                            <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2">
+                                <rect width="3" height="2" fill="#c60b1e" />
+                                <rect width="3" height="1" y="0.5" fill="#ffc400" />
+                            </svg>
+                            Español
+                        </a>
+                        <a href="privacidad_en.html">
+                            <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+                                <rect width="60" height="30" fill="#012169" />
+                                <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6" />
+                                <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="2" />
+                                <path d="M30,0 V30 M0,15 H60" stroke="#fff" stroke-width="10" />
+                                <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" stroke-width="6" />
+                            </svg>
+                            English
+                        </a>
+                        <a href="/?lang=pt">
+                            <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+                                <rect width="600" height="400" fill="#006600"/>
+                                <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
+                                <circle cx="300" cy="200" r="100" fill="#003399"/>
+                            </svg>
+                            Português
+                        </a>
+                    </div>
+                </div>
             </nav>
         </div>
     </header>
@@ -169,7 +196,7 @@
 
     <script>
         document.addEventListener('click', function() {
-            document.querySelectorAll('.footer-lang-dropdown').forEach(function(el) {
+            document.querySelectorAll('.footer-lang-dropdown, .nav-dropdown').forEach(function(el) {
                 el.classList.remove('active');
             });
         });
