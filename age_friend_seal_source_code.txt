@@ -435,7 +435,7 @@ export default async function handler(req, res) {
                             </svg>
                             English
                         </a>
-                        <a href="/?lang=pt">
+                        <a href="privacidad_pt.html">
                             <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
                                 <rect width="600" height="400" fill="#006600"/>
                                 <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
@@ -560,7 +560,7 @@ export default async function handler(req, res) {
                             </svg>
                             English
                         </a>
-                        <a href="/?lang=pt">
+                        <a href="/info/privacidad_pt.html">
                             <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" style="width: 16px; height: 11px; border-radius: 1px; margin: 0;" width="16" height="11">
                                 <rect width="600" height="400" fill="#006600"/>
                                 <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
@@ -652,7 +652,7 @@ export default async function handler(req, res) {
                             </svg>
                             English
                         </a>
-                        <a href="/?lang=pt">
+                        <a href="privacidad_pt.html">
                             <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
                                 <rect width="600" height="400" fill="#006600"/>
                                 <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
@@ -780,7 +780,7 @@ export default async function handler(req, res) {
                             </svg>
                             English
                         </a>
-                        <a href="/?lang=pt">
+                        <a href="/info/privacidad_pt.html">
                             <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" style="width: 16px; height: 11px; border-radius: 1px; margin: 0;" width="16" height="11">
                                 <rect width="600" height="400" fill="#006600"/>
                                 <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
@@ -806,6 +806,221 @@ export default async function handler(req, res) {
 </body>
 </html>
 
+
+
+
+
+// ==========================================
+// FILE: public\info\privacidad_pt.html
+// ==========================================
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidade - Age Friend Seal</title>
+    <meta name="description" content="Política de privacidade do Instituto Certificador Age Friend Seal, redigida sob padrões internacionais de proteção de dados.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/info/styles.css">
+</head>
+<body>
+
+    <!-- Navegación -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="/?lang=pt" class="logo">
+                <img src="/assets/logo_age_friend_seal.png" alt="Age Friend Seal Logo" class="logo-img">
+                <span class="logo-text"><span class="logo-accent">Age</span> Friend Seal</span>
+            </a>
+            <nav class="nav-links">
+                <a href="/?lang=pt#oportunidad">Economia Prateada</a>
+                <a href="/?lang=pt#escalera">Certificações</a>
+                <a href="/?lang=pt#normativas">Fundamentos Globais</a>
+                <a href="/?lang=pt#radar-noticias">Radar de Longevidade</a>
+                <a href="/?lang=pt#autodiagnostico" class="btn btn-primary">Autodiagnóstico MVP</a>
+                <div class="nav-dropdown" style="margin-left: 10px;">
+                    <a href="#" class="nav-dropdown-toggle lang-switch-btn" onclick="event.preventDefault(); event.stopPropagation(); this.parentElement.classList.toggle('active');">
+                        <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+                            <rect width="600" height="400" fill="#006600"/>
+                            <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
+                            <circle cx="300" cy="200" r="100" fill="#003399"/>
+                        </svg>
+                        PT
+                        <span style="font-size: 0.7em; margin-left: 2px;">▼</span>
+                    </a>
+                    <div class="nav-dropdown-menu">
+                        <a href="privacidad.html">
+                            <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2">
+                                <rect width="3" height="2" fill="#c60b1e" />
+                                <rect width="3" height="1" y="0.5" fill="#ffc400" />
+                            </svg>
+                            Español
+                        </a>
+                        <a href="privacidad_en.html">
+                            <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+                                <rect width="60" height="30" fill="#012169" />
+                                <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6" />
+                                <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="2" />
+                                <path d="M30,0 V30 M0,15 H60" stroke="#fff" stroke-width="10" />
+                                <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" stroke-width="6" />
+                            </svg>
+                            English
+                        </a>
+                        <a href="privacidad_pt.html">
+                            <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+                                <rect width="600" height="400" fill="#006600"/>
+                                <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
+                                <circle cx="300" cy="200" r="100" fill="#003399"/>
+                            </svg>
+                            Português
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contenido Legal -->
+    <section class="legal-section">
+        <div class="container container-narrow">
+            <div class="legal-card">
+                <h1>Política de Privacidade</h1>
+                <div class="legal-meta">Última atualização: 1 de junho de 2026</div>
+                
+                <div class="legal-body">
+                    <p>O <strong>Instituto Certificador Age Friend Seal</strong> (doravante, "nós", "nosso" ou "o Instituto") compromete-se firmemente a proteger e respeitar a privacidade de nossos usuários, clientes e parceiros corporativos. Esta Política de Privacidade descreve como coletamos, processamos, armazenamos e protegemos as informações pessoais e corporativas de acordo com os mais altos padrões internacionais, incluindo o Regulamento Geral de Proteção de Dados (<strong>GDPR</strong> - Regulamento UE 2016/679), a Lei de Privacidade do Consumidor da Califórnia (<strong>CCPA/CPRA</strong>) e os marcos regulatórios vigentes de proteção de dados pessoais nos países da América Latina (como a LGPD do Brasil, Lei 1581 da Colômbia, Lei 25.326 da Argentina, entre outras).</p>
+
+                    <h2>1. Responsável pelo Tratamento de Dados</h2>
+                    <p>O responsável pelo tratamento dos dados coletados através desta plataforma é o <strong>Instituto Certificador Age Friend Seal Internacional</strong>, com sede de operações em Santiago, Chile, e com canais de contato direto através do e-mail oficial: <a href="mailto:privacidad@agefriendseal.com" style="color: var(--accent-blue); text-decoration: none;">privacidad@agefriendseal.com</a>.</p>
+
+                    <h2>2. Dados que Coletamos</h2>
+                    <p>Coletamos apenas as informações necessárias para prestar nossos serviços de autodiagnóstico, assessoria e certificação em Economia Prateada. Isso inclui:</p>
+                    <ul>
+                        <li><strong>Dados Corporativos:</strong> Nome da empresa ou negócio, setor industrial ou de serviços, e volume operacional geral.</li>
+                        <li><strong>Dados do Responsável de Contato:</strong> Nome e sobrenome, endereço de e-mail corporativo, cargo dentro da organização e número de telefone.</li>
+                        <li><strong>Dados do Autodiagnóstico:</strong> Respostas fornecidas no questionário de amigabilidade (Acessibilidade Física, Atendimento e Serviço, Inclusão e Comunicação), pontuações resultantes e planos de ação recomendados.</li>
+                        <li><strong>Dados Técnicos de Navegação:</strong> Endereço IP, tipo de navegador, cookies operacionais essenciais para o fluxo do questionário e registros de atividade do servidor.</li>
+                    </ul>
+
+                    <h2>3. Base Legal para o Tratamento</h2>
+                    <p>Tratamos seus dados sob as seguintes bases legais internacionais:</p>
+                    <ul>
+                        <li><strong>Consentimento do Interessado:</strong> Ao inserir voluntariamente seus dados corporativos e de contato para desbloquear o questionário de autodiagnóstico (a partir da terceira pergunta) e aceitar expressamente esta política.</li>
+                        <li><strong>Execução de um Contrato ou Medidas Pré-contratuais:</strong> Quando solicita informações detalhadas sobre certificações avançadas (Nível Médio ou Premium) ou simula e contrata a emissão do Selo de Compromisso Inicial.</li>
+                        <li><strong>Interesse Legítimo:</strong> Para a otimização de nossa plataforma, análises estatísticas anonimizadas sobre os níveis de amigabilidade corporativa na região, e prevenção de fraudes.</li>
+                    </ul>
+
+                    <h2>4. Finalidades do Tratamento de Dados</h2>
+                    <p>Seus dados pessoais e corporativos serão processados com as seguintes finalidades exclusivas:</p>
+                    <ol>
+                        <li>Gerenciar seu registro profissional e garantir o acesso seguro ao questionário de autodiagnóstico.</li>
+                        <li>Gerar e enviar por e-mail o código de verificação OTP (One-Time Password) para validar sua identidade digital através da API segura do **EmailJS**.</li>
+                        <li>Calcular suas pontuações globais e setoriais, e redigir o relatório específico de recomendações prioritárias (Quick Wins) respaldadas pelas normas técnicas internacionais (ISO 25550, ISO 25551, ISO 25556, OMS e OIT).</li>
+                        <li>Coordenar chamadas de contato comercial e auditorias virtuais/físicas em caso de solicitar serviços para os Níveis Médio e Premium de certificação.</li>
+                        <li>Enviar comunicações sobre atualizações normativas, estudos setoriais de longevidade e eventos da rede de empresas certificadas, sempre que contarmos com seu consentimento.</li>
+                    </ol>
+
+                    <h2>5. Destinatários dos Dados e Transferências Internacionais</h2>
+                    <p>O Instituto <strong>não vende, aluga ou comercializa</strong> seus dados pessoais ou corporativos sob nenhuma circunstância. Seus dados só são compartilhados com terceiros provedores essenciais que atuam como operadores do tratamento sob estritos acordos de confidencialidade e segurança:</p>
+                    <ul>
+                        <li><strong>EmailJS Inc.</strong> (EUA): Provedor encarregado do envio do e-mail de verificação de conta e código OTP. O envio é realizado mediante criptografia TLS e os dados de e-mail e nome são processados temporariamente para a entrega da mensagem.</li>
+                        <li><strong>Provedores de Hospedagem e Servidores na Nuvem:</strong> Empresas que hospedam a infraestrutura do site com certificações de segurança física e digital líderes (como AWS ou Google Cloud), garantindo que suas bases de dados estejam criptografadas em repouso e em trânsito (SSL/HTTPS).</li>
+                    </ul>
+
+                    <h2>6. Conservação dos Dados</h2>
+                    <p>Conservaremos seus dados corporativos e de contato enquanto durar a relação comercial e sua conta estiver ativa em nossa plataforma. O distintivo digital do Selo de Compromisso Inicial tem validade de 1 ano; os dados associados serão conservados por esse período. Em caso de inatividade ou a pedido do usuário, procederemos à exclusão segura de seus dados, exceto aqueles que devem ser conservados por obrigações legais, fiscais ou contratuais aplicáveis.</p>
+
+                    <h2>7. Seus Direitos (GDPR e Direitos ARCO)</h2>
+                    <p>Como titular dos dados, você dispõe dos seguintes direitos garantidos internacionalmente, os quais poderá exercer a qualquer momento escrevendo para <a href="mailto:privacidad@agefriendseal.com" style="color: var(--accent-blue); text-decoration: none;">privacidad@agefriendseal.com</a>:</p>
+                    <ul>
+                        <li><strong>Acesso:</strong> Direito de saber quais dados pessoais tratamos sobre você e sua empresa.</li>
+                        <li><strong>Retificação:</strong> Direito de atualizar ou corrigir qualquer dado inexato ou incompleto.</li>
+                        <li><strong>Cancelamento / Exclusão (Direito ao Esquecimento):</strong> Direito de solicitar a exclusão completa de sua conta e de seus registros de nosso banco de dados.</li>
+                        <li><strong>Oposição:</strong> Direito de se opor ao tratamento de seus dados para fins publicitários ou promocionais.</li>
+                        <li><strong>Portabilidade:</strong> Direito de receber seus dados estruturados em um formato digital de uso comum e de transmiti-los a outro responsável pelo tratamento.</li>
+                        <li><strong>Limitação do Tratamento:</strong> Direito de solicitar a restrição temporária do processamento de seus dados em cenários específicos de disputa.</li>
+                    </ul>
+                    <p>Responderemos a qualquer solicitação em um prazo máximo de 15 dias úteis (ou os prazos previstos pela legislação local do seu país), sem custo algum para você.</p>
+
+                    <h2>8. Segurança dos Dados</h2>
+                    <p>Implementamos medidas de segurança técnicas, organizativas and físicas rigorosas para proteger suas informações contra perda, roubo, acesso não autorizado, alteração ou destruição. Isso inclui o uso de protocolos seguros de transmissão HTTPS, mecanismos de hash para senhas/códigos e políticas internas de acesso restrito apenas ao pessoal autorizado de auditoria do Instituto.</p>
+
+                    <h2>9. Alterações a esta Política de Privacidade</h2>
+                    <p>Reservamo-nos o direito de atualizar esta Política de Privacidade para adaptá-la a futuras modificações legislativas, jurisprudenciais ou práticas de mercado. Qualquer alteração substancial será notificada de forma visível em nossa plataforma ou por e-mail direto antes que a atualização seja efetiva.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pie de página -->
+    <footer class="footer">
+        <div class="container footer-container text-center">
+            <div class="logo" style="justify-content: center; margin-bottom: 16px;">
+                <img src="/assets/logo_age_friend_seal.png" alt="Age Friend Seal Logo" class="logo-img">
+                <span class="logo-text"><span class="logo-accent">Age</span> Friend Seal</span>
+            </div>
+            <div class="footer-links" style="margin-bottom: 16px;">
+                <a href="/?lang=pt" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Início</a> | 
+                <a href="/?lang=pt#alianzas" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Alianças</a> | 
+                <a href="/info/privacidad_pt.html" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Política de Privacidade</a> | 
+                <a href="/info/terminos_pt.html" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Termos e Condições</a> |
+                <span class="footer-lang-dropdown">
+                    <a href="#" class="lang-switch-btn" onclick="event.preventDefault(); event.stopPropagation(); this.parentElement.classList.toggle('active');" style="display: inline-flex; align-items: center; gap: 6px; color: var(--text-primary); text-decoration: none; margin: 0 5px; font-weight: bold; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">
+                        <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" style="width: 16px; height: 11px; border-radius: 1px; margin: 0;" width="16" height="11">
+                            <rect width="600" height="400" fill="#006600"/>
+                            <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
+                            <circle cx="300" cy="200" r="100" fill="#003399"/>
+                        </svg>
+                        Português
+                        <span style="font-size: 0.7em; margin-left: 2px;">▼</span>
+                    </a>
+                    <span class="footer-dropdown-menu">
+                        <a href="/info/privacidad.html">
+                            <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2" style="width: 16px; height: 11px; border-radius: 1px; margin: 0;" width="16" height="11">
+                                <rect width="3" height="2" fill="#c60b1e" />
+                                <rect width="3" height="1" y="0.5" fill="#ffc400" />
+                            </svg>
+                            Español
+                        </a>
+                        <a href="/info/privacidad_en.html">
+                            <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" style="width: 16px; height: 11px; border-radius: 1px; margin: 0;" width="16" height="11">
+                                <rect width="60" height="30" fill="#012169" />
+                                <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6" />
+                                <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="2" />
+                                <path d="M30,0 V30 M0,15 H60" stroke="#fff" stroke-width="10" />
+                                <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" stroke-width="6" />
+                            </svg>
+                            English
+                        </a>
+                        <a href="/info/privacidad_pt.html">
+                            <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" style="width: 16px; height: 11px; border-radius: 1px; margin: 0;" width="16" height="11">
+                                <rect width="600" height="400" fill="#006600"/>
+                                <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
+                                <circle cx="300" cy="200" r="100" fill="#003399"/>
+                            </svg>
+                            Português
+                        </a>
+                    </span>
+                </span>
+            </div>
+            <p>&copy; 2026 Age Friendly Seal Certification. Todos os direitos reservados.</p>
+            <p class="footer-note">Desenvolvido no âmbito da Norma ISO 25550 e das melhores práticas intergeracionais.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('click', function() {
+            document.querySelectorAll('.footer-lang-dropdown, .nav-dropdown').forEach(function(el) {
+                el.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
 
 
 
@@ -1288,7 +1503,7 @@ body {
                             </svg>
                             English
                         </a>
-                        <a href="/?lang=pt">
+                        <a href="terminos_pt.html">
                             <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
                                 <rect width="600" height="400" fill="#006600"/>
                                 <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
@@ -1397,7 +1612,7 @@ body {
                             </svg>
                             English
                         </a>
-                        <a href="/?lang=pt">
+                        <a href="/info/terminos_pt.html">
                             <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" style="width: 16px; height: 11px; border-radius: 1px; margin: 0;" width="16" height="11">
                                 <rect width="600" height="400" fill="#006600"/>
                                 <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
@@ -1489,7 +1704,7 @@ body {
                             </svg>
                             English
                         </a>
-                        <a href="/?lang=pt">
+                        <a href="terminos_pt.html">
                             <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
                                 <rect width="600" height="400" fill="#006600"/>
                                 <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
@@ -1601,7 +1816,7 @@ body {
                             </svg>
                             English
                         </a>
-                        <a href="/?lang=pt">
+                        <a href="/info/terminos_pt.html">
                             <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" style="width: 16px; height: 11px; border-radius: 1px; margin: 0;" width="16" height="11">
                                 <rect width="600" height="400" fill="#006600"/>
                                 <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
@@ -1627,6 +1842,205 @@ body {
 </body>
 </html>
 
+
+
+
+
+// ==========================================
+// FILE: public\info\terminos_pt.html
+// ==========================================
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termos e Condições - Age Friend Seal</title>
+    <meta name="description" content="Termos e condições de uso do portal do Instituto Certificador Age Friend Seal, sob padrões de validade internacional.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/info/styles.css">
+</head>
+<body>
+
+    <!-- Navegación -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="/?lang=pt" class="logo">
+                <img src="/assets/logo_age_friend_seal.png" alt="Age Friend Seal Logo" class="logo-img">
+                <span class="logo-text"><span class="logo-accent">Age</span> Friend Seal</span>
+            </a>
+            <nav class="nav-links">
+                <a href="/?lang=pt#oportunidad">Economia Prateada</a>
+                <a href="/?lang=pt#escalera">Certificações</a>
+                <a href="/?lang=pt#normativas">Fundamentos Globais</a>
+                <a href="/?lang=pt#radar-noticias">Radar de Longevidade</a>
+                <a href="/?lang=pt#autodiagnostico" class="btn btn-primary">Autodiagnóstico MVP</a>
+                <div class="nav-dropdown" style="margin-left: 10px;">
+                    <a href="#" class="nav-dropdown-toggle lang-switch-btn" onclick="event.preventDefault(); event.stopPropagation(); this.parentElement.classList.toggle('active');">
+                        <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+                            <rect width="600" height="400" fill="#006600"/>
+                            <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
+                            <circle cx="300" cy="200" r="100" fill="#003399"/>
+                        </svg>
+                        PT
+                        <span style="font-size: 0.7em; margin-left: 2px;">▼</span>
+                    </a>
+                    <div class="nav-dropdown-menu">
+                        <a href="terminos.html">
+                            <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2">
+                                <rect width="3" height="2" fill="#c60b1e" />
+                                <rect width="3" height="1" y="0.5" fill="#ffc400" />
+                            </svg>
+                            Español
+                        </a>
+                        <a href="terminos_en.html">
+                            <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+                                <rect width="60" height="30" fill="#012169" />
+                                <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6" />
+                                <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="2" />
+                                <path d="M30,0 V30 M0,15 H60" stroke="#fff" stroke-width="10" />
+                                <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" stroke-width="6" />
+                            </svg>
+                            English
+                        </a>
+                        <a href="terminos_pt.html">
+                            <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+                                <rect width="600" height="400" fill="#006600"/>
+                                <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
+                                <circle cx="300" cy="200" r="100" fill="#003399"/>
+                            </svg>
+                            Português
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contenido Legal -->
+    <section class="legal-section">
+        <div class="container container-narrow">
+            <div class="legal-card">
+                <h1>Termos e Condições de Uso</h1>
+                <div class="legal-meta">Última atualização: 1 de junho de 2026</div>
+                
+                <div class="legal-body">
+                    <p>Bem-vindo ao portal web do <strong>Instituto Certificador Age Friend Seal Internacional</strong> (doravante, "o Instituto" o "o Portal"). Os presentes Termos e Condições regulam o acesso, navegação e uso do nosso site, ferramentas de autodiagnóstico, simuladores de meios de pagamento e relatórios para download por parte de empresas, profissionais e o público em geral (doravante, "o Usuário" ou "os Usuários").</p>
+                    <p>Ao acessar, navegar ou utilizar este site, você aceita e obriga-se de forma incondicional a cumprir os presentes Termos e Condições em sua totalidade. Se não estiver de acordo com alguma das disposições estabelecidas neste documento, por favor, abstenha-se de utilizar nossos serviços e de preencher os formulários de avaliação.</p>
+
+                    <h2>1. Objeto e Descrição do Serviço</h2>
+                    <p>O portal do Age Friend Seal tem como finalidade fornecer ferramentas de diagnóstico empresarial, divulgação técnica e informações comerciais relacionadas à amigabilidade organizacional frente ao mercado sênior e à longevidade ativa (Economia Prateada). Os serviços prestados através do Portal incluem:</p>
+                    <ul>
+                        <li><strong>Autodiagnóstico Age-Friendly:</strong> Uma ferramenta interativa de 15 perguntas fundamentadas em normas internacionais (ISO 25550, ISO 25551, ISO 25556, OMS e ICOPE) orientada a diagnosticar de forma inicial as capacidades físicas, operativas e de comunicação da organização do Usuário.</li>
+                        <li><strong>Relatórios e Recomendações:</strong> Geração automática de planos de ação imediatos ("Quick Wins") adaptados às respostas da organização avaliada.</li>
+                        <li><strong>Emissão do Selo de Compromisso Inicial:</strong> Um distintivo digital (Nível Básico) emitido sob o pagamento de uma taxa anual que certifica que a empresa iniciou formalmente a autoavaliação.</li>
+                        <li><strong>Solicitações de Auditoria Avançada:</strong> Formulários para solicitar orçamentos e serviços de auditorias virtuais ou físicas integrais a fim de optar pelos níveis Médio (Certificação Condicional) e Premium (Empresa Certificada).</li>
+                    </ul>
+
+                    <h2>2. Registro Profissional, Conta e Segurança</h2>
+                    <p>Para concluir o questionário a partir da terceira pergunta, o Portal exige que o Usuário crie uma conta fornecendo dados corporativos e de contato verídicos, atuais e completos. O Usuário aceita que:</p>
+                    <ul>
+                        <li>É um representante autorizado da empresa ou negócio que se submete ao autodiagnóstico.</li>
+                        <li>O acesso ao questionário exige uma validação por meio de código OTP (One-Time Password) enviado ao e-mail corporativo fornecido. A guarda deste código é de inteira responsabilidade do Usuário.</li>
+                        <li>O Instituto reserva-se o direito de recusar solicitações de registro ou suspender contas se houver suspeita de que foram inseridos dados falsos, marcas usurpadas ou utilizados e-mails não corporativos.</li>
+                    </ul>
+
+                    <h2>3. Propriedade Intelectual e Industrial</h2>
+                    <p>Todos os elementos contidos neste Portal —incluindo de maneira enunciativa, mas não limitativa: o logotipo do <strong>Age Friend Seal</strong>, as perguntas do questionário de autodiagnóstico, a metodologia de pontuação, os algoritmos de feedback, o design visual dos distintivos e relatórios, o código-fonte (HTML, CSS, JS), os textos de notícias locais e os manuais do Portal— são de propriedade exclusiva do Instituto ou de seus respectivos licenciantes, e estão protegidos pelas leis internacionais de propriedade intelectual e pelos tratados de marcas.</p>
+                    <p>Concede-se ao Usuário uma licença limitada, não exclusiva, revogável e não transferível unicamente para acessar, navegar e baixar seu relatório personalizado de autodiagnóstico ou o selo de Compromisso Inicial adquirido para uso corporativo interno. Proíbe-se expressamente qualquer reprodução, revenda, sublicenciamento, engenharia reversa, extração massiva de dados (scraping) ou uso do questionário para fins de consultoria de terceiros sem autorização prévia por escrito do Instituto.</p>
+
+                    <h2>4. Condições e Validade da Certificação (Escada de Valor)</h2>
+                    <p>A escada de certificação do Age Friend Seal opera sob os seguintes termos operacionais:</p>
+                    <ol>
+                        <li><strong>Nível Básico (Selo de Compromisso Inicial):</strong> Adquirido mediante o pagamento simulado ou real de $99 USD. Concede o direito de usar o selo em meios digitais corporativos. Sua validade é de **1 ano civil** a partir da data de emissão. A renovação anual é obrigatória e exige repetir a autoavaliação básica.</li>
+                        <li><strong>Nível Médio (Certificação Condicional) e Nível Premium (Empresa Certificada):</strong> Não são emitidos de forma automática. Sua concessão está sujeita à formalização de contratos específicos de auditoria, à revisão de evidências de conformidade por auditores qualificados sob os padrões ISO 25550/25551/25556, e à aplicação de programas de simulação (Mystery Shopper Senior). As tarifas e validade destes níveis são acordadas por contratos individuais independentes.</li>
+                    </ol>
+
+                    <h2>5. Limitação de Responsabilidade</h2>
+                    <p>O autodiagnóstico automatizado disponível no Portal é uma ferramenta **estritamente de caráter orientador, informativo e de autoavaliação preliminar**. O Instituto não garante que o cumprimento das recomendações básicas ("Quick Wins") ou a posse do Selo de Compromisso Inicial garanta imunidade legal frente a regulamentos locais de idadismo ou o sucesso comercial com o público sênior.</p>
+                    <p>O Instituto não será responsável, em caso algum, por danos diretos, indiretos, incidentais, punitivos ou consequentes de qualquer tipo (incluindo perdas financeiras, danos à reputação ou problemas trabalhistas internos) decorrentes do uso da plataforma, da implementação ou não das sugestões do relatório, da suspensão da conta ou de quedas temporárias do servidor da plataforma.</p>
+
+                    <h2>6. Modificação e Suspensão do Serviço</h2>
+                    <p>Reservamo-nos o direito de modificar, atualizar, suspender ou descontinuar qualquer parte do Portal, os preços das certificaciones, a estrutura das perguntas ou os requisitos regulatórios a qualquer momento e sem aviso prévio, sem incorrer em qualquer responsabilidade perante o Usuário.</p>
+
+                    <h2>7. Lei Aplicable e Jurisdição</h2>
+                    <p>Os presentes Termos e Condições são regidos pelas leis internacionais de comércio eletrônico e, supletivamente, pela legislação aplicável na República do Chile (sede operacional principal do Instituto). Qualquer controvérsia, divergência ou reclamação decorrente do uso do Portal ou da aquisição de certificações que não possa ser resolvida por mútuo acordo será submetida à jurisdição exclusiva dos Tribunais Ordinários de Santiago de Chile.</p>
+
+                    <h2>8. Contato</h2>
+                    <p>Para qualquer dúvida, esclarecimento ou sugestão sobre os presentes Termos e Condições, os Usuários podem contatar o Instituto através do e-mail oficial: <a href="mailto:soporte@agefriendseal.com" style="color: var(--accent-blue); text-decoration: none;">soporte@agefriendseal.com</a>.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pie de página -->
+    <footer class="footer">
+        <div class="container footer-container text-center">
+            <div class="logo" style="justify-content: center; margin-bottom: 16px;">
+                <img src="/assets/logo_age_friend_seal.png" alt="Age Friend Seal Logo" class="logo-img">
+                <span class="logo-text"><span class="logo-accent">Age</span> Friend Seal</span>
+            </div>
+            <div class="footer-links" style="margin-bottom: 16px;">
+                <a href="/?lang=pt" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Início</a> | 
+                <a href="/?lang=pt#alianzas" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Alianças</a> | 
+                <a href="/info/privacidad_pt.html" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Política de Privacidade</a> | 
+                <a href="/info/terminos_pt.html" style="color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Termos e Condições</a> |
+                <span class="footer-lang-dropdown">
+                    <a href="#" class="lang-switch-btn" onclick="event.preventDefault(); event.stopPropagation(); this.parentElement.classList.toggle('active');" style="display: inline-flex; align-items: center; gap: 6px; color: var(--text-primary); text-decoration: none; margin: 0 5px; font-weight: bold; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">
+                        <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" style="width: 16px; height: 11px; border-radius: 1px; margin: 0;" width="16" height="11">
+                            <rect width="600" height="400" fill="#006600"/>
+                            <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
+                            <circle cx="300" cy="200" r="100" fill="#003399"/>
+                        </svg>
+                        Português
+                        <span style="font-size: 0.7em; margin-left: 2px;">▼</span>
+                    </a>
+                    <span class="footer-dropdown-menu">
+                        <a href="/info/terminos.html">
+                            <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2" style="width: 16px; height: 11px; border-radius: 1px; margin: 0;" width="16" height="11">
+                                <rect width="3" height="2" fill="#c60b1e" />
+                                <rect width="3" height="1" y="0.5" fill="#ffc400" />
+                            </svg>
+                            Español
+                        </a>
+                        <a href="/info/terminos_en.html">
+                            <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" style="width: 16px; height: 11px; border-radius: 1px; margin: 0;" width="16" height="11">
+                                <rect width="60" height="30" fill="#012169" />
+                                <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6" />
+                                <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="2" />
+                                <path d="M30,0 V30 M0,15 H60" stroke="#fff" stroke-width="10" />
+                                <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" stroke-width="6" />
+                            </svg>
+                            English
+                        </a>
+                        <a href="/info/terminos_pt.html">
+                            <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" style="width: 16px; height: 11px; border-radius: 1px; margin: 0;" width="16" height="11">
+                                <rect width="600" height="400" fill="#006600"/>
+                                <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
+                                <circle cx="300" cy="200" r="100" fill="#003399"/>
+                            </svg>
+                            Português
+                        </a>
+                    </span>
+                </span>
+            </div>
+            <p>&copy; 2026 Age Friendly Seal Certification. Todos os direitos reservados.</p>
+            <p class="footer-note">Desenvolvido no âmbito da Norma ISO 25550 e das melhores práticas intergeracionais.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('click', function() {
+            document.querySelectorAll('.footer-lang-dropdown, .nav-dropdown').forEach(function(el) {
+                el.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
 
 
 
@@ -2780,11 +3194,15 @@ function Footer({ language, onLanguageChange }) {
   };
 
   const getPrivacidadLink = () => {
-    return language === 'en' ? '/info/privacidad_en.html' : '/info/privacidad.html';
+    if (language === 'en') return '/info/privacidad_en.html';
+    if (language === 'pt') return '/info/privacidad_pt.html';
+    return '/info/privacidad.html';
   };
 
   const getTerminosLink = () => {
-    return language === 'en' ? '/info/terminos_en.html' : '/info/terminos.html';
+    if (language === 'en') return '/info/terminos_en.html';
+    if (language === 'pt') return '/info/terminos_pt.html';
+    return '/info/terminos.html';
   };
 
   return (

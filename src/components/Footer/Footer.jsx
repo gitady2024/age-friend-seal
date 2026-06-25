@@ -30,11 +30,15 @@ function Footer({ language, onLanguageChange }) {
   };
 
   const getPrivacidadLink = () => {
-    return language === 'en' ? '/info/privacidad_en.html' : '/info/privacidad.html';
+    if (language === 'en') return '/info/privacidad_en.html';
+    if (language === 'pt') return '/info/privacidad_pt.html';
+    return '/info/privacidad.html';
   };
 
   const getTerminosLink = () => {
-    return language === 'en' ? '/info/terminos_en.html' : '/info/terminos.html';
+    if (language === 'en') return '/info/terminos_en.html';
+    if (language === 'pt') return '/info/terminos_pt.html';
+    return '/info/terminos.html';
   };
 
   return (
