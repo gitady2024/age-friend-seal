@@ -370,12 +370,11 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                 <label htmlFor="auth-reg-password"><FormattedMessage id="Modals.057" /></label>
                 <input type="password" id="auth-reg-password" required minLength={6} placeholder={intl.formatMessage({ id: "Modals.058" })} />
               </div>
-              {registerType === 'personal' ? (
-                <div className="form-group" id="field-personal-country">
-                  <label htmlFor="auth-reg-country"><FormattedMessage id="Modals.059" /></label>
-                  <input type="text" id="auth-reg-country" name="country" placeholder={intl.formatMessage({ id: "Modals.060" })} />
-                </div>
-              ) : (
+              <div className="form-group" id="field-country">
+                <label htmlFor="auth-reg-country"><FormattedMessage id="Modals.059" /></label>
+                <input type="text" id="auth-reg-country" name="country" placeholder={intl.formatMessage({ id: "Modals.060" })} />
+              </div>
+              {registerType === 'empresa' && (
                 <CompanyFields prefix="auth-reg" intl={intl} language={language} />
               )}
               <button type="submit" className="btn btn-gradient btn-block" style={{ marginTop: 12 }}><FormattedMessage id="Modals.083" /></button>

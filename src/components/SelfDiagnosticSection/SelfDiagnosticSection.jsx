@@ -293,20 +293,19 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                     </div>
                   </div>
 
-                  {registrationType === 'personal' ? (
-                    <div className="form-group" id="quiz-field-personal-country">
-                      <label htmlFor="quiz-reg-country"><FormattedMessage id="SelfDiagnosticSection.020" /></label>
-                      <input
-                        type="text"
-                        id="quiz-reg-country"
-                        name="quiz-demo-country"
-                        autoComplete="off"
-                        value={registrationForm.country}
-                        onChange={(event) => updateRegistrationField('country', event.target.value)}
-                        placeholder={intl.formatMessage({ id: "SelfDiagnosticSection.021" })}
-                      />
-                    </div>
-                  ) : (
+                  <div className="form-group" id="quiz-field-country">
+                    <label htmlFor="quiz-reg-country"><FormattedMessage id="SelfDiagnosticSection.020" /></label>
+                    <input
+                      type="text"
+                      id="quiz-reg-country"
+                      name="quiz-demo-country"
+                      autoComplete="off"
+                      value={registrationForm.country}
+                      onChange={(event) => updateRegistrationField('country', event.target.value)}
+                      placeholder={intl.formatMessage({ id: "SelfDiagnosticSection.021" })}
+                    />
+                  </div>
+                  {registrationType === 'empresa' && (
                     <>
                       <div className="form-group" id="quiz-field-company-sector">
                         <label htmlFor="quiz-reg-sector-type"><FormattedMessage id="SelfDiagnosticSection.022" /></label>
