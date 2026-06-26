@@ -5779,7 +5779,7 @@ function NormativasSection() {
               <li><strong><FormattedMessage id="NormativasSection.034" /></strong> <FormattedMessage id="NormativasSection.035" /></li>
               <li><strong><FormattedMessage id="NormativasSection.036" /></strong> <FormattedMessage id="NormativasSection.037" /></li>
             </ul>
-            <a href="https://www.iso.org/standard/84224.html" target="_blank" className="normativa-link"><FormattedMessage id="NormativasSection.038" /></a>
+            <a href="https://www.iso.org/standard/82401.html" target="_blank" className="normativa-link"><FormattedMessage id="NormativasSection.038" /></a>
           </div>
         </div>
       </div>
