@@ -4389,7 +4389,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                 {upgradeSector === 'publico' && (
                   <div className="form-group">
                     <label htmlFor="upg-subsector">
-                      {language === 'es' ? 'Vertical Sector Público' : language === 'pt' ? 'Vertical Setor Público' : 'Public Sector Vertical'}
+                    {language === 'es' ? 'Vertical de negocio' : language === 'pt' ? 'Vertical de negócios' : 'Business Vertical'}
                     </label>
                     <select id="upg-subsector" name="subsector" required>
                       <option value="PÚBLICO">
@@ -4403,7 +4403,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                 {upgradeSector === 'privado' && (
                   <div className="form-group">
                     <label htmlFor="upg-subsector">
-                      {language === 'es' ? 'Vertical Sector Privado' : language === 'pt' ? 'Vertical Setor Privado' : 'Private Sector Vertical'}
+                    {language === 'es' ? 'Vertical de negocio' : language === 'pt' ? 'Vertical de negócios' : 'Business Vertical'}
                     </label>
                     <select id="upg-subsector" name="subsector" required>
                       <option value="">
@@ -4478,7 +4478,7 @@ function CompanyFields({ prefix = 'auth-reg', intl, language }) {
     <>
       <div className="form-group" id={`${prefix}-company-sector`}>
         <label htmlFor={`${prefix}-sector`}>
-          {language === 'es' ? 'Sector' : language === 'pt' ? 'Setor' : 'Sector'}
+          {language === 'es' ? 'Sector de la Economía' : language === 'pt' ? 'Setor da Economia' : 'Economic Sector'}
         </label>
         <select
           id={`${prefix}-sector`}
@@ -4502,7 +4502,7 @@ function CompanyFields({ prefix = 'auth-reg', intl, language }) {
       {sectorType === 'publico' && (
         <div className="form-group" id={`${prefix}-public-vertical`}>
           <label htmlFor={`${prefix}-subsector`}>
-            {language === 'es' ? 'Vertical Sector Público' : language === 'pt' ? 'Vertical Setor Público' : 'Public Sector Vertical'}
+            {language === 'es' ? 'Vertical de negocio' : language === 'pt' ? 'Vertical de negócios' : 'Business Vertical'}
           </label>
           <select
             id={`${prefix}-subsector`}
@@ -4521,7 +4521,7 @@ function CompanyFields({ prefix = 'auth-reg', intl, language }) {
       {sectorType === 'privado' && (
         <div className="form-group" id={`${prefix}-private-vertical`}>
           <label htmlFor={`${prefix}-subsector`}>
-            {language === 'es' ? 'Vertical Sector Privado' : language === 'pt' ? 'Vertical Setor Privado' : 'Private Sector Vertical'}
+            {language === 'es' ? 'Vertical de negocio' : language === 'pt' ? 'Vertical de negócios' : 'Business Vertical'}
           </label>
           <select
             id={`${prefix}-subsector`}
@@ -6533,7 +6533,7 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
           <div className="glass-card quiz-container" id="quiz-card">
             {currentUser && currentUser.type === 'empresa' && (
               <div id="quiz-sector-header" className="text-center" style={{marginBottom: '25px', fontWeight: 600, fontSize: '1.1rem', background: 'rgba(59, 130, 246, 0.1)', padding: '10px 20px', borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.2)'}}>
-                <span style={{color: 'var(--accent-color)'}}>Sector:</span> {currentUser.sector === 'privado' ? (language === 'es' || language === 'pt' ? 'Privado' : 'Private') : (language === 'es' || language === 'pt' ? 'Público' : 'Public')} <span style={{margin: '0 10px', color: 'var(--border-color)'}}>|</span> <span style={{color: 'var(--accent-color)'}}>Vertical:</span> {currentUser.subsector || 'N/A'}
+                <span style={{color: 'var(--accent-color)'}}>{language === 'es' ? 'Sector de la Economía:' : language === 'pt' ? 'Setor da Economia:' : 'Economic Sector:'}</span> {currentUser.sector === 'privado' ? (language === 'es' || language === 'pt' ? 'Privado' : 'Private') : (language === 'es' || language === 'pt' ? 'Público' : 'Public')} <span style={{margin: '0 10px', color: 'var(--border-color)'}}>|</span> <span style={{color: 'var(--accent-color)'}}>{language === 'es' ? 'Vertical de negocio:' : language === 'pt' ? 'Vertical de negócios:' : 'Business Vertical:'}</span> {currentUser.subsector || 'N/A'}
               </div>
             )}
             <div className="quiz-progress-bar" id="quiz-progress-bar">
@@ -6680,7 +6680,7 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                       {sectorType === 'publico' && (
                         <div className="form-group" id="quiz-field-public-level">
                           <label htmlFor="quiz-reg-public-level">
-                            {language === 'es' ? 'Vertical Sector Público' : language === 'pt' ? 'Vertical Setor Público' : 'Public Sector Vertical'}
+                            {language === 'es' ? 'Vertical de negocio' : language === 'pt' ? 'Vertical de negócios' : 'Business Vertical'}
                           </label>
                           <select
                             id="quiz-reg-public-level"
@@ -6700,7 +6700,7 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                       {sectorType === 'privado' && (
                         <div className="form-group" id="quiz-field-private-vertical">
                           <label htmlFor="quiz-reg-private-vertical">
-                            {language === 'es' ? 'Vertical Sector Privado' : language === 'pt' ? 'Vertical Setor Privado' : 'Private Sector Vertical'}
+                            {language === 'es' ? 'Vertical de negocio' : language === 'pt' ? 'Vertical de negócios' : 'Business Vertical'}
                           </label>
                           <select
                             id="quiz-reg-private-vertical"
@@ -10450,7 +10450,7 @@ export const enMessages = {
   "Modals.058": "⬢⬢⬢⬢⬢⬢⬢⬢",
   "Modals.059": "Country",
   "Modals.060": "e.g. Chile",
-  "Modals.061": "Company Sector",
+  "Modals.061": "Economic Sector",
   "Modals.062": "Select sector...",
   "Modals.063": "Private Sector",
   "Modals.064": "Public Sector",
@@ -10459,7 +10459,7 @@ export const enMessages = {
   "Modals.067": "Municipal Government",
   "Modals.068": "Provincial Government",
   "Modals.069": "National Government",
-  "Modals.070": "Economic Vertical",
+  "Modals.070": "Business Vertical",
   "Modals.071": "Select vertical...",
   "Modals.072": "Banking & Insurance",
   "Modals.073": "Healthcare & Pharma",
@@ -10481,15 +10481,15 @@ export const enMessages = {
   "Modals.089": "email@example.com",
   "Modals.090": "Country:",
   "Modals.091": "Chile",
-  "Modals.092": "Sector:",
+  "Modals.092": "Economic Sector:",
   "Modals.093": "-",
-  "Modals.094": "Sector Detail:",
+  "Modals.094": "Business Vertical:",
   "Modals.095": "-",
   "Modals.096": "Job Title:",
   "Modals.097": "-",
   "Modals.098": "🚀 Upgrade to Company Account",
   "Modals.099": "Add your corporate details to download the alliance dossier and request certification meetings.",
-  "Modals.100": "Sector",
+  "Modals.100": "Economic Sector",
   "Modals.101": "Select sector...",
   "Modals.102": "Private Sector",
   "Modals.103": "Public Sector",
@@ -10498,7 +10498,7 @@ export const enMessages = {
   "Modals.106": "Municipal Government",
   "Modals.107": "Provincial Government",
   "Modals.108": "National Government",
-  "Modals.109": "Economic Vertical",
+  "Modals.109": "Business Vertical",
   "Modals.110": "Select vertical...",
   "Modals.111": "Banking & Insurance",
   "Modals.112": "Healthcare & Pharma",
@@ -10639,7 +10639,7 @@ export const enMessages = {
   "SelfDiagnosticSection.019": "⬢⬢⬢⬢⬢⬢⬢⬢",
   "SelfDiagnosticSection.020": "Country",
   "SelfDiagnosticSection.021": "e.g. Chile",
-  "SelfDiagnosticSection.022": "Company Sector",
+  "SelfDiagnosticSection.022": "Economic Sector",
   "SelfDiagnosticSection.023": "Select sector...",
   "SelfDiagnosticSection.024": "Private Sector",
   "SelfDiagnosticSection.025": "Public Sector",
@@ -10648,7 +10648,7 @@ export const enMessages = {
   "SelfDiagnosticSection.028": "Municipal Government",
   "SelfDiagnosticSection.029": "Provincial Government",
   "SelfDiagnosticSection.030": "National Government",
-  "SelfDiagnosticSection.031": "Economic Vertical",
+  "SelfDiagnosticSection.031": "Business Vertical",
   "SelfDiagnosticSection.032": "Select vertical...",
   "SelfDiagnosticSection.033": "Banking & Insurance",
   "SelfDiagnosticSection.034": "Healthcare & Pharma",
@@ -10893,7 +10893,7 @@ export const esMessages = {
   "Modals.058": "⬢⬢⬢⬢⬢⬢⬢⬢",
   "Modals.059": "País",
   "Modals.060": "Ej. Chile",
-  "Modals.061": "Sector de la Empresa",
+  "Modals.061": "Sector de la Economía",
   "Modals.062": "Seleccione sector...",
   "Modals.063": "Sector Privado",
   "Modals.064": "Sector Público",
@@ -10902,7 +10902,7 @@ export const esMessages = {
   "Modals.067": "Gobierno Municipal",
   "Modals.068": "Gobierno Provincial",
   "Modals.069": "Gobierno Nacional",
-  "Modals.070": "Vertical Económica",
+  "Modals.070": "Vertical de negocio",
   "Modals.071": "Seleccione vertical...",
   "Modals.072": "Finanzas y Seguro",
   "Modals.073": "Salud y Farmacia",
@@ -10924,15 +10924,15 @@ export const esMessages = {
   "Modals.089": "correo@ejemplo.com",
   "Modals.090": "País:",
   "Modals.091": "Chile",
-  "Modals.092": "Sector:",
+  "Modals.092": "Sector de la Economía:",
   "Modals.093": "-",
-  "Modals.094": "Detalle Sector:",
+  "Modals.094": "Vertical de negocio:",
   "Modals.095": "-",
   "Modals.096": "Cargo:",
   "Modals.097": "-",
   "Modals.098": "🚀 Convertir en Cuenta de Empresa",
   "Modals.099": "Agrega tus datos corporativos para descargar el dossier de alianzas y solicitar reuniones de certificación.",
-  "Modals.100": "Sector",
+  "Modals.100": "Sector de la Economía",
   "Modals.101": "Seleccione sector...",
   "Modals.102": "Sector Privado",
   "Modals.103": "Sector Público",
@@ -10941,7 +10941,7 @@ export const esMessages = {
   "Modals.106": "Gobierno Municipal",
   "Modals.107": "Gobierno Provincial",
   "Modals.108": "Gobierno Nacional",
-  "Modals.109": "Vertical Económica",
+  "Modals.109": "Vertical de negocio",
   "Modals.110": "Seleccione vertical...",
   "Modals.111": "Finanzas y Seguro",
   "Modals.112": "Salud y Farmacia",
@@ -11082,7 +11082,7 @@ export const esMessages = {
   "SelfDiagnosticSection.019": "⬢⬢⬢⬢⬢⬢⬢⬢",
   "SelfDiagnosticSection.020": "País",
   "SelfDiagnosticSection.021": "Ej. Chile",
-  "SelfDiagnosticSection.022": "Sector de la Empresa",
+  "SelfDiagnosticSection.022": "Sector de la Economía",
   "SelfDiagnosticSection.023": "Seleccione un sector...",
   "SelfDiagnosticSection.024": "Sector Privado",
   "SelfDiagnosticSection.025": "Sector Público",
@@ -11091,7 +11091,7 @@ export const esMessages = {
   "SelfDiagnosticSection.028": "Gobierno Municipal",
   "SelfDiagnosticSection.029": "Gobierno Provincial",
   "SelfDiagnosticSection.030": "Gobierno Nacional",
-  "SelfDiagnosticSection.031": "Vertical Económica",
+  "SelfDiagnosticSection.031": "Vertical de negocio",
   "SelfDiagnosticSection.032": "Seleccione vertical...",
   "SelfDiagnosticSection.033": "Finanzas y Seguro",
   "SelfDiagnosticSection.034": "Salud y Farmacia",
@@ -11353,7 +11353,7 @@ export const ptMessages = {
   "Modals.058": "⬢⬢⬢⬢⬢⬢⬢⬢",
   "Modals.059": "País",
   "Modals.060": "Chile",
-  "Modals.061": "Setor da Empresa",
+  "Modals.061": "Setor da Economia",
   "Modals.062": "Selecione o setor...",
   "Modals.063": "Setor Privado",
   "Modals.064": "Setor Público",
@@ -11362,7 +11362,7 @@ export const ptMessages = {
   "Modals.067": "Governo municipal",
   "Modals.068": "Governo Provincial",
   "Modals.069": "Governo Nacional",
-  "Modals.070": "Vertical Econômico",
+  "Modals.070": "Vertical de negócios",
   "Modals.071": "Selecione verticais...",
   "Modals.072": "Finanças e Seguros",
   "Modals.073": "Saúde e Farmácia",
@@ -11384,15 +11384,15 @@ export const ptMessages = {
   "Modals.089": "email@exemplo.com",
   "Modals.090": "País:",
   "Modals.091": "Pimentão",
-  "Modals.092": "Setor:",
+  "Modals.092": "Setor da Economia:",
   "Modals.093": "-",
-  "Modals.094": "Detalhe do Setor:",
+  "Modals.094": "Vertical de negócios:",
   "Modals.095": "-",
   "Modals.096": "Publicar:",
   "Modals.097": "-",
   "Modals.098": "🚀 Convertir en Cuenta de Empresa",
   "Modals.099": "Adicione suas informações corporativas para baixar o dossiê da aliança e solicitar reuniões de certificação.",
-  "Modals.100": "Setor",
+  "Modals.100": "Setor da Economia",
   "Modals.101": "Selecione o setor...",
   "Modals.102": "Setor Privado",
   "Modals.103": "Setor Público",
@@ -11401,7 +11401,7 @@ export const ptMessages = {
   "Modals.106": "Governo municipal",
   "Modals.107": "Governo Provincial",
   "Modals.108": "Governo Nacional",
-  "Modals.109": "Vertical Econômico",
+  "Modals.109": "Vertical de negócios",
   "Modals.110": "Selecione verticais...",
   "Modals.111": "Finanças e Seguros",
   "Modals.112": "Saúde e Farmácia",
@@ -11542,7 +11542,7 @@ export const ptMessages = {
   "SelfDiagnosticSection.019": "⬢⬢⬢⬢⬢⬢⬢⬢",
   "SelfDiagnosticSection.020": "País",
   "SelfDiagnosticSection.021": "Chile",
-  "SelfDiagnosticSection.022": "Setor da Empresa",
+  "SelfDiagnosticSection.022": "Setor da Economia",
   "SelfDiagnosticSection.023": "Selecione um setor...",
   "SelfDiagnosticSection.024": "Setor Privado",
   "SelfDiagnosticSection.025": "Setor Público",
@@ -11551,7 +11551,7 @@ export const ptMessages = {
   "SelfDiagnosticSection.028": "Governo municipal",
   "SelfDiagnosticSection.029": "Governo Provincial",
   "SelfDiagnosticSection.030": "Governo Nacional",
-  "SelfDiagnosticSection.031": "Vertical Econômico",
+  "SelfDiagnosticSection.031": "Vertical de negócios",
   "SelfDiagnosticSection.032": "Selecione verticais...",
   "SelfDiagnosticSection.033": "Finanças e Seguros",
   "SelfDiagnosticSection.034": "Saúde e Farmácia",

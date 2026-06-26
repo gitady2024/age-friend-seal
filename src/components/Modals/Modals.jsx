@@ -433,7 +433,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                 {upgradeSector === 'publico' && (
                   <div className="form-group">
                     <label htmlFor="upg-subsector">
-                      {language === 'es' ? 'Vertical Sector Público' : language === 'pt' ? 'Vertical Setor Público' : 'Public Sector Vertical'}
+                    {language === 'es' ? 'Vertical de negocio' : language === 'pt' ? 'Vertical de negócios' : 'Business Vertical'}
                     </label>
                     <select id="upg-subsector" name="subsector" required>
                       <option value="PÚBLICO">
@@ -447,7 +447,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                 {upgradeSector === 'privado' && (
                   <div className="form-group">
                     <label htmlFor="upg-subsector">
-                      {language === 'es' ? 'Vertical Sector Privado' : language === 'pt' ? 'Vertical Setor Privado' : 'Private Sector Vertical'}
+                    {language === 'es' ? 'Vertical de negocio' : language === 'pt' ? 'Vertical de negócios' : 'Business Vertical'}
                     </label>
                     <select id="upg-subsector" name="subsector" required>
                       <option value="">
@@ -522,7 +522,7 @@ function CompanyFields({ prefix = 'auth-reg', intl, language }) {
     <>
       <div className="form-group" id={`${prefix}-company-sector`}>
         <label htmlFor={`${prefix}-sector`}>
-          {language === 'es' ? 'Sector' : language === 'pt' ? 'Setor' : 'Sector'}
+          {language === 'es' ? 'Sector de la Economía' : language === 'pt' ? 'Setor da Economia' : 'Economic Sector'}
         </label>
         <select
           id={`${prefix}-sector`}
@@ -546,7 +546,7 @@ function CompanyFields({ prefix = 'auth-reg', intl, language }) {
       {sectorType === 'publico' && (
         <div className="form-group" id={`${prefix}-public-vertical`}>
           <label htmlFor={`${prefix}-subsector`}>
-            {language === 'es' ? 'Vertical Sector Público' : language === 'pt' ? 'Vertical Setor Público' : 'Public Sector Vertical'}
+            {language === 'es' ? 'Vertical de negocio' : language === 'pt' ? 'Vertical de negócios' : 'Business Vertical'}
           </label>
           <select
             id={`${prefix}-subsector`}
@@ -565,7 +565,7 @@ function CompanyFields({ prefix = 'auth-reg', intl, language }) {
       {sectorType === 'privado' && (
         <div className="form-group" id={`${prefix}-private-vertical`}>
           <label htmlFor={`${prefix}-subsector`}>
-            {language === 'es' ? 'Vertical Sector Privado' : language === 'pt' ? 'Vertical Setor Privado' : 'Private Sector Vertical'}
+            {language === 'es' ? 'Vertical de negocio' : language === 'pt' ? 'Vertical de negócios' : 'Business Vertical'}
           </label>
           <select
             id={`${prefix}-subsector`}

@@ -171,7 +171,7 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
           <div className="glass-card quiz-container" id="quiz-card">
             {currentUser && currentUser.type === 'empresa' && (
               <div id="quiz-sector-header" className="text-center" style={{marginBottom: '25px', fontWeight: 600, fontSize: '1.1rem', background: 'rgba(59, 130, 246, 0.1)', padding: '10px 20px', borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.2)'}}>
-                <span style={{color: 'var(--accent-color)'}}>Sector:</span> {currentUser.sector === 'privado' ? (language === 'es' || language === 'pt' ? 'Privado' : 'Private') : (language === 'es' || language === 'pt' ? 'Público' : 'Public')} <span style={{margin: '0 10px', color: 'var(--border-color)'}}>|</span> <span style={{color: 'var(--accent-color)'}}>Vertical:</span> {currentUser.subsector || 'N/A'}
+                <span style={{color: 'var(--accent-color)'}}>{language === 'es' ? 'Sector de la Economía:' : language === 'pt' ? 'Setor da Economia:' : 'Economic Sector:'}</span> {currentUser.sector === 'privado' ? (language === 'es' || language === 'pt' ? 'Privado' : 'Private') : (language === 'es' || language === 'pt' ? 'Público' : 'Public')} <span style={{margin: '0 10px', color: 'var(--border-color)'}}>|</span> <span style={{color: 'var(--accent-color)'}}>{language === 'es' ? 'Vertical de negocio:' : language === 'pt' ? 'Vertical de negócios:' : 'Business Vertical:'}</span> {currentUser.subsector || 'N/A'}
               </div>
             )}
             <div className="quiz-progress-bar" id="quiz-progress-bar">
@@ -318,7 +318,7 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                       {sectorType === 'publico' && (
                         <div className="form-group" id="quiz-field-public-level">
                           <label htmlFor="quiz-reg-public-level">
-                            {language === 'es' ? 'Vertical Sector Público' : language === 'pt' ? 'Vertical Setor Público' : 'Public Sector Vertical'}
+                            {language === 'es' ? 'Vertical de negocio' : language === 'pt' ? 'Vertical de negócios' : 'Business Vertical'}
                           </label>
                           <select
                             id="quiz-reg-public-level"
@@ -338,7 +338,7 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                       {sectorType === 'privado' && (
                         <div className="form-group" id="quiz-field-private-vertical">
                           <label htmlFor="quiz-reg-private-vertical">
-                            {language === 'es' ? 'Vertical Sector Privado' : language === 'pt' ? 'Vertical Setor Privado' : 'Private Sector Vertical'}
+                            {language === 'es' ? 'Vertical de negocio' : language === 'pt' ? 'Vertical de negócios' : 'Business Vertical'}
                           </label>
                           <select
                             id="quiz-reg-private-vertical"
