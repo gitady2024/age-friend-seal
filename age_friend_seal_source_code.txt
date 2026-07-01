@@ -180,7 +180,8 @@ import Footer from './components/Footer/Footer.jsx';
 import AccessibilityWidget from './components/AccessibilityWidget/AccessibilityWidget.jsx';
 import { messages } from './i18n/messages.js';
 import { signInAnonymously, onAuthStateChanged } from 'firebase/auth';
-import { auth } from './config/firebase.js';
+import { auth, db } from './config/firebase.js';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 function getInitialLanguage() {
   const params = new URLSearchParams(window.location.search);
@@ -213,14 +214,39 @@ function App() {
 
   useEffect(() => {
     if (!auth) return;
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        setCurrentUser(curr => {
-          if (curr && !curr.uid) {
+        if (user.isAnonymous) {
+          setCurrentUser(curr => {
+            if (!curr) {
+              return { uid: user.uid, type: 'anonymous' };
+            }
             return { ...curr, uid: user.uid };
+          });
+        } else {
+          // Recuperar el perfil real desde Firestore
+          try {
+            const userDocRef = doc(db, "users", user.uid);
+            const docSnap = await getDoc(userDocRef);
+            if (docSnap.exists()) {
+              setCurrentUser(docSnap.data());
+            } else {
+              const basicProfile = {
+                uid: user.uid,
+                email: user.email || "",
+                name: user.displayName || user.email?.split("@")[0] || "Usuario",
+                type: "personal",
+                role: "user",
+                createdAt: new Date().toISOString()
+              };
+              await setDoc(userDocRef, basicProfile);
+              setCurrentUser(basicProfile);
+            }
+          } catch (error) {
+            console.error("Error recuperando perfil de usuario de Firestore:", error);
+            setCurrentUser(curr => curr || { uid: user.uid, email: user.email || "", name: user.displayName || user.email?.split("@")[0] || "Usuario" });
           }
-          return curr;
-        });
+        }
       } else {
         signInAnonymously(auth).catch((error) => {
           console.error("Error signing in anonymously to Firebase Auth:", error);
@@ -2650,8 +2676,8 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
               "Content-Type": "application/json"
             },
             body: JSON.stringify({
-              email: currentUser.email || "",
-              name: currentUser.name || "",
+              email: currentUser?.email || auth?.currentUser?.email || "",
+              name: currentUser?.name || auth?.currentUser?.displayName || (currentUser?.email || auth?.currentUser?.email || "").split("@")[0] || "",
               companyName: companyName,
               pilarScores: latestDiagnostic.scores || {
                 pilar1: latestDiagnostic.score,
@@ -13162,10 +13188,10 @@ export default async function handler(req, res) {
 
       const safeCompanyName = targetCompany.replace(/\s+/g, "_");
       const mailOptions = {
-        from: `"Age Friend Seal Certification" <${smtpUser}>`,
+        from: `"Age Friend Seal" <${smtpUser}>`,
         to: targetEmail,
         subject: `Reporte de Autodiagnóstico Age-Friendly - ${targetCompany}`,
-        text: `Estimado equipo de ${targetCompany},\n\n` +
+        text: `Estimado/a equipo de ${targetCompany},\n\n` +
               `Agradecemos su participación en el proceso de Autodiagnóstico del Age Friend Seal.\n\n` +
               `Adjunto a este correo electrónico encontrarán el Reporte de Resultados Oficial estructurado en formato Excel (.xlsx), ` +
               `el cual incluye la evaluación cuantitativa de sus ejes de madurez corporativa y las recomendaciones de mejora basadas en el estándar ISO 25550.\n\n` +

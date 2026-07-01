@@ -594,8 +594,8 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
               "Content-Type": "application/json"
             },
             body: JSON.stringify({
-              email: currentUser.email || "",
-              name: currentUser.name || "",
+              email: currentUser?.email || auth?.currentUser?.email || "",
+              name: currentUser?.name || auth?.currentUser?.displayName || (currentUser?.email || auth?.currentUser?.email || "").split("@")[0] || "",
               companyName: companyName,
               pilarScores: latestDiagnostic.scores || {
                 pilar1: latestDiagnostic.score,

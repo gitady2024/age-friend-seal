@@ -197,10 +197,10 @@ export default async function handler(req, res) {
 
       const safeCompanyName = targetCompany.replace(/\s+/g, "_");
       const mailOptions = {
-        from: `"Age Friend Seal Certification" <${smtpUser}>`,
+        from: `"Age Friend Seal" <${smtpUser}>`,
         to: targetEmail,
         subject: `Reporte de Autodiagnóstico Age-Friendly - ${targetCompany}`,
-        text: `Estimado equipo de ${targetCompany},\n\n` +
+        text: `Estimado/a equipo de ${targetCompany},\n\n` +
               `Agradecemos su participación en el proceso de Autodiagnóstico del Age Friend Seal.\n\n` +
               `Adjunto a este correo electrónico encontrarán el Reporte de Resultados Oficial estructurado en formato Excel (.xlsx), ` +
               `el cual incluye la evaluación cuantitativa de sus ejes de madurez corporativa y las recomendaciones de mejora basadas en el estándar ISO 25550.\n\n` +

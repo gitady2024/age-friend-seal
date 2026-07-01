@@ -15,7 +15,8 @@ import Footer from './components/Footer/Footer.jsx';
 import AccessibilityWidget from './components/AccessibilityWidget/AccessibilityWidget.jsx';
 import { messages } from './i18n/messages.js';
 import { signInAnonymously, onAuthStateChanged } from 'firebase/auth';
-import { auth } from './config/firebase.js';
+import { auth, db } from './config/firebase.js';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 function getInitialLanguage() {
   const params = new URLSearchParams(window.location.search);
@@ -48,14 +49,39 @@ function App() {
 
   useEffect(() => {
     if (!auth) return;
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        setCurrentUser(curr => {
-          if (curr && !curr.uid) {
+        if (user.isAnonymous) {
+          setCurrentUser(curr => {
+            if (!curr) {
+              return { uid: user.uid, type: 'anonymous' };
+            }
             return { ...curr, uid: user.uid };
+          });
+        } else {
+          // Recuperar el perfil real desde Firestore
+          try {
+            const userDocRef = doc(db, "users", user.uid);
+            const docSnap = await getDoc(userDocRef);
+            if (docSnap.exists()) {
+              setCurrentUser(docSnap.data());
+            } else {
+              const basicProfile = {
+                uid: user.uid,
+                email: user.email || "",
+                name: user.displayName || user.email?.split("@")[0] || "Usuario",
+                type: "personal",
+                role: "user",
+                createdAt: new Date().toISOString()
+              };
+              await setDoc(userDocRef, basicProfile);
+              setCurrentUser(basicProfile);
+            }
+          } catch (error) {
+            console.error("Error recuperando perfil de usuario de Firestore:", error);
+            setCurrentUser(curr => curr || { uid: user.uid, email: user.email || "", name: user.displayName || user.email?.split("@")[0] || "Usuario" });
           }
-          return curr;
-        });
+        }
       } else {
         signInAnonymously(auth).catch((error) => {
           console.error("Error signing in anonymously to Firebase Auth:", error);

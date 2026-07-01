@@ -235,10 +235,10 @@ export const onDiagnosticoCompleted = onDocumentCreated("diagnosticos/{diagnosti
   });
 
   const mailOptions = {
-    from: `"Age Friend Seal Certification" <${smtpUser}>`,
+    from: `"Age Friend Seal" <${smtpUser}>`,
     to: enterpriseEmail,
     subject: `Reporte de Autodiagnóstico Age-Friendly - ${enterpriseName}`,
-    text: `Estimado equipo de ${enterpriseName},\n\n` +
+    text: `Estimado/a equipo de ${enterpriseName},\n\n` +
           `Agradecemos su participación en el proceso de Autodiagnóstico del Age Friend Seal.\n\n` +
           `Adjunto a este correo electrónico encontrarán el Reporte de Resultados Oficial estructurado en formato Excel (.xlsx), ` +
           `el cual incluye la evaluación cuantitativa de sus pilares críticos (Accesibilidad Física, Atención y Servicio, e Inclusión y Comunicación) ` +
