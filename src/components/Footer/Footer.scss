@@ -27,6 +27,7 @@
     position: relative;
     display: inline-flex;
     align-items: center;
+    vertical-align: middle; /* Fix vertical alignment to match footer links */
 }
 
 .footer-dropdown-menu {

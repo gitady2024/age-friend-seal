@@ -2,26 +2,41 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Reglas para la colección 'empresas':
-    // El ID del documento debe coincidir con el UID del usuario autenticado.
-    match /empresas/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    // Helper para verificar si el usuario es administrador
+    function isAdmin() {
+      return request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Reglas para la colección 'users' (Fase 2):
+    // El ID del documento debe coincidir con el UID del usuario autenticado o ser admin.
+    match /users/{userId} {
+      allow read, write: if request.auth != null && (request.auth.uid == userId || isAdmin());
     }
 
-    // Reglas para la colección 'diagnosticos':
-    // Lectura y escritura permitidas únicamente para el usuario dueño del diagnóstico.
-    // Al crear un diagnóstico, el campo 'id_empresa' debe coincidir con el UID del usuario.
+    // Reglas para la colección 'evaluations' (Fase 2):
+    // El campo 'uid' debe coincidir con el UID del usuario autenticado o ser admin.
+    match /evaluations/{evaluationId} {
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+      allow read, update, delete: if request.auth != null && (resource.data.uid == request.auth.uid || isAdmin());
+    }
+    
+    // Reglas legacy para la colección 'empresas':
+    match /empresas/{userId} {
+      allow read, write: if request.auth != null && (request.auth.uid == userId || isAdmin());
+    }
+
+    // Reglas legacy para la colección 'diagnosticos':
     match /diagnosticos/{diagnosticoId} {
       allow create: if request.auth != null && request.resource.data.id_empresa == request.auth.uid;
-      allow read, update, delete: if request.auth != null && resource.data.id_empresa == request.auth.uid;
+      allow read, update, delete: if request.auth != null && (resource.data.id_empresa == request.auth.uid || isAdmin());
     }
 
     // Reglas para la colección 'entregables_b2b':
-    // Lectura permitida para el usuario dueño (si su UID coincide con 'id_empresa').
-    // Escritura deshabilitada desde el SDK del cliente (solo permitida mediante backend/Cloud Functions).
     match /entregables_b2b/{entregableId} {
-      allow read: if request.auth != null && resource.data.id_empresa == request.auth.uid;
-      allow write: if false;
+      allow read: if request.auth != null && (resource.data.id_empresa == request.auth.uid || isAdmin());
+      allow write: if isAdmin();
     }
   }
 }

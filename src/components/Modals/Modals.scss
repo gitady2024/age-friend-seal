@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    Modales & Ventanas Emergentes
    ========================================================================== */
 
@@ -435,6 +435,24 @@
     margin-right: 8px;
     letter-spacing: 0.03em;
     vertical-align: middle;
+}
+
+/* B2B Portal Extension Styles */
+.brand-custom-tab {
+    input[type="text"] {
+        padding: 10px;
+        border-radius: 8px;
+        background: rgba(15, 23, 42, 0.8);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+        font-family: var(--font-body);
+    }
+}
+
+.admin-users-list {
+    max-height: 50vh;
+    overflow-y: auto;
+    padding-right: 5px;
 }
 
 

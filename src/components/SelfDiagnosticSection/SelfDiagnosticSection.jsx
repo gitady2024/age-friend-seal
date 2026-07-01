@@ -4,11 +4,14 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { questions as defaultQuestions } from "../../data/diagnostic.js";
 import { QUESTIONS_BY_SECTOR } from "../../data/questionsBySector.js";
 import { downloadTextFile } from "../../utils/downloads.js";
+import { signUpUser } from "../../utils/firebaseHelpers.js";
 
 const pilarNames = [
-  { es: "Pilar 1: Prácticas Internas", en: "Pillar 1: Internal Practices", pt: "Pilar 1: Práticas Internas" },
-  { es: "Pilar 2: Prácticas Externas", en: "Pillar 2: External Practices", pt: "Pilar 2: Práticas Externas" },
-  { es: "Pilar 3: Ecosistema y Entorno", en: "Pillar 3: Ecosystem and Environment", pt: "Pilar 3: Ecossistema e Entorno" }
+  { es: "Pilar 1: Eje Laboral", en: "Pillar 1: Labor Axis", pt: "Pilar 1: Eixo Trabalhista" },
+  { es: "Pilar 2: Eje Conciliación", en: "Pillar 2: Work-Life Balance", pt: "Pilar 2: Eixo de Conciliação" },
+  { es: "Pilar 3: Eje Consumidor", en: "Pillar 3: Consumer Axis", pt: "Pilar 3: Eixo do Consumidor" },
+  { es: "Pilar 4: Eje Salud", en: "Pillar 4: Health Axis", pt: "Pilar 4: Eixo de Saúde" },
+  { es: "Pilar 5: Eje Comunitario", en: "Pillar 5: Community Axis", pt: "Pilar 5: Eixo Comunitário" }
 ];
 
 const getTranslation = (obj, lang) => {
@@ -60,7 +63,9 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
     country: '',
     publicLevel: '',
     privateVertical: '',
-    role: ''
+    role: '',
+    website: '',
+    companySize: ''
   });
 
   useEffect(() => {
@@ -89,17 +94,25 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
         respuestas: currentQuestions.map((item, index) => {
           const scoreVal = answers[index]?.score ?? 0;
           return {
-            pilar: item.pilar || 1,
+            pilar: Math.min(5, Math.floor(index / 3) + 1),
             pregunta: item.question || getTranslation(item.text, language),
             opcion_seleccionada: getTranslation(answers[index]?.text, language),
             puntuacion: scoreVal,
             recomendacion: getTranslation(item.recommendation, language)
           };
         }),
-        score: results.globalPercent
+        score: results.globalPercent,
+        scores: {
+          pilar1: results.pillarPercents[0] || 0,
+          pilar2: results.pillarPercents[1] || 0,
+          pilar3: results.pillarPercents[2] || 0,
+          pilar4: results.pillarPercents[3] || 0,
+          pilar5: results.pillarPercents[4] || 0
+        },
+        criticalPillar: results.criticalPillar
       });
     }
-  }, [showResults, answers, results.globalPercent, currentQuestions, language]);
+  }, [showResults, answers, results.globalPercent, results.pillarPercents, results.criticalPillar, currentQuestions, language]);
 
   const selectOption = (option) => {
     setAnswers((current) => {
@@ -125,21 +138,48 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
     setShowResults(false);
   };
 
-  const handleRegister = (event) => {
+  const handleRegister = async (event) => {
     event.preventDefault();
     const sector = sectorType || '';
     const subsector = sector === 'publico' ? 'PÚBLICO' : registrationForm.privateVertical;
-    onUserChange({
-      type: registrationType,
-      name: registrationForm.name,
-      email: registrationForm.email,
-      username: registrationForm.username,
-      country: registrationForm.country,
-      sector,
-      subsector: subsector || '',
-      role: registrationForm.role
-    });
-    alert(language === 'es' ? 'Cuenta guardada localmente para la demo.' : 'Account saved locally for the demo.');
+    
+    // Website Validation
+    if (registrationType === 'empresa') {
+      const website = registrationForm.website || '';
+      const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
+      if (!urlPattern.test(website)) {
+        alert(language === 'es' 
+          ? 'Por favor, ingrese una dirección web válida (ej. miempresa.com o https://miempresa.com).' 
+          : language === 'pt'
+            ? 'Por favor, insira um endereço web válido (ex. minhaempresa.com).'
+            : 'Please enter a valid website address (e.g. mycompany.com or https://mycompany.com).');
+        return;
+      }
+    }
+
+    try {
+      const profileData = {
+        type: registrationType,
+        name: registrationForm.name,
+        email: registrationForm.email,
+        username: registrationForm.username,
+        country: registrationForm.country,
+        sector,
+        subsector: subsector || '',
+        role: registrationForm.role || '',
+        website: registrationForm.website || '',
+        companySize: registrationForm.companySize || ''
+      };
+      
+      const user = await signUpUser(registrationForm.email, registrationForm.password, profileData);
+      onUserChange(user);
+      alert(language === 'es' ? '¡Cuenta creada exitosamente!' : (language === 'pt' ? 'Conta criada com sucesso!' : 'Account created successfully!'));
+    } catch (error) {
+      console.error("Registration error:", error);
+      alert(language === 'es' 
+        ? `Error al crear la cuenta: ${error.message}` 
+        : `Error creating account: ${error.message}`);
+    }
   };
 
   const updateRegistrationField = (field, value) => {
@@ -174,24 +214,32 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                 <span style={{color: 'var(--accent-color)'}}>{language === 'es' ? 'Sector de la Economía:' : language === 'pt' ? 'Setor da Economia:' : 'Economic Sector:'}</span> {currentUser.sector === 'privado' ? (language === 'es' || language === 'pt' ? 'Privado' : 'Private') : (language === 'es' || language === 'pt' ? 'Público' : 'Public')} <span style={{margin: '0 10px', color: 'var(--border-color)'}}>|</span> <span style={{color: 'var(--accent-color)'}}>{language === 'es' ? 'Vertical de negocio:' : language === 'pt' ? 'Vertical de negócios:' : 'Business Vertical:'}</span> {currentUser.subsector || 'N/A'}
               </div>
             )}
-            <div className="quiz-progress-bar" id="quiz-progress-bar">
-              <div className="progress-info">
-                <span id="quiz-pilar-name">
-                  {question.pilarName 
-                    ? getTranslation(question.pilarName, language) 
-                    : getTranslation(pilarNames[Math.min(2, Math.floor(step / Math.ceil(currentQuestions.length / 3)))], language)}
-                </span>
-                <span id="quiz-step-text">
-                  {language === 'es' 
-                    ? `Pregunta ${step + 1} de ${currentQuestions.length}` 
-                    : language === 'pt'
-                      ? `Pergunta ${step + 1} de ${currentQuestions.length}`
-                      : `Question ${step + 1} of ${currentQuestions.length}`}
-                </span>
+            <div className="wizard-progress-stepper">
+              <div className="stepper-track-bar">
+                <div 
+                  className="stepper-track-fill" 
+                  style={{ width: `${Math.min(100, (Math.floor(step / 3) / 4) * 100)}%` }} 
+                />
               </div>
-              <div className="progress-track">
-                <div className="progress-fill" id="quiz-progress-fill" style={{ width: `${progress}%` }} />
-              </div>
+              {pilarNames.map((pilar, idx) => {
+                const currentPilarIndex = Math.min(4, Math.floor(step / 3));
+                const isCompleted = currentPilarIndex > idx;
+                const isActive = currentPilarIndex === idx;
+                return (
+                  <div key={idx} className={`stepper-node ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}`}>
+                    <div className="step-circle">{idx + 1}</div>
+                    <span className="step-label">{getTranslation(pilar, language).replace(/^Pilar \d+: /, '')}</span>
+                  </div>
+                );
+              })}
+            </div>
+            
+            <div className="quiz-progress-subinfo text-center" style={{ marginBottom: '24px', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+              {language === 'es' 
+                ? `Pregunta ${step + 1} de ${currentQuestions.length} (Progreso del pilar: ${Math.floor(step % 3) + 1}/3)` 
+                : language === 'pt'
+                  ? `Pergunta ${step + 1} de ${currentQuestions.length} (Progresso do pilar: ${Math.floor(step % 3) + 1}/3)`
+                  : `Question ${step + 1} of ${currentQuestions.length} (Pillar progress: ${Math.floor(step % 3) + 1}/3)`}
             </div>
 
             <div className="quiz-question-box" id="question-box">
@@ -299,6 +347,7 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                       type="text"
                       id="quiz-reg-country"
                       name="quiz-demo-country"
+                      required
                       autoComplete="off"
                       value={registrationForm.country}
                       onChange={(event) => updateRegistrationField('country', event.target.value)}
@@ -307,6 +356,36 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                   </div>
                   {registrationType === 'empresa' && (
                     <>
+                      <div className="form-group" id="quiz-field-company-website">
+                        <label htmlFor="quiz-reg-website">
+                          {language === 'es' ? 'Web de la Empresa *' : language === 'pt' ? 'Site da Empresa *' : 'Company Website *'}
+                        </label>
+                        <input
+                          type="text"
+                          id="quiz-reg-website"
+                          required
+                          value={registrationForm.website || ''}
+                          onChange={(event) => updateRegistrationField('website', event.target.value)}
+                          placeholder="ej. https://miempresa.com"
+                        />
+                      </div>
+                      <div className="form-group" id="quiz-field-company-size">
+                        <label htmlFor="quiz-reg-company-size">
+                          {language === 'es' ? 'Tamaño de la Empresa *' : language === 'pt' ? 'Tamanho da Empresa *' : 'Company Size *'}
+                        </label>
+                        <select
+                          id="quiz-reg-company-size"
+                          required
+                          value={registrationForm.companySize || ''}
+                          onChange={(event) => updateRegistrationField('companySize', event.target.value)}
+                        >
+                          <option value="">{language === 'es' ? 'Seleccionar tamaño...' : language === 'pt' ? 'Selecionar tamanho...' : 'Select size...'}</option>
+                          <option value="Micro (1-9 empleados)">Micro (1-9 empleados)</option>
+                          <option value="Pequeña (10-49 empleados)">Pequeña (10-49 empleados)</option>
+                          <option value="Mediana (50-249 empleados)">Mediana (50-249 empleados)</option>
+                          <option value="Grande (250+ empleados)">Grande (250+ empleados)</option>
+                        </select>
+                      </div>
                       <div className="form-group" id="quiz-field-company-sector">
                         <label htmlFor="quiz-reg-sector-type"><FormattedMessage id="SelfDiagnosticSection.022" /></label>
                         <select id="quiz-reg-sector-type" name="sectorType" value={sectorType} onChange={(event) => setSectorType(event.target.value)} required>
@@ -481,24 +560,34 @@ function calculateResults(answers, language, currentQuestions) {
   const safeAnswers = answers.map((answer) => answer || { score: 0 });
   const totalScore = safeAnswers.reduce((sum, answer) => sum + answer.score, 0);
   
-  // Novedad: cálculo de maxScore (45 para las 15 preguntas, o 100 por defecto para el viejo)
+  // 15 questions, max score per question is 100 for old/generic, or 3 for sector-specific
   const isOldGeneric = currentQuestions === defaultQuestions;
   const maxScore = isOldGeneric ? currentQuestions.length * 100 : currentQuestions.length * 3; 
   const globalPercent = maxScore > 0 ? Math.round((totalScore / maxScore) * 100) : 0;
   
-  const pillarScores = [0, 0, 0];
-  const questionsPerPilar = Math.ceil(currentQuestions.length / 3);
-
+  // Calculate 5 pillars (each containing exactly 3 questions)
+  const pillarScores = [0, 0, 0, 0, 0];
   safeAnswers.forEach((answer, index) => {
-    let pilarIndex = currentQuestions[index].pilar ? currentQuestions[index].pilar - 1 : Math.min(2, Math.floor(index / questionsPerPilar));
+    const pilarIndex = Math.min(4, Math.floor(index / 3));
     pillarScores[pilarIndex] += answer.score;
   });
 
-  const pillarPercents = pillarScores.map((score, idx) => {
-    const questionsInThisPilar = idx === 2 ? currentQuestions.length - (2 * questionsPerPilar) : questionsPerPilar;
-    const maxPillarScore = isOldGeneric ? questionsInThisPilar * 100 : questionsInThisPilar * 3;
+  const pillarPercents = pillarScores.map((score) => {
+    const maxPillarScore = isOldGeneric ? 3 * 100 : 3 * 3;
     return maxPillarScore > 0 ? Math.round((score / maxPillarScore) * 100) : 0;
   });
+
+  // Determine critical pillar (lowest percentage score)
+  const pillarNamesList = ["Eje Laboral", "Eje Conciliación", "Eje Consumidor", "Eje Salud", "Eje Comunitario"];
+  let minScore = 101;
+  let minIndex = 0;
+  pillarPercents.forEach((pct, idx) => {
+    if (pct < minScore) {
+      minScore = pct;
+      minIndex = idx;
+    }
+  });
+  const criticalPillar = pillarNamesList[minIndex];
 
   const recommendations = currentQuestions
     .filter((item, index) => isOldGeneric ? ((answers[index]?.score ?? 0) < 100) : ((answers[index]?.score ?? 0) < 3))
@@ -536,6 +625,7 @@ function calculateResults(answers, language, currentQuestions) {
   return {
     globalPercent,
     pillarPercents,
+    criticalPillar,
     recommendations: recommendations.length ? recommendations : [langKey === 'es' ? 'Excelente puntuación! Su negocio cumple con todos los parámetros. Le sugerimos proceder con la Certificación.' : (langKey === 'pt' ? 'Excelente pontuação! Seu negócio atende a todos os parâmetros. Sugerimos proceder com a Certificação.' : 'Excellent score! Your business meets all parameters. Proceed with Certification.')],
     statusTitle: copy[langKey][level][0],
     statusDesc: copy[langKey][level][1]

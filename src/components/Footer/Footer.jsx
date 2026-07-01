@@ -47,12 +47,17 @@ function Footer({ language, onLanguageChange }) {
         <div className="container footer-container text-center">
           <a href="#" className="logo" style={{
             justifyContent: 'center',
-            marginBottom: 16
+            marginBottom: 16,
+            display: 'flex',
+            alignItems: 'center',
+            height: '42px',
+            textDecoration: 'none'
           }}>
-            <img src="/assets/logo_age_friend_seal.png" alt={intl.formatMessage({
-              id: "Footer.001"
-            })} className="logo-img" />
-            <span className="logo-text"><span className="logo-accent"><FormattedMessage id="Footer.002" /></span> <FormattedMessage id="Footer.003" /></span>
+            <img 
+              src="/assets/logo.svg" 
+              alt={intl.formatMessage({ id: "Footer.001" })} 
+              style={{ height: '100%', width: 'auto' }} 
+            />
           </a>
           <div className="footer-links" style={{
             marginBottom: 16
@@ -86,7 +91,7 @@ function Footer({ language, onLanguageChange }) {
             }} onMouseOver={(e) => { e.currentTarget.style.color='var(--text-primary)' }} onMouseOut={(e) => { e.currentTarget.style.color='var(--text-muted)' }}><FormattedMessage id="Footer.010" /></a>
             <FormattedMessage id="Footer.011" />
             <div className={`footer-lang-dropdown ${langDropdownOpen ? 'active' : ''}`} ref={langDropdownRef} style={{ marginLeft: '10px' }}>
-              <a href="#" className="nav-dropdown-toggle lang-switch-btn" onClick={(e) => { e.preventDefault(); setLangDropdownOpen(!langDropdownOpen); }} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 'bold' }}>
+              <a href="#" className="nav-dropdown-toggle lang-switch-btn" onClick={(e) => { e.preventDefault(); setLangDropdownOpen(!langDropdownOpen); }} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: '500', fontSize: '0.95rem' }}>
                 {language === 'es' ? (
                   <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2" style={{ width: '16px', height: '11px', borderRadius: '1px', margin: 0 }} width="16" height="11">
                     <rect width="3" height="2" fill="#c60b1e" />

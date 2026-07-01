@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 140" width="100%" height="100%">
+  <!-- Piedra Izquierda (Azul) -->
+  <path d="M 50,20 C 80,15 105,35 101,65 C 97,95 75,120 45,120 C 18,120 5,95 10,65 C 15,35 22,25 50,20 Z" fill="#163a8c" />
+  <!-- Piedra Derecha (Teal) -->
+  <path d="M 125,25 C 148,38 162,70 148,98 C 134,124 100,124 88,102 C 76,80 94,48 110,34 C 117,27 117,27 125,25 Z" fill="#0b8d80" />
+</svg>

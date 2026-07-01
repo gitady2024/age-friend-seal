@@ -170,10 +170,59 @@ export function buildDossierHtml(language = "es") {
 </html>`;
 }
 
-function escapeXml(value) {
+export function escapeXml(value) {
   return String(value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+export function generateSvgMatrix(companyName, hexPrimary = "#3b82f6", hexSecondary = "#10b981", stageText = "Compromiso Inicial", logoUrl = null) {
+  const gradientId = `badge-grad-${hexPrimary.replace("#", "")}-${hexSecondary.replace("#", "")}`;
+  const clipPathId = `logo-clip-${hexPrimary.replace("#", "")}`;
+  const hasLogo = !!logoUrl;
+  const badgeText = `${companyName} • ${stageText}`;
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="${gradientId}" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="${hexPrimary}" />
+      <stop offset="100%" stop-color="${hexSecondary}" />
+    </linearGradient>
+    <radialGradient id="inner-shadow" cx="50%" cy="50%" r="50%">
+      <stop offset="75%" stop-color="rgba(0,0,0,0)" />
+      <stop offset="100%" stop-color="rgba(0,0,0,0.15)" />
+    </radialGradient>
+    <clipPath id="${clipPathId}">
+      <circle cx="200" cy="200" r="75" />
+    </clipPath>
+    <path id="text-curve" d="M 72,200 A 128,128 0 1,1 328,200" fill="none" />
+  </defs>
+  <circle cx="200" cy="200" r="190" fill="#0b0f19" />
+  <circle cx="200" cy="200" r="185" fill="none" stroke="url(#${gradientId})" stroke-width="4" />
+  <circle cx="200" cy="200" r="179" fill="none" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1" />
+  <circle cx="200" cy="200" r="135" fill="#111827" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1" />
+  <text fill="url(#text-curve)">
+    <textPath href="#text-curve" startOffset="50%" text-anchor="middle" fill="#ffffff" style="font-family: 'Outfit', 'Inter', sans-serif; font-size: 19px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;">
+      ${escapeXml(badgeText)}
+    </textPath>
+  </text>
+  <g fill="url(#${gradientId})">
+    <circle cx="62" cy="200" r="3" />
+    <circle cx="338" cy="200" r="3" />
+  </g>
+  <circle cx="200" cy="200" r="82" fill="#ffffff" stroke="url(#${gradientId})" stroke-width="3" />
+  ${hasLogo ? `
+    <image href="${logoUrl}" x="120" y="120" width="160" height="160" clip-path="url(#${clipPathId})" preserveAspectRatio="xMidYMid meet" />
+  ` : `
+    <g transform="translate(145, 145)">
+      <circle cx="55" cy="55" r="45" fill="rgba(11, 15, 25, 0.05)" />
+      <text x="55" y="63" text-anchor="middle" fill="url(#${gradientId})" style="font-family: 'Outfit', sans-serif; font-size: 36px; font-weight: 900; letter-spacing: -0.05em;">
+        AFS
+      </text>
+    </g>
+  `}
+  <circle cx="200" cy="200" r="80" fill="url(#inner-shadow)" pointer-events="none" />
+</svg>`;
 }

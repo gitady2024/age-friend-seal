@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -15,12 +16,14 @@ const firebaseConfig = {
 let app;
 let auth;
 let db;
+let storage;
 
 if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "your_api_key_here") {
   try {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);
+    storage = getStorage(app);
   } catch (error) {
     console.error("Error initializing Firebase SDK:", error);
   }
@@ -28,5 +31,5 @@ if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "your_api_key_here") {
   console.warn("Firebase credentials are not defined in environment variables. Services are disabled.");
 }
 
-export { auth, db };
+export { auth, db, storage };
 export default app;

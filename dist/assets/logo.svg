@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 130" width="100%" height="100%">
+  <!-- Icono (Piedras orgánicas solapadas) -->
+  <g transform="translate(5, -2)">
+    <!-- Piedra Izquierda (Azul) -->
+    <path d="M 55,20 C 85,15 112,35 108,65 C 104,95 80,120 50,120 C 20,120 5,95 10,65 C 15,35 25,25 55,20 Z" fill="#163a8c" />
+    <!-- Piedra Derecha (Teal / Turquesa) -->
+    <path d="M 142,25 C 168,38 185,72 168,102 C 151,130 112,130 98,106 C 84,82 106,45 124,30 C 132,22 132,22 142,25 Z" fill="#0b8d80" />
+  </g>
+  <!-- Texto -->
+  <text x="205" y="78" fill="#163a8c" style="font-family: 'Outfit', 'Inter', sans-serif; font-size: 38px; font-weight: 800; letter-spacing: 0.03em;">
+    AGE FRIEND <tspan fill="#163a8c" font-weight="400">Seal</tspan>
+  </text>
+</svg>

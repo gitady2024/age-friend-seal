@@ -1,0 +1,23 @@
+.svg-matrix-container {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    user-select: none;
+    transition: var(--transition-smooth);
+
+    &:hover {
+        transform: scale(1.03);
+        
+        .svg-matrix-badge {
+            filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.05));
+        }
+    }
+}
+
+.svg-matrix-badge {
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+    transition: filter 0.3s ease;
+    max-width: 100%;
+    max-height: 100%;
+}

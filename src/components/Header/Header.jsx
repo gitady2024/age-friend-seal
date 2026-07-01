@@ -29,16 +29,12 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
   return (
     <header className="navbar">
       <div className="container nav-container">
-        <a href="#" className="logo" onClick={closeMenu}>
+        <a href="#" className="logo" onClick={closeMenu} style={{ display: 'flex', alignItems: 'center', height: '42px', textDecoration: 'none' }}>
           <img
-            src="/assets/logo_age_friend_seal.png"
+            src="/assets/logo.svg"
             alt={intl.formatMessage({ id: 'brand.logoAlt' })}
-            className="logo-img"
+            style={{ height: '100%', width: 'auto' }}
           />
-          <span className="logo-text">
-            <span className="logo-accent">{intl.formatMessage({ id: 'brand.logoAccent' })}</span>{' '}
-            {intl.formatMessage({ id: 'brand.logoRest' })}
-          </span>
         </a>
 
         <button
