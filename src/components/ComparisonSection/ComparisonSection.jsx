@@ -104,20 +104,23 @@ function ComparisonSection() {
           <div className="mobile-only-view">
             <div className="comparativa-mobile-tabs">
               <button 
+                type="button"
                 className={`mobile-tab-btn seal-tab ${activeMobileTab === 'seal' ? 'active' : ''}`}
-                onClick={() => setActiveMobileTab('seal')}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveMobileTab('seal'); }}
               >
                 <FormattedMessage id="ComparisonSection.008" />
               </button>
               <button 
+                type="button"
                 className={`mobile-tab-btn senior-tab ${activeMobileTab === 'senior' ? 'active' : ''}`}
-                onClick={() => setActiveMobileTab('senior')}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveMobileTab('senior'); }}
               >
                 <FormattedMessage id="ComparisonSection.004" />
               </button>
               <button 
+                type="button"
                 className={`mobile-tab-btn local-tab ${activeMobileTab === 'local' ? 'active' : ''}`}
-                onClick={() => setActiveMobileTab('local')}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveMobileTab('local'); }}
               >
                 <FormattedMessage id="ComparisonSection.006" />
               </button>

@@ -109,14 +109,14 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
               <span style={{ fontSize: '0.7em', marginLeft: 4 }}>▼</span>
             </a>
             <div className="nav-dropdown-menu" style={{ minWidth: '150px' }}>
-              <a href="#" onClick={(e) => { e.preventDefault(); onLanguageChange('es'); setLangDropdownOpen(false); closeMenu(); }} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <button type="button" onClick={(e) => { e.preventDefault(); onLanguageChange('es'); setLangDropdownOpen(false); closeMenu(); }} style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', background: 'none', border: 'none', padding: '10px 20px', color: 'var(--text-secondary)', cursor: 'pointer', textAlign: 'left', font: 'inherit' }}>
                 <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2" style={{ margin: 0 }}>
                   <rect width="3" height="2" fill="#c60b1e" />
                   <rect width="3" height="1" y="0.5" fill="#ffc400" />
                 </svg>
                 Español
-              </a>
-              <a href="#" onClick={(e) => { e.preventDefault(); onLanguageChange('en'); setLangDropdownOpen(false); closeMenu(); }} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              </button>
+              <button type="button" onClick={(e) => { e.preventDefault(); onLanguageChange('en'); setLangDropdownOpen(false); closeMenu(); }} style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', background: 'none', border: 'none', padding: '10px 20px', color: 'var(--text-secondary)', cursor: 'pointer', textAlign: 'left', font: 'inherit' }}>
                 <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" style={{ margin: 0 }}>
                   <rect width="60" height="30" fill="#012169" />
                   <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6" />
@@ -125,15 +125,15 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
                   <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" strokeWidth="6" />
                 </svg>
                 English
-              </a>
-              <a href="#" onClick={(e) => { e.preventDefault(); onLanguageChange('pt'); setLangDropdownOpen(false); closeMenu(); }} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              </button>
+              <button type="button" onClick={(e) => { e.preventDefault(); onLanguageChange('pt'); setLangDropdownOpen(false); closeMenu(); }} style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', background: 'none', border: 'none', padding: '10px 20px', color: 'var(--text-secondary)', cursor: 'pointer', textAlign: 'left', font: 'inherit' }}>
                 <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" style={{ margin: 0 }}>
                   <rect width="600" height="400" fill="#006600"/>
                   <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
                   <circle cx="300" cy="200" r="100" fill="#003399"/>
                 </svg>
                 Português
-              </a>
+              </button>
             </div>
           </div>
         </nav>
