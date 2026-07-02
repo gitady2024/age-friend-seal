@@ -368,6 +368,7 @@ export const ptMessages = {
   "OpportunitySection.030": "+$180,000",
   "OpportunitySection.031": "Veja Planos de Certificação",
   "SelfDiagnosticSection.001": "Autodiagnóstico adequado para idosos",
+  "SelfDiagnosticSection.pillars": "PILARES",
   "SelfDiagnosticSection.002": "Avalie o compromisso de sua empresa sob os 3 pilares do Selo de Compromisso em apenas 5 minutos.",
   "SelfDiagnosticSection.003": "Pilar 1: Accesibilidad Física",
   "SelfDiagnosticSection.004": "Pregunta 1 de 15",

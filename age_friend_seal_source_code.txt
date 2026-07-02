@@ -6000,6 +6000,9 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                 <span style={{color: 'var(--accent-color)'}}>{language === 'es' ? 'Sector de la Economía:' : language === 'pt' ? 'Setor da Economia:' : 'Economic Sector:'}</span> {currentUser.sector === 'privado' ? (language === 'es' || language === 'pt' ? 'Privado' : 'Private') : (language === 'es' || language === 'pt' ? 'Público' : 'Public')} <span style={{margin: '0 10px', color: 'var(--border-color)'}}>|</span> <span style={{color: 'var(--accent-color)'}}>{language === 'es' ? 'Vertical de negocio:' : language === 'pt' ? 'Vertical de negócios:' : 'Business Vertical:'}</span> {currentUser.subsector || 'N/A'}
               </div>
             )}
+            <div className="stepper-header-title">
+              <FormattedMessage id="SelfDiagnosticSection.pillars" defaultMessage="PILARES" />
+            </div>
             <div className="wizard-progress-stepper">
               <div className="stepper-track-bar">
                 <div 
@@ -6805,6 +6808,17 @@ export default SelfDiagnosticSection;
 }
 
 /* Wizard Progress Stepper */
+.stepper-header-title {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
 .wizard-progress-stepper {
     display: flex;
     justify-content: space-between;
@@ -6812,6 +6826,10 @@ export default SelfDiagnosticSection;
     position: relative;
     margin: 20px 0 45px 0;
     padding: 0 10px;
+
+    @media (max-width: 768px) {
+        margin: 20px 0 65px 0; /* Extra margin for centered active pilar label */
+    }
 }
 
 .stepper-track-bar {
@@ -6868,10 +6886,7 @@ export default SelfDiagnosticSection;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 
     @media (max-width: 768px) {
-        font-size: 0.65rem;
-        white-space: normal;
-        max-width: 60px;
-        line-height: 1.2;
+        display: none; /* Hide labels for all circles on mobile/tablet to avoid collision */
     }
 }
 
@@ -6886,6 +6901,23 @@ export default SelfDiagnosticSection;
     .step-label {
         color: var(--text-primary);
         font-weight: 700;
+
+        @media (max-width: 768px) {
+            display: block;
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 290px;
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--accent-color, #10b981);
+            text-shadow: none;
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px dashed rgba(16, 185, 129, 0.25);
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
     }
 }
 
@@ -10404,6 +10436,7 @@ export const enMessages = {
   "OpportunitySection.030": "+$180,000",
   "OpportunitySection.031": "View Certification Plans",
   "SelfDiagnosticSection.001": "Age-Friendly Self-Diagnostic",
+  "SelfDiagnosticSection.pillars": "PILLARS",
   "SelfDiagnosticSection.002": "Evaluate your company's commitment under the 3 pillars of the Commitment Seal in just 5 minutes.",
   "SelfDiagnosticSection.003": "Pilar 1: Physical Accessibility",
   "SelfDiagnosticSection.004": "Question 1 of 15",
@@ -10847,6 +10880,7 @@ export const esMessages = {
   "OpportunitySection.030": "+$180,000",
   "OpportunitySection.031": "Ver Planes de Certificación",
   "SelfDiagnosticSection.001": "Autodiagnóstico Age-Friendly",
+  "SelfDiagnosticSection.pillars": "PILARES",
   "SelfDiagnosticSection.002": "Evalúe el compromiso de su empresa bajo los 3 pilares del Sello de Compromiso en solo 5 minutos.",
   "SelfDiagnosticSection.003": "Pilar 1: Accesibilidad Física",
   "SelfDiagnosticSection.004": "Pregunta 1 de 15",
@@ -11307,6 +11341,7 @@ export const ptMessages = {
   "OpportunitySection.030": "+$180,000",
   "OpportunitySection.031": "Veja Planos de Certificação",
   "SelfDiagnosticSection.001": "Autodiagnóstico adequado para idosos",
+  "SelfDiagnosticSection.pillars": "PILARES",
   "SelfDiagnosticSection.002": "Avalie o compromisso de sua empresa sob os 3 pilares do Selo de Compromisso em apenas 5 minutos.",
   "SelfDiagnosticSection.003": "Pilar 1: Accesibilidad Física",
   "SelfDiagnosticSection.004": "Pregunta 1 de 15",

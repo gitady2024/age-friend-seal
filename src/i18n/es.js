@@ -368,6 +368,7 @@ export const esMessages = {
   "OpportunitySection.030": "+$180,000",
   "OpportunitySection.031": "Ver Planes de Certificación",
   "SelfDiagnosticSection.001": "Autodiagnóstico Age-Friendly",
+  "SelfDiagnosticSection.pillars": "PILARES",
   "SelfDiagnosticSection.002": "Evalúe el compromiso de su empresa bajo los 3 pilares del Sello de Compromiso en solo 5 minutos.",
   "SelfDiagnosticSection.003": "Pilar 1: Accesibilidad Física",
   "SelfDiagnosticSection.004": "Pregunta 1 de 15",

@@ -214,6 +214,9 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                 <span style={{color: 'var(--accent-color)'}}>{language === 'es' ? 'Sector de la Economía:' : language === 'pt' ? 'Setor da Economia:' : 'Economic Sector:'}</span> {currentUser.sector === 'privado' ? (language === 'es' || language === 'pt' ? 'Privado' : 'Private') : (language === 'es' || language === 'pt' ? 'Público' : 'Public')} <span style={{margin: '0 10px', color: 'var(--border-color)'}}>|</span> <span style={{color: 'var(--accent-color)'}}>{language === 'es' ? 'Vertical de negocio:' : language === 'pt' ? 'Vertical de negócios:' : 'Business Vertical:'}</span> {currentUser.subsector || 'N/A'}
               </div>
             )}
+            <div className="stepper-header-title">
+              <FormattedMessage id="SelfDiagnosticSection.pillars" defaultMessage="PILARES" />
+            </div>
             <div className="wizard-progress-stepper">
               <div className="stepper-track-bar">
                 <div 

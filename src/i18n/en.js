@@ -368,6 +368,7 @@ export const enMessages = {
   "OpportunitySection.030": "+$180,000",
   "OpportunitySection.031": "View Certification Plans",
   "SelfDiagnosticSection.001": "Age-Friendly Self-Diagnostic",
+  "SelfDiagnosticSection.pillars": "PILLARS",
   "SelfDiagnosticSection.002": "Evaluate your company's commitment under the 3 pillars of the Commitment Seal in just 5 minutes.",
   "SelfDiagnosticSection.003": "Pilar 1: Physical Accessibility",
   "SelfDiagnosticSection.004": "Question 1 of 15",
