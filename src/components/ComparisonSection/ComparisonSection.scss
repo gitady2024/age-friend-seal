@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    Sección Comparativa
    ========================================================================== */
 .comparativa-section {
@@ -145,5 +145,158 @@
     flex-direction: column;
     align-items: center;
     margin-bottom: 16px;
+}
+
+/* ==========================================================================
+   Responsive Styles for Comparison
+   ========================================================================== */
+.desktop-only-view {
+    display: block;
+}
+
+.mobile-only-view {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .desktop-only-view {
+        display: none !important;
+    }
+    
+    .mobile-only-view {
+        display: block !important;
+        width: 100%;
+    }
+    
+    .comparativa-section {
+        padding: 60px 0;
+    }
+
+    /* Tab Switcher Styles */
+    .comparativa-mobile-tabs {
+        display: flex;
+        gap: 6px;
+        background: rgba(15, 23, 42, 0.4);
+        padding: 5px;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 24px;
+        justify-content: space-between;
+    }
+    
+    .mobile-tab-btn {
+        flex: 1;
+        padding: 10px 4px;
+        font-family: var(--font-heading);
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        background: transparent;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .mobile-tab-btn.active {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .mobile-tab-btn.seal-tab.active {
+        color: #fbbf24;
+        background: rgba(251, 191, 36, 0.1);
+        border: 1px solid rgba(251, 191, 36, 0.2);
+    }
+
+    /* Mobile Cards Grid */
+    .comparativa-mobile-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .mobile-comp-card {
+        background: rgba(30, 41, 59, 0.4);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 20px;
+        transition: var(--transition-smooth);
+        position: relative;
+    }
+    
+    /* Highlight Card (Age Friend Seal) */
+    .mobile-comp-card.highlight-card {
+        background: rgba(251, 191, 36, 0.04);
+        border: 1px solid rgba(251, 191, 36, 0.35);
+        box-shadow: 0 0 20px rgba(251, 191, 36, 0.05);
+    }
+    
+    .card-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+    }
+    
+    .dimension-title {
+        font-family: var(--font-heading);
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+        flex: 1;
+        min-width: 140px;
+        text-align: left;
+    }
+    
+    /* Status Badges */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .status-badge.success {
+        color: #10b981;
+        background: rgba(16, 185, 129, 0.08);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    
+    .status-badge.danger {
+        color: #ef4444;
+        background: rgba(239, 68, 68, 0.08);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .status-badge.warning {
+        color: #f59e0b;
+        background: rgba(245, 158, 11, 0.08);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+    
+    .badge-icon {
+        font-size: 0.85rem;
+    }
+    
+    .dimension-description {
+        font-size: 0.88rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+        margin: 0;
+        text-align: left;
+    }
 }
 
