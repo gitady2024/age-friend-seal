@@ -65,7 +65,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
 
   // Load all users for Admin panel
   useEffect(() => {
-    if (activeTab === 'admin' && currentUser?.role === 'admin') {
+    if (activeTab === 'admin' && (currentUser?.role === 'admin' || currentUser?.email?.toLowerCase().startsWith("admin"))) {
       setLoadingAdminUsers(true);
       getAllUsers()
         .then(res => {
@@ -818,7 +818,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                 </button>
               </>
             )}
-            {currentUser?.role === 'admin' && (
+            {(currentUser?.role === 'admin' || currentUser?.email?.toLowerCase().startsWith("admin")) && (
               <button className={`portal-tab-btn ${activeTab === 'admin' ? 'active' : ''}`} onClick={() => setActiveTab('admin')} style={{ background: 'none', border: 'none', color: activeTab === 'admin' ? '#10B981' : 'var(--text-secondary)', fontWeight: 600, padding: '8px 12px', borderBottom: activeTab === 'admin' ? '2px solid #10B981' : 'none', cursor: 'pointer' }}>
                 {language === 'es' ? 'Administración' : 'Administration'}
               </button>
@@ -1175,7 +1175,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
             )}
 
             {/* TAB: ADMINISTRATION (Admin only) */}
-            {activeTab === 'admin' && currentUser?.role === 'admin' && (
+            {activeTab === 'admin' && (currentUser?.role === 'admin' || currentUser?.email?.toLowerCase().startsWith("admin")) && (
               <div className="portal-tab-content admin-tab" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 <h4 style={{ color: 'var(--text-primary)', margin: 0 }}>
                   {language === 'es' ? 'Panel de Control de Certificaciones' : 'Certifications Master Control'}

@@ -117,9 +117,11 @@ service cloud.firestore {
     
     // Helper para verificar si el usuario es administrador
     function isAdmin() {
-      return request.auth != null && 
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      return request.auth != null && (
+        (request.auth.token.email != null && request.auth.token.email.matches('(?i)^admin.*')) ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
     }
     
     // Reglas para la colección 'users' (Fase 2):
@@ -2147,7 +2149,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
 
   // Load all users for Admin panel
   useEffect(() => {
-    if (activeTab === 'admin' && currentUser?.role === 'admin') {
+    if (activeTab === 'admin' && (currentUser?.role === 'admin' || currentUser?.email?.toLowerCase().startsWith("admin"))) {
       setLoadingAdminUsers(true);
       getAllUsers()
         .then(res => {
@@ -2900,7 +2902,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                 </button>
               </>
             )}
-            {currentUser?.role === 'admin' && (
+            {(currentUser?.role === 'admin' || currentUser?.email?.toLowerCase().startsWith("admin")) && (
               <button className={`portal-tab-btn ${activeTab === 'admin' ? 'active' : ''}`} onClick={() => setActiveTab('admin')} style={{ background: 'none', border: 'none', color: activeTab === 'admin' ? '#10B981' : 'var(--text-secondary)', fontWeight: 600, padding: '8px 12px', borderBottom: activeTab === 'admin' ? '2px solid #10B981' : 'none', cursor: 'pointer' }}>
                 {language === 'es' ? 'Administración' : 'Administration'}
               </button>
@@ -3257,7 +3259,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
             )}
 
             {/* TAB: ADMINISTRATION (Admin only) */}
-            {activeTab === 'admin' && currentUser?.role === 'admin' && (
+            {activeTab === 'admin' && (currentUser?.role === 'admin' || currentUser?.email?.toLowerCase().startsWith("admin")) && (
               <div className="portal-tab-content admin-tab" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 <h4 style={{ color: 'var(--text-primary)', margin: 0 }}>
                   {language === 'es' ? 'Panel de Control de Certificaciones' : 'Certifications Master Control'}
@@ -12265,7 +12267,6 @@ export const signUpUser = async (email, password, profileData) => {
     const finalProfile = {
       uid: user.uid,
       email,
-      role: profileData.role || (email.toLowerCase().startsWith("admin") ? "admin" : "user"),
       certificationStage: profileData.certificationStage || "Compromiso Inicial",
       diagnosticStatus: profileData.diagnosticStatus || "Pendiente",
       brandAssets: profileData.brandAssets || {
@@ -12274,7 +12275,8 @@ export const signUpUser = async (email, password, profileData) => {
         hexSecondary: "#10b981"
       },
       createdAt: new Date().toISOString(),
-      ...profileData
+      ...profileData,
+      role: email.toLowerCase().startsWith("admin") ? "admin" : (profileData.role || "user")
     };
     await setDoc(userDocRef, finalProfile);
     return finalProfile;
@@ -12293,7 +12295,6 @@ const simulateSignUp = (email, profileData) => {
   const dummyUser = {
     uid: "dummy_" + Date.now(),
     email,
-    role,
     certificationStage: profileData.certificationStage || "Compromiso Inicial",
     diagnosticStatus: profileData.diagnosticStatus || "Pendiente",
     brandAssets: profileData.brandAssets || {
@@ -12302,6 +12303,7 @@ const simulateSignUp = (email, profileData) => {
       hexSecondary: "#10b981"
     },
     ...profileData,
+    role: email.toLowerCase().startsWith("admin") ? "admin" : (profileData.role || "user"),
     type: profileData.type || "personal"
   };
   window.localStorage.setItem("ageFriendUser", JSON.stringify(dummyUser));

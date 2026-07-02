@@ -40,7 +40,6 @@ export const signUpUser = async (email, password, profileData) => {
     const finalProfile = {
       uid: user.uid,
       email,
-      role: profileData.role || (email.toLowerCase().startsWith("admin") ? "admin" : "user"),
       certificationStage: profileData.certificationStage || "Compromiso Inicial",
       diagnosticStatus: profileData.diagnosticStatus || "Pendiente",
       brandAssets: profileData.brandAssets || {
@@ -49,7 +48,8 @@ export const signUpUser = async (email, password, profileData) => {
         hexSecondary: "#10b981"
       },
       createdAt: new Date().toISOString(),
-      ...profileData
+      ...profileData,
+      role: email.toLowerCase().startsWith("admin") ? "admin" : (profileData.role || "user")
     };
     await setDoc(userDocRef, finalProfile);
     return finalProfile;
@@ -68,7 +68,6 @@ const simulateSignUp = (email, profileData) => {
   const dummyUser = {
     uid: "dummy_" + Date.now(),
     email,
-    role,
     certificationStage: profileData.certificationStage || "Compromiso Inicial",
     diagnosticStatus: profileData.diagnosticStatus || "Pendiente",
     brandAssets: profileData.brandAssets || {
@@ -77,6 +76,7 @@ const simulateSignUp = (email, profileData) => {
       hexSecondary: "#10b981"
     },
     ...profileData,
+    role: email.toLowerCase().startsWith("admin") ? "admin" : (profileData.role || "user"),
     type: profileData.type || "personal"
   };
   window.localStorage.setItem("ageFriendUser", JSON.stringify(dummyUser));
