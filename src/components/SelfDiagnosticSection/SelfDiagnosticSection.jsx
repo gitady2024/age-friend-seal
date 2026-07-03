@@ -93,12 +93,32 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
       onDiagnosticComplete({
         respuestas: currentQuestions.map((item, index) => {
           const scoreVal = answers[index]?.score ?? 0;
+          let rec = "";
+          if (scoreVal === 3) {
+            rec = language === 'es' 
+              ? "Práctica en nivel de excelencia. Mantener el estándar." 
+              : language === 'pt'
+                ? "Prática em nível de excelência. Manter o padrão."
+                : "Excellence level practice. Maintain the standard.";
+          } else {
+            const bestOption = item.options ? item.options.find(o => o.score === 3) : null;
+            const bestOptionText = bestOption ? getTranslation(bestOption.text, language) : '';
+            if (bestOptionText) {
+              rec = language === 'es'
+                ? `Mejora recomendada: Implementar "${bestOptionText}"`
+                : language === 'pt'
+                  ? `Melhoria recomendada: Implementar "${bestOptionText}"`
+                  : `Recommended improvement: Implement "${bestOptionText}"`;
+            } else {
+              rec = getTranslation(item.recommendation, language) || "N/A";
+            }
+          }
           return {
             pilar: Math.min(5, Math.floor(index / 3) + 1),
             pregunta: item.question || getTranslation(item.text, language),
             opcion_seleccionada: getTranslation(answers[index]?.text, language),
             puntuacion: scoreVal,
-            recomendacion: getTranslation(item.recommendation, language)
+            recomendacion: rec
           };
         }),
         score: results.globalPercent,

@@ -409,7 +409,8 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
           email: currentUser?.email || "demo@example.com",
           enterpriseName: currentUser?.name || "Empresa",
           score: evalData.globalScore || evalData.score || 0,
-          respuestas: evalData.respuestas || []
+          respuestas: evalData.respuestas || [],
+          country: currentUser?.country || "España"
         })
       });
 
@@ -606,7 +607,8 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
               },
               criticalPillar: latestDiagnostic.criticalPillar || "Eje Laboral",
               score: latestDiagnostic.score,
-              respuestas: latestDiagnostic.respuestas
+              respuestas: latestDiagnostic.respuestas,
+              country: currentUser?.country || "España"
             })
           });
 

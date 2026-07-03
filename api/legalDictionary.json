@@ -1,0 +1,79 @@
+{
+  "Argentina": {
+    "1": "Ley de Contrato de Trabajo N° 20.744, Art. 17 (Principio de no discriminación por edad).",
+    "2": "Ley N° 20.744; políticas de flexibilidad laboral y convenios colectivos con cláusulas de adaptabilidad familiar.",
+    "3": "Ley N° 24.240 de Defensa del Consumidor, Art. 4 (Derecho a la información accesible y trato digno para adultos mayores).",
+    "4": "Ley N° 19.587 de Higiene y Seguridad en el Trabajo; directrices de prevención ergonómica de la SRT.",
+    "5": "Convención Interamericana sobre la Protección de los Derechos Humanos de las Personas Mayores (Ley N° 27.360)."
+  },
+  "Chile": {
+    "1": "Código del Trabajo de Chile, Art. 2 (Prohibición de discriminación por edad y ofertas laborales neutras).",
+    "2": "Código del Trabajo, Art. 206 bis (Derecho al teletrabajo y adaptabilidad horaria para cuidadores de dependientes).",
+    "3": "Ley N° 19.496 de Protección de los Derechos de los Consumidores (Principio de trato digno y no discriminación).",
+    "4": "Ley N° 16.744 sobre Accidentes del Trabajo y Enfermedades Profesionales; guías ergonómicas del MINSAL.",
+    "5": "Convención Interamericana sobre la Protección de los Derechos Humanos de las Personas Mayores (SENAMA)."
+  },
+  "Uruguay": {
+    "1": "Ley N° 19.689 de Fomento al Empleo (sección de incentivos para trabajadores de más de 45 años).",
+    "2": "Ley N° 19.121 y normativas de licencias especiales para cuidado de familiares a cargo.",
+    "3": "Ley N° 17.250 de Relaciones de Consumo (accesibilidad y trato equitativo sin discriminación cronológica).",
+    "4": "Ley N° 5.032 de Prevención de Accidentes de Trabajo; directrices de salud ocupacional de la Inspección General del Trabajo.",
+    "5": "Ley N° 19.430 de aprobación de la Convención Interamericana de Protección de los Derechos de las Personas Mayores."
+  },
+  "Brasil": {
+    "1": "Constituição Federal de 1988, Art. 7, XXX; Lei 9.029/1995 (prohibición de discriminación en selección por edad).",
+    "2": "CLT (Consolidação das Leis do Trabalho) y directrices de adaptabilidad de jornada para cuidados familiares.",
+    "3": "Código de Defesa do Consumidor (CDC) y directrices de accesibilidad digital y financiera de la ANPD y BACEN.",
+    "4": "NR-17 de Ergonomía del Ministerio de Trabajo y Empleo (MTE) y directrices de salud ocupacional preventiva.",
+    "5": "Estatuto do Idoso (Lei N° 10.741/2003) y directrices de integración social y empleabilidad activa."
+  },
+  "Colombia": {
+    "1": "Ley N° 2040 de 2020 (Ley de Empleo de Adulto Mayor - deducción tributaria por contratar mayores de edad de pensión).",
+    "2": "Código Sustantivo del Trabajo; Ley N° 2101 de 2021 de reducción de jornada laboral y licencias por calamidad familiar.",
+    "3": "Estatuto del Consumidor (Ley N° 1480 de 2011); lineamientos de la Superindustria (SIC) sobre accesibilidad y protección.",
+    "4": "Ley N° 1562 de 2012 de Sistema de Riesgos Laborales; directrices de medicina preventiva y ergonomía industrial.",
+    "5": "Ley N° 2055 de 2020 que aprueba la Convención Interamericana sobre la Protección de los Derechos de las Personas Mayores."
+  },
+  "Ecuador": {
+    "1": "Código del Trabajo de Ecuador, Art. 79 (Derecho a la no discriminación laboral por edad u otras condiciones).",
+    "2": "Ley Orgánica de Apoyo Humanitario; políticas de reducción y adaptabilidad horaria de la jornada laboral.",
+    "3": "Ley Orgánica de Defensa del Consumidor, Art. 4 (Derechos a trato equitativo, accesibilidad y no discriminación).",
+    "4": "Reglamento de Seguridad y Salud de los Trabajadores; directrices de prevención ergonómica del Ministerio del Trabajo.",
+    "5": "Ley Orgánica de las Personas Adultas Mayores (LOPAM), que promueve la inclusión económica y el envejecimiento activo."
+  },
+  "México": {
+    "1": "Ley Federal del Trabajo (LFT), Art. 2 y 3 (Prohibición de discriminación por edad en la contratación y despidos).",
+    "2": "LFT y normativas sobre flexibilidad de jornada para el cuidado de adultos mayores dependientes.",
+    "3": "Ley Federal de Protección al Consumidor; NOM-151 y directrices de PROFECO sobre trato digno y accesibilidad digital.",
+    "4": "Reglamento Federal de Seguridad y Salud en el Trabajo; NOM-035 (factores de riesgo psicosocial y tecnoestrés).",
+    "5": "Ley de los Derechos de las Personas Adultas Mayores (INAPAM) y convenios de inclusión económica."
+  },
+  "España": {
+    "1": "Ley 15/2022 de Igualdad de Trato y No Discriminación; Estatuto de los Trabajadores, Art. 17 (Nulidad de cláusulas edadistas).",
+    "2": "Real Decreto-ley 6/2019 de medidas urgentes para garantía de igualdad; Directiva (UE) 2019/1158 de conciliación.",
+    "3": "Ley 4/2022 de protección de los consumidores vulnerables; Norma ISO 25556:2025 de accesibilidad en canales.",
+    "4": "Ley 31/1995 de Prevención de Riesgos Laborales; directrices del INSST para la gestión preventiva de edad.",
+    "5": "Estrategia Nacional de Soledad No Deseada; Alianzas B2B bajo la norma de referencia ISO 25550."
+  },
+  "Resto de Europa": {
+    "1": "Directiva 2000/78/CE del Consejo de la Unión Europea relativa al establecimiento de un marco general de igualdad.",
+    "2": "Directiva (UE) 2019/1158 relativa a la conciliación de la vida familiar y profesional de los progenitores y cuidadores.",
+    "3": "Norma ISO 25556:2025 y el Acta Europea de Accesibilidad (European Accessibility Act - Directiva (UE) 2019/882).",
+    "4": "Directrices de la Agencia Europea para la Seguridad y la Salud en el Trabajo (EU-OSHA) sobre envejecimiento activo.",
+    "5": "Marco de referencia de la Norma ISO 25550:2022 sobre organizaciones que envejecen de manera amigable."
+  },
+  "Australia": {
+    "1": "Age Discrimination Act 2004 (Commonwealth); Fair Work Act 2009 (Prohibición de discriminación laboral por edad).",
+    "2": "National Employment Standards (NES) - Derecho a solicitar arreglos de trabajo flexible para cuidadores.",
+    "3": "Competition and Consumer Act 2010; Web Content Accessibility Guidelines (WCAG) aplicables a canales digitales.",
+    "4": "Work Health and Safety (WHS) Act del respectivo estado; directrices de Comcare sobre ergonomía en el envejecimiento.",
+    "5": "Australian Human Rights Commission (AHRC) - Mature Age Workforce Alliance; directrices de Age Management."
+  },
+  "Otros": {
+    "1": "Convenio 111 de la OIT sobre discriminación en el empleo y ocupación.",
+    "2": "Recomendaciones globales de la OIT sobre conciliación familiar y soporte al trabajador con responsabilidades familiares.",
+    "3": "Directrices de Accesibilidad Web (WCAG 2.2) y principios universales de trato equitativo al cliente de la OMS.",
+    "4": "Directrices de la OMS sobre Salud Ocupacional y prevención del desgaste laboral por proceso de envejecimiento.",
+    "5": "Convención Interamericana sobre los Derechos de las Personas Mayores (OEA) / Principios de la ONU para las personas mayores."
+  }
+}
