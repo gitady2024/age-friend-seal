@@ -1,5 +1,8 @@
 import ExcelJS from "exceljs";
-import legalDictionary from "./legalDictionary.json" assert { type: "json" };
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
+const legalDictionary = require("./legalDictionary.json");
 
 export async function generateExcelWorkbook({ email, enterpriseName, score, respuestas, country }) {
   const workbook = new ExcelJS.Workbook();
