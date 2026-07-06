@@ -1,12 +1,5 @@
 import ExcelJS from "exceljs";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const dictionaryPath = path.join(__dirname, "legalDictionary.json");
-const legalDictionary = JSON.parse(fs.readFileSync(dictionaryPath, "utf8"));
+import legalDictionary from "./legalDictionary.json" assert { type: "json" };
 
 export async function generateExcelWorkbook({ email, enterpriseName, score, respuestas, country }) {
   const workbook = new ExcelJS.Workbook();

@@ -103,7 +103,7 @@ export default async function handler(req, res) {
     if (brevoApiKey) {
       try {
         console.log(`Sincronizando contacto con Brevo para: ${targetEmail}`);
-        const nameParts = targetName.trim().split(/\s+/);
+        const nameParts = String(targetName || "").trim().split(/\s+/);
         const firstName = nameParts[0] || "";
         const lastName = nameParts.slice(1).join(" ") || "";
 
