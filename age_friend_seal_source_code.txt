@@ -13698,7 +13698,13 @@ export default async function handler(req, res) {
               LASTNAME: lastName,
               COMPANY: targetCompany,
               PILAR_CRITICO: calculatedCriticalPillar,
-              COUNTRY: country || "España"
+              COUNTRY: country || "España",
+              SCORE_GLOBAL: Number(score || 0),
+              SCORE_LABORAL: Number(pilarScores?.pilar1 || 0),
+              SCORE_CONCILIACION: Number(pilarScores?.pilar2 || 0),
+              SCORE_CONSUMIDOR: Number(pilarScores?.pilar3 || 0),
+              SCORE_SALUD: Number(pilarScores?.pilar4 || 0),
+              SCORE_COMUNITARIO: Number(pilarScores?.pilar5 || 0)
             }
           })
         });
