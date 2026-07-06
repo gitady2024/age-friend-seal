@@ -460,12 +460,14 @@
         flex-direction: column;
     }
     
-    .nav-dropdown-toggle span {
-        display: none; /* Ocultamos la flecha ▼ en móvil */
+    .nav-dropdown-toggle .arrow-indicator {
+        display: inline-block !important; /* Mostrar la flecha del acordeón */
+        transition: transform 0.2s ease;
     }
     
-    /* En móvil se muestra siempre visible pero como un subnivel (sangría) */
+    /* En móvil se colapsa y se despliega con la clase open */
     .nav-dropdown-menu {
+        display: none;
         position: static;
         transform: none !important;
         opacity: 1;
@@ -478,6 +480,11 @@
         padding: 8px 0;
         margin-top: 8px;
         width: 100%;
+        flex-direction: column;
+    }
+
+    .nav-dropdown-menu.open {
+        display: flex;
     }
 
     .nav-dropdown-menu a {

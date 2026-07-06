@@ -6,6 +6,7 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
   const intl = useIntl();
   const [menuOpen, setMenuOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+  const [certDropdownOpen, setCertDropdownOpen] = useState(false);
   const langDropdownRef = useRef(null);
 
   useEffect(() => {
@@ -24,6 +25,7 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
   const closeMenu = () => {
     setMenuOpen(false);
     setLangDropdownOpen(false);
+    setCertDropdownOpen(false);
   };
 
   return (
@@ -51,12 +53,23 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
         <nav className={`nav-links ${menuOpen ? 'active' : ''}`}>
           <a href="#oportunidad" onClick={closeMenu}>{intl.formatMessage({ id: 'nav.opportunity' })}</a>
 
-          <div className="nav-dropdown">
-            <a href="#escalera" className="nav-dropdown-toggle" onClick={closeMenu}>
+          <div className={`nav-dropdown ${certDropdownOpen ? 'active' : ''}`}>
+            <a 
+              href="#escalera" 
+              className="nav-dropdown-toggle" 
+              onClick={(e) => {
+                if (window.innerWidth <= 992) {
+                  e.preventDefault();
+                  setCertDropdownOpen(!certDropdownOpen);
+                } else {
+                  closeMenu();
+                }
+              }}
+            >
               {intl.formatMessage({ id: 'nav.certifications' })}{' '}
-              <span style={{ fontSize: '0.7em', marginLeft: 4 }}>▼</span>
+              <span className="arrow-indicator" style={{ fontSize: '0.7em', marginLeft: 4 }}>{certDropdownOpen ? '▲' : '▼'}</span>
             </a>
-            <div className="nav-dropdown-menu">
+            <div className={`nav-dropdown-menu ${certDropdownOpen ? 'open' : ''}`}>
               <a href="#normativas" onClick={closeMenu}>{intl.formatMessage({ id: 'nav.regulations' })}</a>
               <a href="#alianzas" onClick={closeMenu}>{intl.formatMessage({ id: 'nav.alliances' })}</a>
             </div>

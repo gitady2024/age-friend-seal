@@ -1806,6 +1806,7 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
   const intl = useIntl();
   const [menuOpen, setMenuOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+  const [certDropdownOpen, setCertDropdownOpen] = useState(false);
   const langDropdownRef = useRef(null);
 
   useEffect(() => {
@@ -1824,6 +1825,7 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
   const closeMenu = () => {
     setMenuOpen(false);
     setLangDropdownOpen(false);
+    setCertDropdownOpen(false);
   };
 
   return (
@@ -1851,12 +1853,23 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
         <nav className={`nav-links ${menuOpen ? 'active' : ''}`}>
           <a href="#oportunidad" onClick={closeMenu}>{intl.formatMessage({ id: 'nav.opportunity' })}</a>
 
-          <div className="nav-dropdown">
-            <a href="#escalera" className="nav-dropdown-toggle" onClick={closeMenu}>
+          <div className={`nav-dropdown ${certDropdownOpen ? 'active' : ''}`}>
+            <a 
+              href="#escalera" 
+              className="nav-dropdown-toggle" 
+              onClick={(e) => {
+                if (window.innerWidth <= 992) {
+                  e.preventDefault();
+                  setCertDropdownOpen(!certDropdownOpen);
+                } else {
+                  closeMenu();
+                }
+              }}
+            >
               {intl.formatMessage({ id: 'nav.certifications' })}{' '}
-              <span style={{ fontSize: '0.7em', marginLeft: 4 }}>▼</span>
+              <span className="arrow-indicator" style={{ fontSize: '0.7em', marginLeft: 4 }}>{certDropdownOpen ? '▲' : '▼'}</span>
             </a>
-            <div className="nav-dropdown-menu">
+            <div className={`nav-dropdown-menu ${certDropdownOpen ? 'open' : ''}`}>
               <a href="#normativas" onClick={closeMenu}>{intl.formatMessage({ id: 'nav.regulations' })}</a>
               <a href="#alianzas" onClick={closeMenu}>{intl.formatMessage({ id: 'nav.alliances' })}</a>
             </div>
@@ -2169,20 +2182,20 @@ export default Header;
     }
 
     .nav-links .btn, 
-    .nav-links .lang-switch-btn,
     .nav-links .nav-auth-link {
         width: 100%;
+        max-width: 280px;
         justify-content: center;
-        height: 48px; /* Botones más altos (área táctil) */
-        font-size: 1.05rem;
+        height: 44px; /* Botones más compactos y balanceados */
+        font-size: 1rem;
     }
 
-    /* Selector de idioma para móvil */
+    /* Selector de idioma para móvil (Segmented Control Pill) */
     .mobile-only-lang {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
         width: 100%;
         margin-top: 10px;
         padding-top: 20px;
@@ -2190,7 +2203,7 @@ export default Header;
     }
 
     .mobile-only-lang .lang-label {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         font-weight: 600;
         color: var(--text-muted);
         text-transform: uppercase;
@@ -2199,24 +2212,27 @@ export default Header;
 
     .mobile-only-lang .lang-buttons-row {
         display: flex;
-        justify-content: center;
-        gap: 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-color);
+        border-radius: 30px; /* Pill shape */
+        padding: 4px;
         width: 100%;
-        max-width: 320px;
+        max-width: 280px;
+        justify-content: space-between;
     }
 
     .mobile-only-lang .lang-btn {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        padding: 10px 16px;
+        gap: 6px;
+        background: transparent;
+        border: none;
+        border-radius: 26px;
+        padding: 8px 12px;
         color: var(--text-secondary);
         font-weight: 600;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         cursor: pointer;
         transition: var(--transition-smooth);
         flex: 1;
@@ -2225,17 +2241,23 @@ export default Header;
 
     .mobile-only-lang .lang-btn:hover,
     .mobile-only-lang .lang-btn.active {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: var(--accent-blue);
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         color: var(--text-primary);
-        box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
+        box-shadow: var(--shadow-premium);
     }
 
     .mobile-only-lang .flag-icon {
-        width: 20px;
-        height: 14px;
+        width: 18px;
+        height: 12px;
         border-radius: 2px;
         object-fit: cover;
+    }
+
+    @media (max-width: 480px) {
+        .logo {
+            height: 32px !important;
+        }
     }
 }
 
@@ -10561,7 +10583,7 @@ export const enMessages = {
   "nav.alliances": "Alliances",
   "nav.certifications": "Certifications",
   "nav.openMenu": "Open menu",
-  "nav.opportunity": "Opportunity",
+  "nav.opportunity": "Opportunities",
   "nav.radar": "Radar",
   "nav.regulations": "Regulations",
   "nav.selfDiagnostic": "Self-diagnostic",
@@ -11013,7 +11035,7 @@ export const esMessages = {
   "nav.alliances": "Alianzas",
   "nav.certifications": "Certificaciones",
   "nav.openMenu": "Abrir menu",
-  "nav.opportunity": "Oportunidad",
+  "nav.opportunity": "Oportunidades",
   "nav.radar": "Radar",
   "nav.regulations": "Normativas",
   "nav.selfDiagnostic": "Autodiagnostico",
@@ -11482,7 +11504,7 @@ export const ptMessages = {
   "nav.alliances": "Parcerias",
   "nav.certifications": "Certificações",
   "nav.openMenu": "Abrir menu",
-  "nav.opportunity": "Oportunidade",
+  "nav.opportunity": "Oportunidades",
   "nav.radar": "Radar",
   "nav.regulations": "Diretrizes",
   "nav.selfDiagnostic": "Autodiagnóstico",
@@ -12323,12 +12345,14 @@ p {
         flex-direction: column;
     }
     
-    .nav-dropdown-toggle span {
-        display: none; /* Ocultamos la flecha ▼ en móvil */
+    .nav-dropdown-toggle .arrow-indicator {
+        display: inline-block !important; /* Mostrar la flecha del acordeón */
+        transition: transform 0.2s ease;
     }
     
-    /* En móvil se muestra siempre visible pero como un subnivel (sangría) */
+    /* En móvil se colapsa y se despliega con la clase open */
     .nav-dropdown-menu {
+        display: none;
         position: static;
         transform: none !important;
         opacity: 1;
@@ -12341,6 +12365,11 @@ p {
         padding: 8px 0;
         margin-top: 8px;
         width: 100%;
+        flex-direction: column;
+    }
+
+    .nav-dropdown-menu.open {
+        display: flex;
     }
 
     .nav-dropdown-menu a {

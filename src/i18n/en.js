@@ -276,7 +276,7 @@ export const enMessages = {
   "nav.alliances": "Alliances",
   "nav.certifications": "Certifications",
   "nav.openMenu": "Open menu",
-  "nav.opportunity": "Opportunity",
+  "nav.opportunity": "Opportunities",
   "nav.radar": "Radar",
   "nav.regulations": "Regulations",
   "nav.selfDiagnostic": "Self-diagnostic",

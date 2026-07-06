@@ -276,7 +276,7 @@ export const ptMessages = {
   "nav.alliances": "Parcerias",
   "nav.certifications": "Certificações",
   "nav.openMenu": "Abrir menu",
-  "nav.opportunity": "Oportunidade",
+  "nav.opportunity": "Oportunidades",
   "nav.radar": "Radar",
   "nav.regulations": "Diretrizes",
   "nav.selfDiagnostic": "Autodiagnóstico",
