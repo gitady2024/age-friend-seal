@@ -13670,6 +13670,18 @@ export default async function handler(req, res) {
         const firstName = nameParts[0] || "";
         const lastName = nameParts.slice(1).join(" ") || "";
 
+        let calculatedCriticalPillar = criticalPillar || "Eje Laboral";
+        if (pilarScores) {
+          const p1 = Number(pilarScores.pilar1 !== undefined ? pilarScores.pilar1 : 100);
+          const p2 = Number(pilarScores.pilar2 !== undefined ? pilarScores.pilar2 : 100);
+          const p3 = Number(pilarScores.pilar3 !== undefined ? pilarScores.pilar3 : 100);
+          const p4 = Number(pilarScores.pilar4 !== undefined ? pilarScores.pilar4 : 100);
+          const p5 = Number(pilarScores.pilar5 !== undefined ? pilarScores.pilar5 : 100);
+          if (p1 >= 65 && p2 >= 65 && p3 >= 65 && p4 >= 65 && p5 >= 65) {
+            calculatedCriticalPillar = "Ninguno";
+          }
+        }
+
         const brevoResponse = await fetch("https://api.brevo.com/v3/contacts", {
           method: "POST",
           headers: {
@@ -13685,13 +13697,8 @@ export default async function handler(req, res) {
               FIRSTNAME: firstName,
               LASTNAME: lastName,
               COMPANY: targetCompany,
-              SCORE_GLOBAL: Number(score || 0),
-              SCORE_LABORAL: Number(pilarScores?.pilar1 || 0),
-              SCORE_CONCILIACION: Number(pilarScores?.pilar2 || 0),
-              SCORE_CONSUMIDOR: Number(pilarScores?.pilar3 || 0),
-              SCORE_SALUD: Number(pilarScores?.pilar4 || 0),
-              SCORE_COMUNITARIO: Number(pilarScores?.pilar5 || 0),
-              PILAR_CRITICO: criticalPillar || "Eje Laboral"
+              PILAR_CRITICO: calculatedCriticalPillar,
+              COUNTRY: country || "España"
             }
           })
         });
