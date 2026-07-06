@@ -103,7 +103,10 @@
     color: var(--text-secondary);
 }
 
-.form-group input {
+.form-group input,
+.form-group select {
+    width: 100%;
+    box-sizing: border-box;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -112,13 +115,20 @@
     font-family: var(--font-body);
     font-size: 1.05rem;
     transition: var(--transition-smooth);
+    outline: none;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
     outline: none;
     border-color: var(--accent-blue);
     background: rgba(255, 255, 255, 0.05);
     box-shadow: var(--shadow-glow);
+}
+
+.form-group select option {
+    background-color: #0f172a;
+    color: var(--text-primary);
 }
 
 /* Pasarela de pago simulada */
@@ -217,16 +227,19 @@
     color: var(--text-muted);
 }
 
-.register-form .form-row {
+.register-form .form-row,
+.modal-form .form-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 20px;
+    width: 100%;
 }
 
 @media (max-width: 600px) {
-    .register-form .form-row {
-        grid-template-columns: 1fr;
-        gap: 0;
+    .register-form .form-row,
+    .modal-form .form-row {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
     }
 }
 

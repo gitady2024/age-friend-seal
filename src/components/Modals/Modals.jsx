@@ -755,22 +755,22 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                   <option value="empresa"><FormattedMessage id="Modals.050" /></option>
                 </select>
               </div>
-              <div className="form-row" style={{ display: 'flex', gap: '15px' }}>
-                <div className="form-group" style={{ flex: 1 }}>
+              <div className="form-row">
+                <div className="form-group">
                   <label htmlFor="auth-reg-firstname"><FormattedMessage id="Modals.051" /></label>
                   <input type="text" id="auth-reg-firstname" name="firstName" required placeholder={intl.formatMessage({ id: "Modals.052" })} />
                 </div>
-                <div className="form-group" style={{ flex: 1 }}>
+                <div className="form-group">
                   <label htmlFor="auth-reg-lastname"><FormattedMessage id="Modals.051a" /></label>
                   <input type="text" id="auth-reg-lastname" name="lastName" required placeholder={intl.formatMessage({ id: "Modals.052a" })} />
                 </div>
               </div>
-              <div className="form-row" style={{ display: 'flex', gap: '15px' }}>
-                <div className="form-group" style={{ flex: 1 }}>
+              <div className="form-row">
+                <div className="form-group">
                   <label htmlFor="auth-reg-companyname"><FormattedMessage id="Modals.051b" /></label>
                   <input type="text" id="auth-reg-companyname" name="companyName" required placeholder={intl.formatMessage({ id: "Modals.052b" })} />
                 </div>
-                <div className="form-group" style={{ flex: 1 }}>
+                <div className="form-group">
                   <label htmlFor="auth-reg-website">
                     {language === 'es' ? 'Sitio Web de la Empresa *' : language === 'pt' ? 'Site da Empresa *' : 'Company Website *'}
                   </label>
@@ -783,10 +783,10 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                   />
                 </div>
               </div>
-              <div className="form-row" style={{ display: 'flex', gap: '15px' }}>
-                <div className="form-group" style={{ flex: 1 }}>
+              <div className="form-row">
+                <div className="form-group">
                   <label htmlFor="auth-reg-country"><FormattedMessage id="Modals.059" /></label>
-                  <select id="auth-reg-country" name="country" required defaultValue="" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(30, 41, 59, 0.5)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none' }}>
+                  <select id="auth-reg-country" name="country" required defaultValue="">
                     <option value="" disabled>{intl.formatMessage({ id: "Modals.060" })}</option>
                     <option value="España">España</option>
                     <option value="Argentina">Argentina</option>
@@ -801,13 +801,13 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                     <option value="Otros">Otros</option>
                   </select>
                 </div>
-                <div className="form-group" style={{ flex: 1 }}>
+                <div className="form-group">
                   <label htmlFor="auth-reg-email"><FormattedMessage id="Modals.053" /></label>
                   <input type="email" id="auth-reg-email" name="email" required placeholder={intl.formatMessage({ id: "Modals.054" })} />
                 </div>
               </div>
-              <div className="form-row" style={{ display: 'flex', gap: '15px' }}>
-                <div className="form-group" style={{ flex: '0 0 calc(50% - 7.5px)' }}>
+              <div className="form-row">
+                <div className="form-group">
                   <label htmlFor="auth-reg-password"><FormattedMessage id="Modals.057" /></label>
                   <input type="password" id="auth-reg-password" name="password" required minLength={6} placeholder={intl.formatMessage({ id: "Modals.058" })} />
                 </div>
