@@ -204,19 +204,15 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       const subsector = form.get('subsector') || '';
       const role = form.get('role') || '';
       const companySize = form.get('companySize') || '';
-      let website = '';
-
-      if (type === 'empresa') {
-        website = form.get('website') || '';
-        const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
-        if (!urlPattern.test(website)) {
-          alert(language === 'es' 
-            ? 'Por favor, ingrese una dirección web válida (ej. miempresa.com o https://miempresa.com).' 
-            : language === 'pt'
-              ? 'Por favor, insira um endereço web válido (ex. minhaempresa.com).'
-              : 'Please enter a valid website address (e.g. mycompany.com or https://mycompany.com).');
-          return;
-        }
+      const website = form.get('website') || '';
+      const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
+      if (!urlPattern.test(website)) {
+        alert(language === 'es' 
+          ? 'Por favor, ingrese una dirección web válida (ej. miempresa.com o https://miempresa.com).' 
+          : language === 'pt'
+            ? 'Por favor, insira um endereço web válido (ex. minhaempresa.com).'
+            : 'Please enter a valid website address (e.g. mycompany.com or https://mycompany.com).');
+        return;
       }
 
       try {
@@ -759,20 +755,6 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                   <option value="empresa"><FormattedMessage id="Modals.050" /></option>
                 </select>
               </div>
-              {registerType === 'empresa' && (
-                <div className="form-group" id="field-company-website">
-                  <label htmlFor="auth-reg-website">
-                    {language === 'es' ? 'Web de la Empresa' : language === 'pt' ? 'Site da Empresa' : 'Company Website'}
-                  </label>
-                  <input
-                    type="text"
-                    id="auth-reg-website"
-                    name="website"
-                    required
-                    placeholder={language === 'es' ? 'Ej. https://miempresa.com' : language === 'pt' ? 'Ex. https://minhaempresa.com' : 'e.g. https://mycompany.com'}
-                  />
-                </div>
-              )}
               <div className="form-row" style={{ display: 'flex', gap: '15px' }}>
                 <div className="form-group" style={{ flex: 1 }}>
                   <label htmlFor="auth-reg-firstname"><FormattedMessage id="Modals.051" /></label>
@@ -788,6 +770,20 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                   <label htmlFor="auth-reg-companyname"><FormattedMessage id="Modals.051b" /></label>
                   <input type="text" id="auth-reg-companyname" name="companyName" required placeholder={intl.formatMessage({ id: "Modals.052b" })} />
                 </div>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label htmlFor="auth-reg-website">
+                    {language === 'es' ? 'Sitio Web de la Empresa *' : language === 'pt' ? 'Site da Empresa *' : 'Company Website *'}
+                  </label>
+                  <input
+                    type="text"
+                    id="auth-reg-website"
+                    name="website"
+                    required
+                    placeholder={language === 'es' ? 'Ej. https://miempresa.com' : language === 'pt' ? 'Ex. https://minhaempresa.com' : 'e.g. https://mycompany.com'}
+                  />
+                </div>
+              </div>
+              <div className="form-row" style={{ display: 'flex', gap: '15px' }}>
                 <div className="form-group" style={{ flex: 1 }}>
                   <label htmlFor="auth-reg-country"><FormattedMessage id="Modals.059" /></label>
                   <select id="auth-reg-country" name="country" required defaultValue="" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(30, 41, 59, 0.5)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none' }}>
@@ -805,13 +801,13 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                     <option value="Otros">Otros</option>
                   </select>
                 </div>
-              </div>
-              <div className="form-row" style={{ display: 'flex', gap: '15px' }}>
                 <div className="form-group" style={{ flex: 1 }}>
                   <label htmlFor="auth-reg-email"><FormattedMessage id="Modals.053" /></label>
                   <input type="email" id="auth-reg-email" name="email" required placeholder={intl.formatMessage({ id: "Modals.054" })} />
                 </div>
-                <div className="form-group" style={{ flex: 1 }}>
+              </div>
+              <div className="form-row" style={{ display: 'flex', gap: '15px' }}>
+                <div className="form-group" style={{ flex: '0 0 calc(50% - 7.5px)' }}>
                   <label htmlFor="auth-reg-password"><FormattedMessage id="Modals.057" /></label>
                   <input type="password" id="auth-reg-password" name="password" required minLength={6} placeholder={intl.formatMessage({ id: "Modals.058" })} />
                 </div>

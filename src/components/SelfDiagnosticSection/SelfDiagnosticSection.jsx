@@ -167,17 +167,16 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
     const subsector = sector === 'publico' ? 'PÚBLICO' : registrationForm.privateVertical;
     
     // Website Validation
-    if (registrationType === 'empresa') {
-      const website = registrationForm.website || '';
-      const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
-      if (!urlPattern.test(website)) {
-        alert(language === 'es' 
-          ? 'Por favor, ingrese una dirección web válida (ej. miempresa.com o https://miempresa.com).' 
-          : language === 'pt'
-            ? 'Por favor, insira um endereço web válido (ex. minhaempresa.com).'
-            : 'Please enter a valid website address (e.g. mycompany.com or https://mycompany.com).');
-        return;
-      }
+    // Website Validation
+    const website = registrationForm.website || '';
+    const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
+    if (!urlPattern.test(website)) {
+      alert(language === 'es' 
+        ? 'Por favor, ingrese una dirección web válida (ej. miempresa.com o https://miempresa.com).' 
+        : language === 'pt'
+          ? 'Por favor, insira um endereço web válido (ex. minhaempresa.com).'
+          : 'Please enter a valid website address (e.g. mycompany.com or https://mycompany.com).');
+      return;
     }
 
     try {
@@ -356,6 +355,23 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                       />
                     </div>
                     <div className="form-group">
+                      <label htmlFor="quiz-reg-website">
+                        {language === 'es' ? 'Sitio Web de la Empresa *' : language === 'pt' ? 'Site da Empresa *' : 'Company Website *'}
+                      </label>
+                      <input
+                        type="text"
+                        id="quiz-reg-website"
+                        name="quiz-demo-website"
+                        required
+                        autoComplete="off"
+                        value={registrationForm.website || ''}
+                        onChange={(event) => updateRegistrationField('website', event.target.value)}
+                        placeholder="ej. https://miempresa.com"
+                      />
+                    </div>
+                  </div>
+                  <div className="form-row">
+                    <div className="form-group">
                       <label htmlFor="quiz-reg-country"><FormattedMessage id="SelfDiagnosticSection.020" /></label>
                       <select
                         id="quiz-reg-country"
@@ -378,8 +394,6 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                         <option value="Otros">Otros</option>
                       </select>
                     </div>
-                  </div>
-                  <div className="form-row">
                     <div className="form-group">
                       <label htmlFor="quiz-reg-email"><FormattedMessage id="SelfDiagnosticSection.014" /></label>
                       <input
@@ -393,7 +407,9 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                         placeholder={intl.formatMessage({ id: "SelfDiagnosticSection.015" })}
                       />
                     </div>
-                    <div className="form-group">
+                  </div>
+                  <div className="form-row">
+                    <div className="form-group" style={{ flex: '0 0 calc(50% - 10px)' }}>
                       <label htmlFor="quiz-reg-password"><FormattedMessage id="SelfDiagnosticSection.018" /></label>
                       <input
                         type="password"
@@ -410,19 +426,6 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                   </div>
                   {registrationType === 'empresa' && (
                     <>
-                      <div className="form-group" id="quiz-field-company-website">
-                        <label htmlFor="quiz-reg-website">
-                          {language === 'es' ? 'Web de la Empresa *' : language === 'pt' ? 'Site da Empresa *' : 'Company Website *'}
-                        </label>
-                        <input
-                          type="text"
-                          id="quiz-reg-website"
-                          required
-                          value={registrationForm.website || ''}
-                          onChange={(event) => updateRegistrationField('website', event.target.value)}
-                          placeholder="ej. https://miempresa.com"
-                        />
-                      </div>
                       <div className="form-group" id="quiz-field-company-size">
                         <label htmlFor="quiz-reg-company-size">
                           {language === 'es' ? 'Tamaño de la Empresa *' : language === 'pt' ? 'Tamanho da Empresa *' : 'Company Size *'}

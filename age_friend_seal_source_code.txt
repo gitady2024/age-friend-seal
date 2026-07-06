@@ -2538,19 +2538,15 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       const subsector = form.get('subsector') || '';
       const role = form.get('role') || '';
       const companySize = form.get('companySize') || '';
-      let website = '';
-
-      if (type === 'empresa') {
-        website = form.get('website') || '';
-        const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
-        if (!urlPattern.test(website)) {
-          alert(language === 'es' 
-            ? 'Por favor, ingrese una dirección web válida (ej. miempresa.com o https://miempresa.com).' 
-            : language === 'pt'
-              ? 'Por favor, insira um endereço web válido (ex. minhaempresa.com).'
-              : 'Please enter a valid website address (e.g. mycompany.com or https://mycompany.com).');
-          return;
-        }
+      const website = form.get('website') || '';
+      const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
+      if (!urlPattern.test(website)) {
+        alert(language === 'es' 
+          ? 'Por favor, ingrese una dirección web válida (ej. miempresa.com o https://miempresa.com).' 
+          : language === 'pt'
+            ? 'Por favor, insira um endereço web válido (ex. minhaempresa.com).'
+            : 'Please enter a valid website address (e.g. mycompany.com or https://mycompany.com).');
+        return;
       }
 
       try {
@@ -3093,20 +3089,6 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                   <option value="empresa"><FormattedMessage id="Modals.050" /></option>
                 </select>
               </div>
-              {registerType === 'empresa' && (
-                <div className="form-group" id="field-company-website">
-                  <label htmlFor="auth-reg-website">
-                    {language === 'es' ? 'Web de la Empresa' : language === 'pt' ? 'Site da Empresa' : 'Company Website'}
-                  </label>
-                  <input
-                    type="text"
-                    id="auth-reg-website"
-                    name="website"
-                    required
-                    placeholder={language === 'es' ? 'Ej. https://miempresa.com' : language === 'pt' ? 'Ex. https://minhaempresa.com' : 'e.g. https://mycompany.com'}
-                  />
-                </div>
-              )}
               <div className="form-row" style={{ display: 'flex', gap: '15px' }}>
                 <div className="form-group" style={{ flex: 1 }}>
                   <label htmlFor="auth-reg-firstname"><FormattedMessage id="Modals.051" /></label>
@@ -3122,6 +3104,20 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                   <label htmlFor="auth-reg-companyname"><FormattedMessage id="Modals.051b" /></label>
                   <input type="text" id="auth-reg-companyname" name="companyName" required placeholder={intl.formatMessage({ id: "Modals.052b" })} />
                 </div>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label htmlFor="auth-reg-website">
+                    {language === 'es' ? 'Sitio Web de la Empresa *' : language === 'pt' ? 'Site da Empresa *' : 'Company Website *'}
+                  </label>
+                  <input
+                    type="text"
+                    id="auth-reg-website"
+                    name="website"
+                    required
+                    placeholder={language === 'es' ? 'Ej. https://miempresa.com' : language === 'pt' ? 'Ex. https://minhaempresa.com' : 'e.g. https://mycompany.com'}
+                  />
+                </div>
+              </div>
+              <div className="form-row" style={{ display: 'flex', gap: '15px' }}>
                 <div className="form-group" style={{ flex: 1 }}>
                   <label htmlFor="auth-reg-country"><FormattedMessage id="Modals.059" /></label>
                   <select id="auth-reg-country" name="country" required defaultValue="" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(30, 41, 59, 0.5)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none' }}>
@@ -3139,13 +3135,13 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                     <option value="Otros">Otros</option>
                   </select>
                 </div>
-              </div>
-              <div className="form-row" style={{ display: 'flex', gap: '15px' }}>
                 <div className="form-group" style={{ flex: 1 }}>
                   <label htmlFor="auth-reg-email"><FormattedMessage id="Modals.053" /></label>
                   <input type="email" id="auth-reg-email" name="email" required placeholder={intl.formatMessage({ id: "Modals.054" })} />
                 </div>
-                <div className="form-group" style={{ flex: 1 }}>
+              </div>
+              <div className="form-row" style={{ display: 'flex', gap: '15px' }}>
+                <div className="form-group" style={{ flex: '0 0 calc(50% - 7.5px)' }}>
                   <label htmlFor="auth-reg-password"><FormattedMessage id="Modals.057" /></label>
                   <input type="password" id="auth-reg-password" name="password" required minLength={6} placeholder={intl.formatMessage({ id: "Modals.058" })} />
                 </div>
@@ -5986,17 +5982,16 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
     const subsector = sector === 'publico' ? 'PÚBLICO' : registrationForm.privateVertical;
     
     // Website Validation
-    if (registrationType === 'empresa') {
-      const website = registrationForm.website || '';
-      const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
-      if (!urlPattern.test(website)) {
-        alert(language === 'es' 
-          ? 'Por favor, ingrese una dirección web válida (ej. miempresa.com o https://miempresa.com).' 
-          : language === 'pt'
-            ? 'Por favor, insira um endereço web válido (ex. minhaempresa.com).'
-            : 'Please enter a valid website address (e.g. mycompany.com or https://mycompany.com).');
-        return;
-      }
+    // Website Validation
+    const website = registrationForm.website || '';
+    const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
+    if (!urlPattern.test(website)) {
+      alert(language === 'es' 
+        ? 'Por favor, ingrese una dirección web válida (ej. miempresa.com o https://miempresa.com).' 
+        : language === 'pt'
+          ? 'Por favor, insira um endereço web válido (ex. minhaempresa.com).'
+          : 'Please enter a valid website address (e.g. mycompany.com or https://mycompany.com).');
+      return;
     }
 
     try {
@@ -6175,6 +6170,23 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                       />
                     </div>
                     <div className="form-group">
+                      <label htmlFor="quiz-reg-website">
+                        {language === 'es' ? 'Sitio Web de la Empresa *' : language === 'pt' ? 'Site da Empresa *' : 'Company Website *'}
+                      </label>
+                      <input
+                        type="text"
+                        id="quiz-reg-website"
+                        name="quiz-demo-website"
+                        required
+                        autoComplete="off"
+                        value={registrationForm.website || ''}
+                        onChange={(event) => updateRegistrationField('website', event.target.value)}
+                        placeholder="ej. https://miempresa.com"
+                      />
+                    </div>
+                  </div>
+                  <div className="form-row">
+                    <div className="form-group">
                       <label htmlFor="quiz-reg-country"><FormattedMessage id="SelfDiagnosticSection.020" /></label>
                       <select
                         id="quiz-reg-country"
@@ -6197,8 +6209,6 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                         <option value="Otros">Otros</option>
                       </select>
                     </div>
-                  </div>
-                  <div className="form-row">
                     <div className="form-group">
                       <label htmlFor="quiz-reg-email"><FormattedMessage id="SelfDiagnosticSection.014" /></label>
                       <input
@@ -6212,7 +6222,9 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                         placeholder={intl.formatMessage({ id: "SelfDiagnosticSection.015" })}
                       />
                     </div>
-                    <div className="form-group">
+                  </div>
+                  <div className="form-row">
+                    <div className="form-group" style={{ flex: '0 0 calc(50% - 10px)' }}>
                       <label htmlFor="quiz-reg-password"><FormattedMessage id="SelfDiagnosticSection.018" /></label>
                       <input
                         type="password"
@@ -6229,19 +6241,6 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                   </div>
                   {registrationType === 'empresa' && (
                     <>
-                      <div className="form-group" id="quiz-field-company-website">
-                        <label htmlFor="quiz-reg-website">
-                          {language === 'es' ? 'Web de la Empresa *' : language === 'pt' ? 'Site da Empresa *' : 'Company Website *'}
-                        </label>
-                        <input
-                          type="text"
-                          id="quiz-reg-website"
-                          required
-                          value={registrationForm.website || ''}
-                          onChange={(event) => updateRegistrationField('website', event.target.value)}
-                          placeholder="ej. https://miempresa.com"
-                        />
-                      </div>
                       <div className="form-group" id="quiz-field-company-size">
                         <label htmlFor="quiz-reg-company-size">
                           {language === 'es' ? 'Tamaño de la Empresa *' : language === 'pt' ? 'Tamanho da Empresa *' : 'Company Size *'}
