@@ -56,6 +56,9 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
   const [registrationType, setRegistrationType] = useState('personal');
   const [sectorType, setSectorType] = useState('');
   const [registrationForm, setRegistrationForm] = useState({
+    firstName: '',
+    lastName: '',
+    companyName: '',
     name: '',
     email: '',
     username: '',
@@ -178,11 +181,15 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
     }
 
     try {
+      const fullName = `${registrationForm.firstName || ''} ${registrationForm.lastName || ''}`.trim() || registrationForm.name || 'Usuario';
       const profileData = {
         type: registrationType,
-        name: registrationForm.name,
+        firstName: registrationForm.firstName,
+        lastName: registrationForm.lastName,
+        companyName: registrationForm.companyName || registrationForm.name || '',
+        name: fullName,
         email: registrationForm.email,
-        username: registrationForm.username,
+        username: registrationForm.username || registrationForm.email.split('@')[0],
         country: registrationForm.country,
         sector,
         subsector: subsector || '',
@@ -308,18 +315,71 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                   </div>
                   <div className="form-row">
                     <div className="form-group">
-                      <label htmlFor="quiz-reg-name"><FormattedMessage id="SelfDiagnosticSection.012" /></label>
+                      <label htmlFor="quiz-reg-firstname"><FormattedMessage id="SelfDiagnosticSection.012" /></label>
                       <input
                         type="text"
-                        id="quiz-reg-name"
-                        name="quiz-demo-name"
+                        id="quiz-reg-firstname"
+                        name="quiz-demo-firstname"
                         required
                         autoComplete="off"
-                        value={registrationForm.name}
-                        onChange={(event) => updateRegistrationField('name', event.target.value)}
+                        value={registrationForm.firstName}
+                        onChange={(event) => updateRegistrationField('firstName', event.target.value)}
                         placeholder={intl.formatMessage({ id: "SelfDiagnosticSection.013" })}
                       />
                     </div>
+                    <div className="form-group">
+                      <label htmlFor="quiz-reg-lastname"><FormattedMessage id="SelfDiagnosticSection.012a" /></label>
+                      <input
+                        type="text"
+                        id="quiz-reg-lastname"
+                        name="quiz-demo-lastname"
+                        required
+                        autoComplete="off"
+                        value={registrationForm.lastName}
+                        onChange={(event) => updateRegistrationField('lastName', event.target.value)}
+                        placeholder={intl.formatMessage({ id: "SelfDiagnosticSection.013a" })}
+                      />
+                    </div>
+                  </div>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="quiz-reg-companyname"><FormattedMessage id="SelfDiagnosticSection.012b" /></label>
+                      <input
+                        type="text"
+                        id="quiz-reg-companyname"
+                        name="quiz-demo-companyname"
+                        required
+                        autoComplete="off"
+                        value={registrationForm.companyName}
+                        onChange={(event) => updateRegistrationField('companyName', event.target.value)}
+                        placeholder={intl.formatMessage({ id: "SelfDiagnosticSection.013b" })}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="quiz-reg-country"><FormattedMessage id="SelfDiagnosticSection.020" /></label>
+                      <select
+                        id="quiz-reg-country"
+                        name="quiz-demo-country"
+                        required
+                        value={registrationForm.country}
+                        onChange={(event) => updateRegistrationField('country', event.target.value)}
+                      >
+                        <option value="" disabled><FormattedMessage id="SelfDiagnosticSection.021" /></option>
+                        <option value="España">España</option>
+                        <option value="Argentina">Argentina</option>
+                        <option value="Chile">Chile</option>
+                        <option value="Uruguay">Uruguay</option>
+                        <option value="Brasil">Brasil</option>
+                        <option value="Colombia">Colombia</option>
+                        <option value="México">México</option>
+                        <option value="Ecuador">Ecuador</option>
+                        <option value="Australia">Australia</option>
+                        <option value="Resto de Europa">Resto de Europa</option>
+                        <option value="Otros">Otros</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="form-row">
                     <div className="form-group">
                       <label htmlFor="quiz-reg-email"><FormattedMessage id="SelfDiagnosticSection.014" /></label>
                       <input
@@ -331,21 +391,6 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                         value={registrationForm.email}
                         onChange={(event) => updateRegistrationField('email', event.target.value)}
                         placeholder={intl.formatMessage({ id: "SelfDiagnosticSection.015" })}
-                      />
-                    </div>
-                  </div>
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="quiz-reg-username"><FormattedMessage id="SelfDiagnosticSection.016" /></label>
-                      <input
-                        type="text"
-                        id="quiz-reg-username"
-                        name="quiz-demo-username"
-                        required
-                        autoComplete="off"
-                        value={registrationForm.username}
-                        onChange={(event) => updateRegistrationField('username', event.target.value)}
-                        placeholder={intl.formatMessage({ id: "SelfDiagnosticSection.017" })}
                       />
                     </div>
                     <div className="form-group">
@@ -362,20 +407,6 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                         placeholder={intl.formatMessage({ id: "SelfDiagnosticSection.019" })}
                       />
                     </div>
-                  </div>
-
-                  <div className="form-group" id="quiz-field-country">
-                    <label htmlFor="quiz-reg-country"><FormattedMessage id="SelfDiagnosticSection.020" /></label>
-                    <input
-                      type="text"
-                      id="quiz-reg-country"
-                      name="quiz-demo-country"
-                      required
-                      autoComplete="off"
-                      value={registrationForm.country}
-                      onChange={(event) => updateRegistrationField('country', event.target.value)}
-                      placeholder={intl.formatMessage({ id: "SelfDiagnosticSection.021" })}
-                    />
                   </div>
                   {registrationType === 'empresa' && (
                     <>

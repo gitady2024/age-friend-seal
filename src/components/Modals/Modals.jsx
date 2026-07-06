@@ -193,9 +193,11 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       }
     } else {
       const type = form.get('type');
-      const name = form.get('name');
+      const firstName = form.get('firstName') || '';
+      const lastName = form.get('lastName') || '';
+      const companyNameVal = form.get('companyName') || '';
       const email = form.get('email');
-      const username = form.get('username');
+      const username = email.split('@')[0];
       const password = form.get('password');
       const country = form.get('country') || '';
       const sector = form.get('sector') || '';
@@ -220,7 +222,10 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       try {
         const profileData = {
           type,
-          name,
+          firstName,
+          lastName,
+          companyName: companyNameVal,
+          name: `${firstName} ${lastName}`.trim() || 'Usuario',
           username,
           country,
           sector,
@@ -407,7 +412,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
         },
         body: JSON.stringify({
           email: currentUser?.email || "demo@example.com",
-          enterpriseName: currentUser?.name || "Empresa",
+          enterpriseName: currentUser?.companyName || currentUser?.name || "Empresa",
           score: evalData.globalScore || evalData.score || 0,
           respuestas: evalData.respuestas || [],
           country: currentUser?.country || "España"
@@ -548,7 +553,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   };
 
   const handlePayment = async () => {
-    const companyName = currentUser?.name || (language === 'es' ? 'Su Empresa' : (language === 'pt' ? 'Sua Empresa' : 'Your Company'));
+    const companyName = currentUser?.companyName || currentUser?.name || (language === 'es' ? 'Su Empresa' : (language === 'pt' ? 'Sua Empresa' : 'Your Company'));
     
     // Download SVG decal
     downloadSvgBadge();
@@ -560,7 +565,10 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       try {
         // 1. Asegurar perfil en la colección 'users' para cumplir con RLS
         await updateUserProfile(uid, {
-          name: companyName,
+          name: currentUser.name || companyName,
+          firstName: currentUser.firstName || "",
+          lastName: currentUser.lastName || "",
+          companyName: currentUser.companyName || companyName,
           email: currentUser.email || "",
           username: currentUser.username || "",
           country: currentUser.country || "",
@@ -765,25 +773,48 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                   />
                 </div>
               )}
-              <div className="form-group">
-                <label htmlFor="auth-reg-name"><FormattedMessage id="Modals.051" /></label>
-                <input type="text" id="auth-reg-name" name="name" required placeholder={intl.formatMessage({ id: "Modals.052" })} />
+              <div className="form-row" style={{ display: 'flex', gap: '15px' }}>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label htmlFor="auth-reg-firstname"><FormattedMessage id="Modals.051" /></label>
+                  <input type="text" id="auth-reg-firstname" name="firstName" required placeholder={intl.formatMessage({ id: "Modals.052" })} />
+                </div>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label htmlFor="auth-reg-lastname"><FormattedMessage id="Modals.051a" /></label>
+                  <input type="text" id="auth-reg-lastname" name="lastName" required placeholder={intl.formatMessage({ id: "Modals.052a" })} />
+                </div>
               </div>
-              <div className="form-group">
-                <label htmlFor="auth-reg-email"><FormattedMessage id="Modals.053" /></label>
-                <input type="email" id="auth-reg-email" name="email" required placeholder={intl.formatMessage({ id: "Modals.054" })} />
+              <div className="form-row" style={{ display: 'flex', gap: '15px' }}>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label htmlFor="auth-reg-companyname"><FormattedMessage id="Modals.051b" /></label>
+                  <input type="text" id="auth-reg-companyname" name="companyName" required placeholder={intl.formatMessage({ id: "Modals.052b" })} />
+                </div>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label htmlFor="auth-reg-country"><FormattedMessage id="Modals.059" /></label>
+                  <select id="auth-reg-country" name="country" required defaultValue="" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(30, 41, 59, 0.5)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none' }}>
+                    <option value="" disabled>{intl.formatMessage({ id: "Modals.060" })}</option>
+                    <option value="España">España</option>
+                    <option value="Argentina">Argentina</option>
+                    <option value="Chile">Chile</option>
+                    <option value="Uruguay">Uruguay</option>
+                    <option value="Brasil">Brasil</option>
+                    <option value="Colombia">Colombia</option>
+                    <option value="México">México</option>
+                    <option value="Ecuador">Ecuador</option>
+                    <option value="Australia">Australia</option>
+                    <option value="Resto de Europa">Resto de Europa</option>
+                    <option value="Otros">Otros</option>
+                  </select>
+                </div>
               </div>
-              <div className="form-group">
-                <label htmlFor="auth-reg-username"><FormattedMessage id="Modals.055" /></label>
-                <input type="text" id="auth-reg-username" name="username" required placeholder={intl.formatMessage({ id: "Modals.056" })} />
-              </div>
-              <div className="form-group">
-                <label htmlFor="auth-reg-password"><FormattedMessage id="Modals.057" /></label>
-                <input type="password" id="auth-reg-password" name="password" required minLength={6} placeholder={intl.formatMessage({ id: "Modals.058" })} />
-              </div>
-              <div className="form-group" id="field-country">
-                <label htmlFor="auth-reg-country"><FormattedMessage id="Modals.059" /></label>
-                <input type="text" id="auth-reg-country" name="country" placeholder={intl.formatMessage({ id: "Modals.060" })} />
+              <div className="form-row" style={{ display: 'flex', gap: '15px' }}>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label htmlFor="auth-reg-email"><FormattedMessage id="Modals.053" /></label>
+                  <input type="email" id="auth-reg-email" name="email" required placeholder={intl.formatMessage({ id: "Modals.054" })} />
+                </div>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label htmlFor="auth-reg-password"><FormattedMessage id="Modals.057" /></label>
+                  <input type="password" id="auth-reg-password" name="password" required minLength={6} placeholder={intl.formatMessage({ id: "Modals.058" })} />
+                </div>
               </div>
               {registerType === 'empresa' && (
                 <CompanyFields prefix="auth-reg" intl={intl} language={language} />

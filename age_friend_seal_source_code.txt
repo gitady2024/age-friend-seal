@@ -2527,9 +2527,11 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       }
     } else {
       const type = form.get('type');
-      const name = form.get('name');
+      const firstName = form.get('firstName') || '';
+      const lastName = form.get('lastName') || '';
+      const companyNameVal = form.get('companyName') || '';
       const email = form.get('email');
-      const username = form.get('username');
+      const username = email.split('@')[0];
       const password = form.get('password');
       const country = form.get('country') || '';
       const sector = form.get('sector') || '';
@@ -2554,7 +2556,10 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       try {
         const profileData = {
           type,
-          name,
+          firstName,
+          lastName,
+          companyName: companyNameVal,
+          name: `${firstName} ${lastName}`.trim() || 'Usuario',
           username,
           country,
           sector,
@@ -2741,7 +2746,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
         },
         body: JSON.stringify({
           email: currentUser?.email || "demo@example.com",
-          enterpriseName: currentUser?.name || "Empresa",
+          enterpriseName: currentUser?.companyName || currentUser?.name || "Empresa",
           score: evalData.globalScore || evalData.score || 0,
           respuestas: evalData.respuestas || [],
           country: currentUser?.country || "España"
@@ -2882,7 +2887,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   };
 
   const handlePayment = async () => {
-    const companyName = currentUser?.name || (language === 'es' ? 'Su Empresa' : (language === 'pt' ? 'Sua Empresa' : 'Your Company'));
+    const companyName = currentUser?.companyName || currentUser?.name || (language === 'es' ? 'Su Empresa' : (language === 'pt' ? 'Sua Empresa' : 'Your Company'));
     
     // Download SVG decal
     downloadSvgBadge();
@@ -2894,7 +2899,10 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       try {
         // 1. Asegurar perfil en la colección 'users' para cumplir con RLS
         await updateUserProfile(uid, {
-          name: companyName,
+          name: currentUser.name || companyName,
+          firstName: currentUser.firstName || "",
+          lastName: currentUser.lastName || "",
+          companyName: currentUser.companyName || companyName,
           email: currentUser.email || "",
           username: currentUser.username || "",
           country: currentUser.country || "",
@@ -3099,25 +3107,48 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                   />
                 </div>
               )}
-              <div className="form-group">
-                <label htmlFor="auth-reg-name"><FormattedMessage id="Modals.051" /></label>
-                <input type="text" id="auth-reg-name" name="name" required placeholder={intl.formatMessage({ id: "Modals.052" })} />
+              <div className="form-row" style={{ display: 'flex', gap: '15px' }}>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label htmlFor="auth-reg-firstname"><FormattedMessage id="Modals.051" /></label>
+                  <input type="text" id="auth-reg-firstname" name="firstName" required placeholder={intl.formatMessage({ id: "Modals.052" })} />
+                </div>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label htmlFor="auth-reg-lastname"><FormattedMessage id="Modals.051a" /></label>
+                  <input type="text" id="auth-reg-lastname" name="lastName" required placeholder={intl.formatMessage({ id: "Modals.052a" })} />
+                </div>
               </div>
-              <div className="form-group">
-                <label htmlFor="auth-reg-email"><FormattedMessage id="Modals.053" /></label>
-                <input type="email" id="auth-reg-email" name="email" required placeholder={intl.formatMessage({ id: "Modals.054" })} />
+              <div className="form-row" style={{ display: 'flex', gap: '15px' }}>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label htmlFor="auth-reg-companyname"><FormattedMessage id="Modals.051b" /></label>
+                  <input type="text" id="auth-reg-companyname" name="companyName" required placeholder={intl.formatMessage({ id: "Modals.052b" })} />
+                </div>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label htmlFor="auth-reg-country"><FormattedMessage id="Modals.059" /></label>
+                  <select id="auth-reg-country" name="country" required defaultValue="" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(30, 41, 59, 0.5)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none' }}>
+                    <option value="" disabled>{intl.formatMessage({ id: "Modals.060" })}</option>
+                    <option value="España">España</option>
+                    <option value="Argentina">Argentina</option>
+                    <option value="Chile">Chile</option>
+                    <option value="Uruguay">Uruguay</option>
+                    <option value="Brasil">Brasil</option>
+                    <option value="Colombia">Colombia</option>
+                    <option value="México">México</option>
+                    <option value="Ecuador">Ecuador</option>
+                    <option value="Australia">Australia</option>
+                    <option value="Resto de Europa">Resto de Europa</option>
+                    <option value="Otros">Otros</option>
+                  </select>
+                </div>
               </div>
-              <div className="form-group">
-                <label htmlFor="auth-reg-username"><FormattedMessage id="Modals.055" /></label>
-                <input type="text" id="auth-reg-username" name="username" required placeholder={intl.formatMessage({ id: "Modals.056" })} />
-              </div>
-              <div className="form-group">
-                <label htmlFor="auth-reg-password"><FormattedMessage id="Modals.057" /></label>
-                <input type="password" id="auth-reg-password" name="password" required minLength={6} placeholder={intl.formatMessage({ id: "Modals.058" })} />
-              </div>
-              <div className="form-group" id="field-country">
-                <label htmlFor="auth-reg-country"><FormattedMessage id="Modals.059" /></label>
-                <input type="text" id="auth-reg-country" name="country" placeholder={intl.formatMessage({ id: "Modals.060" })} />
+              <div className="form-row" style={{ display: 'flex', gap: '15px' }}>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label htmlFor="auth-reg-email"><FormattedMessage id="Modals.053" /></label>
+                  <input type="email" id="auth-reg-email" name="email" required placeholder={intl.formatMessage({ id: "Modals.054" })} />
+                </div>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label htmlFor="auth-reg-password"><FormattedMessage id="Modals.057" /></label>
+                  <input type="password" id="auth-reg-password" name="password" required minLength={6} placeholder={intl.formatMessage({ id: "Modals.058" })} />
+                </div>
               </div>
               {registerType === 'empresa' && (
                 <CompanyFields prefix="auth-reg" intl={intl} language={language} />
@@ -5844,6 +5875,9 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
   const [registrationType, setRegistrationType] = useState('personal');
   const [sectorType, setSectorType] = useState('');
   const [registrationForm, setRegistrationForm] = useState({
+    firstName: '',
+    lastName: '',
+    companyName: '',
     name: '',
     email: '',
     username: '',
@@ -5966,11 +6000,15 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
     }
 
     try {
+      const fullName = `${registrationForm.firstName || ''} ${registrationForm.lastName || ''}`.trim() || registrationForm.name || 'Usuario';
       const profileData = {
         type: registrationType,
-        name: registrationForm.name,
+        firstName: registrationForm.firstName,
+        lastName: registrationForm.lastName,
+        companyName: registrationForm.companyName || registrationForm.name || '',
+        name: fullName,
         email: registrationForm.email,
-        username: registrationForm.username,
+        username: registrationForm.username || registrationForm.email.split('@')[0],
         country: registrationForm.country,
         sector,
         subsector: subsector || '',
@@ -6096,18 +6134,71 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                   </div>
                   <div className="form-row">
                     <div className="form-group">
-                      <label htmlFor="quiz-reg-name"><FormattedMessage id="SelfDiagnosticSection.012" /></label>
+                      <label htmlFor="quiz-reg-firstname"><FormattedMessage id="SelfDiagnosticSection.012" /></label>
                       <input
                         type="text"
-                        id="quiz-reg-name"
-                        name="quiz-demo-name"
+                        id="quiz-reg-firstname"
+                        name="quiz-demo-firstname"
                         required
                         autoComplete="off"
-                        value={registrationForm.name}
-                        onChange={(event) => updateRegistrationField('name', event.target.value)}
+                        value={registrationForm.firstName}
+                        onChange={(event) => updateRegistrationField('firstName', event.target.value)}
                         placeholder={intl.formatMessage({ id: "SelfDiagnosticSection.013" })}
                       />
                     </div>
+                    <div className="form-group">
+                      <label htmlFor="quiz-reg-lastname"><FormattedMessage id="SelfDiagnosticSection.012a" /></label>
+                      <input
+                        type="text"
+                        id="quiz-reg-lastname"
+                        name="quiz-demo-lastname"
+                        required
+                        autoComplete="off"
+                        value={registrationForm.lastName}
+                        onChange={(event) => updateRegistrationField('lastName', event.target.value)}
+                        placeholder={intl.formatMessage({ id: "SelfDiagnosticSection.013a" })}
+                      />
+                    </div>
+                  </div>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="quiz-reg-companyname"><FormattedMessage id="SelfDiagnosticSection.012b" /></label>
+                      <input
+                        type="text"
+                        id="quiz-reg-companyname"
+                        name="quiz-demo-companyname"
+                        required
+                        autoComplete="off"
+                        value={registrationForm.companyName}
+                        onChange={(event) => updateRegistrationField('companyName', event.target.value)}
+                        placeholder={intl.formatMessage({ id: "SelfDiagnosticSection.013b" })}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="quiz-reg-country"><FormattedMessage id="SelfDiagnosticSection.020" /></label>
+                      <select
+                        id="quiz-reg-country"
+                        name="quiz-demo-country"
+                        required
+                        value={registrationForm.country}
+                        onChange={(event) => updateRegistrationField('country', event.target.value)}
+                      >
+                        <option value="" disabled><FormattedMessage id="SelfDiagnosticSection.021" /></option>
+                        <option value="España">España</option>
+                        <option value="Argentina">Argentina</option>
+                        <option value="Chile">Chile</option>
+                        <option value="Uruguay">Uruguay</option>
+                        <option value="Brasil">Brasil</option>
+                        <option value="Colombia">Colombia</option>
+                        <option value="México">México</option>
+                        <option value="Ecuador">Ecuador</option>
+                        <option value="Australia">Australia</option>
+                        <option value="Resto de Europa">Resto de Europa</option>
+                        <option value="Otros">Otros</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="form-row">
                     <div className="form-group">
                       <label htmlFor="quiz-reg-email"><FormattedMessage id="SelfDiagnosticSection.014" /></label>
                       <input
@@ -6119,21 +6210,6 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                         value={registrationForm.email}
                         onChange={(event) => updateRegistrationField('email', event.target.value)}
                         placeholder={intl.formatMessage({ id: "SelfDiagnosticSection.015" })}
-                      />
-                    </div>
-                  </div>
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="quiz-reg-username"><FormattedMessage id="SelfDiagnosticSection.016" /></label>
-                      <input
-                        type="text"
-                        id="quiz-reg-username"
-                        name="quiz-demo-username"
-                        required
-                        autoComplete="off"
-                        value={registrationForm.username}
-                        onChange={(event) => updateRegistrationField('username', event.target.value)}
-                        placeholder={intl.formatMessage({ id: "SelfDiagnosticSection.017" })}
                       />
                     </div>
                     <div className="form-group">
@@ -6150,20 +6226,6 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                         placeholder={intl.formatMessage({ id: "SelfDiagnosticSection.019" })}
                       />
                     </div>
-                  </div>
-
-                  <div className="form-group" id="quiz-field-country">
-                    <label htmlFor="quiz-reg-country"><FormattedMessage id="SelfDiagnosticSection.020" /></label>
-                    <input
-                      type="text"
-                      id="quiz-reg-country"
-                      name="quiz-demo-country"
-                      required
-                      autoComplete="off"
-                      value={registrationForm.country}
-                      onChange={(event) => updateRegistrationField('country', event.target.value)}
-                      placeholder={intl.formatMessage({ id: "SelfDiagnosticSection.021" })}
-                    />
                   </div>
                   {registrationType === 'empresa' && (
                     <>
@@ -10279,8 +10341,12 @@ export const enMessages = {
   "Modals.048": "Account Type",
   "Modals.049": "Personal User",
   "Modals.050": "Company User",
-  "Modals.051": "First & Last Name",
-  "Modals.052": "e.g. John Doe",
+  "Modals.051": "First Name",
+  "Modals.051a": "Last Names",
+  "Modals.051b": "Company Name",
+  "Modals.052": "e.g. John",
+  "Modals.052a": "e.g. Doe",
+  "Modals.052b": "e.g. Tech Solutions",
   "Modals.053": "Email Address",
   "Modals.054": "name@email.com",
   "Modals.055": "Username",
@@ -10288,7 +10354,7 @@ export const enMessages = {
   "Modals.057": "Password (Minimum 6 characters)",
   "Modals.058": "⬢⬢⬢⬢⬢⬢⬢⬢",
   "Modals.059": "Country",
-  "Modals.060": "e.g. Chile",
+  "Modals.060": "Select country...",
   "Modals.061": "Economic Sector",
   "Modals.062": "Select sector...",
   "Modals.063": "Private Sector",
@@ -10469,8 +10535,12 @@ export const enMessages = {
   "SelfDiagnosticSection.009": "Account Type",
   "SelfDiagnosticSection.010": "Personal User",
   "SelfDiagnosticSection.011": "Company User",
-  "SelfDiagnosticSection.012": "First & Last Name",
-  "SelfDiagnosticSection.013": "e.g. Ana Martínez",
+  "SelfDiagnosticSection.012": "First Name",
+  "SelfDiagnosticSection.012a": "Last Names",
+  "SelfDiagnosticSection.012b": "Company Name",
+  "SelfDiagnosticSection.013": "e.g. Ana",
+  "SelfDiagnosticSection.013a": "e.g. Martínez",
+  "SelfDiagnosticSection.013b": "e.g. Tech Solutions",
   "SelfDiagnosticSection.014": "Email Address",
   "SelfDiagnosticSection.015": "name@email.com",
   "SelfDiagnosticSection.016": "Username",
@@ -10478,7 +10548,7 @@ export const enMessages = {
   "SelfDiagnosticSection.018": "Password (Min. 6 chars)",
   "SelfDiagnosticSection.019": "⬢⬢⬢⬢⬢⬢⬢⬢",
   "SelfDiagnosticSection.020": "Country",
-  "SelfDiagnosticSection.021": "e.g. Chile",
+  "SelfDiagnosticSection.021": "Select country...",
   "SelfDiagnosticSection.022": "Economic Sector",
   "SelfDiagnosticSection.023": "Select sector...",
   "SelfDiagnosticSection.024": "Private Sector",
@@ -10723,8 +10793,12 @@ export const esMessages = {
   "Modals.048": "Tipo de Cuenta",
   "Modals.049": "Usuario Personal",
   "Modals.050": "Usuario Empresa",
-  "Modals.051": "Nombre y Apellido",
-  "Modals.052": "Ej. Juan Pérez",
+  "Modals.051": "Nombre",
+  "Modals.051a": "Apellidos",
+  "Modals.051b": "Nombre de la Empresa",
+  "Modals.052": "Ej. Juan",
+  "Modals.052a": "Ej. Pérez",
+  "Modals.052b": "Ej. Tech Solutions",
   "Modals.053": "Correo Electrónico",
   "Modals.054": "nombre@correo.com",
   "Modals.055": "Nombre de Usuario",
@@ -10732,7 +10806,7 @@ export const esMessages = {
   "Modals.057": "Contraseña (Mínimo 6 caracteres)",
   "Modals.058": "⬢⬢⬢⬢⬢⬢⬢⬢",
   "Modals.059": "País",
-  "Modals.060": "Ej. Chile",
+  "Modals.060": "Seleccione país...",
   "Modals.061": "Sector de la Economía",
   "Modals.062": "Seleccione sector...",
   "Modals.063": "Sector Privado",
@@ -10913,8 +10987,12 @@ export const esMessages = {
   "SelfDiagnosticSection.009": "Tipo de Cuenta",
   "SelfDiagnosticSection.010": "Usuario Personal",
   "SelfDiagnosticSection.011": "Usuario Empresa",
-  "SelfDiagnosticSection.012": "Nombre y Apellido",
-  "SelfDiagnosticSection.013": "Ej. Ana Martínez",
+  "SelfDiagnosticSection.012": "Nombre",
+  "SelfDiagnosticSection.012a": "Apellidos",
+  "SelfDiagnosticSection.012b": "Nombre de la Empresa",
+  "SelfDiagnosticSection.013": "Ej. Ana",
+  "SelfDiagnosticSection.013a": "Ej. Martínez",
+  "SelfDiagnosticSection.013b": "Ej. Tech Solutions",
   "SelfDiagnosticSection.014": "Correo Electrónico",
   "SelfDiagnosticSection.015": "nombre@correo.com",
   "SelfDiagnosticSection.016": "Nombre de Usuario",
@@ -10922,7 +11000,7 @@ export const esMessages = {
   "SelfDiagnosticSection.018": "Contraseña (Mín. 6 caracteres)",
   "SelfDiagnosticSection.019": "⬢⬢⬢⬢⬢⬢⬢⬢",
   "SelfDiagnosticSection.020": "País",
-  "SelfDiagnosticSection.021": "Ej. Chile",
+  "SelfDiagnosticSection.021": "Seleccione país...",
   "SelfDiagnosticSection.022": "Sector de la Economía",
   "SelfDiagnosticSection.023": "Seleccione un sector...",
   "SelfDiagnosticSection.024": "Sector Privado",
@@ -11184,8 +11262,12 @@ export const ptMessages = {
   "Modals.048": "Tipo de conta",
   "Modals.049": "Usuário pessoal",
   "Modals.050": "Usuário da empresa",
-  "Modals.051": "Nome e sobrenome",
-  "Modals.052": "Ex. Juan Pérez",
+  "Modals.051": "Nome",
+  "Modals.051a": "Sobrenome",
+  "Modals.051b": "Nome da Empresa",
+  "Modals.052": "Ex. Juan",
+  "Modals.052a": "Ex. Pérez",
+  "Modals.052b": "Ex. Tech Solutions",
   "Modals.053": "E-mail",
   "Modals.054": "nome@mail.com",
   "Modals.055": "Nome de usuário",
@@ -11193,7 +11275,7 @@ export const ptMessages = {
   "Modals.057": "Senha (Mínimo 6 caracteres)",
   "Modals.058": "⬢⬢⬢⬢⬢⬢⬢⬢",
   "Modals.059": "País",
-  "Modals.060": "Chile",
+  "Modals.060": "Selecione o país...",
   "Modals.061": "Setor da Economia",
   "Modals.062": "Selecione o setor...",
   "Modals.063": "Setor Privado",
@@ -11374,8 +11456,12 @@ export const ptMessages = {
   "SelfDiagnosticSection.009": "Tipo de conta",
   "SelfDiagnosticSection.010": "Usuário pessoal",
   "SelfDiagnosticSection.011": "Usuário da empresa",
-  "SelfDiagnosticSection.012": "Nome e sobrenome",
-  "SelfDiagnosticSection.013": "Ex. Ana Martínez",
+  "SelfDiagnosticSection.012": "Nome",
+  "SelfDiagnosticSection.012a": "Sobrenome",
+  "SelfDiagnosticSection.012b": "Nome da Empresa",
+  "SelfDiagnosticSection.013": "Ex. Ana",
+  "SelfDiagnosticSection.013a": "Ex. Martínez",
+  "SelfDiagnosticSection.013b": "Ex. Tech Solutions",
   "SelfDiagnosticSection.014": "E-mail",
   "SelfDiagnosticSection.015": "nome@mail.com",
   "SelfDiagnosticSection.016": "Nome de usuário",
@@ -11383,7 +11469,7 @@ export const ptMessages = {
   "SelfDiagnosticSection.018": "Senha (mín. 6 caracteres)",
   "SelfDiagnosticSection.019": "⬢⬢⬢⬢⬢⬢⬢⬢",
   "SelfDiagnosticSection.020": "País",
-  "SelfDiagnosticSection.021": "Chile",
+  "SelfDiagnosticSection.021": "Selecione o país...",
   "SelfDiagnosticSection.022": "Setor da Economia",
   "SelfDiagnosticSection.023": "Selecione um setor...",
   "SelfDiagnosticSection.024": "Setor Privado",
