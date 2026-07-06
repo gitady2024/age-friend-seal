@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    Estructura Navbar
    ========================================================================== */
 
@@ -130,25 +130,28 @@
     }
 
     .nav-links {
-        position: absolute;
-        top: 100%; /* Justo debajo del navbar */
+        position: fixed;
+        top: 74px; /* Justo debajo del navbar */
         left: 0;
         width: 100%;
-        background: rgba(11, 15, 25, 0.95);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
+        height: calc(100vh - 74px);
+        background: rgba(11, 15, 25, 0.98);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         flex-direction: column;
         align-items: center;
-        padding: 32px 24px;
-        gap: 20px;
+        padding: 40px 24px 80px; /* Suficiente espacio en la base para evitar el widget de accesibilidad */
+        gap: 24px;
         border-bottom: 1px solid var(--border-color);
         box-shadow: var(--shadow-premium);
+        overflow-y: auto; /* Permite scroll vertical interno si se desborda en pantallas pequeñas */
+        -webkit-overflow-scrolling: touch;
         
         /* Oculto inicialmente con animación */
         opacity: 0;
         visibility: hidden;
-        transform: translateY(-20px);
-        transition: var(--transition-smooth);
+        transform: translateY(-10px);
+        transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
     }
 
     /* Clase que se activa con JS para mostrar el menú */
@@ -160,17 +163,90 @@
     
     /* Adaptar botones y enlaces para que ocupen todo el ancho en el móvil */
     .nav-links a {
-        font-size: 1.1rem; /* Texto un poco más grande en móvil para facilitar el tap */
+        font-size: 1.15rem; /* Texto un poco más grande y claro en móvil */
         width: 100%;
         text-align: center;
+        font-weight: 600;
+        color: var(--text-primary);
     }
 
     .nav-links .btn, 
-    .nav-links .lang-switch-btn {
+    .nav-links .lang-switch-btn,
+    .nav-links .nav-auth-link {
         width: 100%;
         justify-content: center;
         height: 48px; /* Botones más altos (área táctil) */
+        font-size: 1.05rem;
     }
+
+    /* Selector de idioma para móvil */
+    .mobile-only-lang {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        margin-top: 10px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .mobile-only-lang .lang-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .mobile-only-lang .lang-buttons-row {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        width: 100%;
+        max-width: 320px;
+    }
+
+    .mobile-only-lang .lang-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 10px 16px;
+        color: var(--text-secondary);
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+        flex: 1;
+        outline: none;
+    }
+
+    .mobile-only-lang .lang-btn:hover,
+    .mobile-only-lang .lang-btn.active {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--accent-blue);
+        color: var(--text-primary);
+        box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
+    }
+
+    .mobile-only-lang .flag-icon {
+        width: 20px;
+        height: 14px;
+        border-radius: 2px;
+        object-fit: cover;
+    }
+}
+
+/* Ocultar/mostrar selectores según el dispositivo */
+.desktop-only-lang {
+    display: inline-flex;
+}
+.mobile-only-lang {
+    display: none;
 }
 
 /* ==========================================================================

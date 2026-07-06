@@ -83,7 +83,8 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
             {currentUser && currentUser.email ? (language === 'es' ? 'Mi Cuenta' : (language === 'pt' ? 'Minha Conta' : 'My Account')) : intl.formatMessage({ id: 'nav.access' })}
           </button>
 
-          <div className={`nav-dropdown ${langDropdownOpen ? 'active' : ''}`} ref={langDropdownRef} style={{ marginLeft: '10px' }}>
+          {/* Selector de idioma para Escritorio */}
+          <div className={`nav-dropdown desktop-only-lang ${langDropdownOpen ? 'active' : ''}`} ref={langDropdownRef} style={{ marginLeft: '10px' }}>
             <a href="#" className="nav-dropdown-toggle lang-switch-btn" onClick={(e) => { e.preventDefault(); setLangDropdownOpen(!langDropdownOpen); }} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               {language === 'es' ? (
                 <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2">
@@ -133,6 +134,50 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
                   <circle cx="300" cy="200" r="100" fill="#003399"/>
                 </svg>
                 Português
+              </button>
+            </div>
+          </div>
+
+          {/* Selector de idioma para Móvil */}
+          <div className="mobile-only-lang">
+            <span className="lang-label">{language === 'es' ? 'Idioma' : language === 'pt' ? 'Idioma' : 'Language'}</span>
+            <div className="lang-buttons-row">
+              <button 
+                type="button" 
+                className={`lang-btn ${language === 'es' ? 'active' : ''}`} 
+                onClick={() => { onLanguageChange('es'); closeMenu(); }}
+              >
+                <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2" style={{ margin: 0 }}>
+                  <rect width="3" height="2" fill="#c60b1e" />
+                  <rect width="3" height="1" y="0.5" fill="#ffc400" />
+                </svg>
+                <span>ES</span>
+              </button>
+              <button 
+                type="button" 
+                className={`lang-btn ${language === 'en' ? 'active' : ''}`} 
+                onClick={() => { onLanguageChange('en'); closeMenu(); }}
+              >
+                <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" style={{ margin: 0 }}>
+                  <rect width="60" height="30" fill="#012169" />
+                  <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6" />
+                  <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" strokeWidth="2" />
+                  <path d="M30,0 V30 M0,15 H60" stroke="#fff" strokeWidth="10" />
+                  <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" strokeWidth="6" />
+                </svg>
+                <span>EN</span>
+              </button>
+              <button 
+                type="button" 
+                className={`lang-btn ${language === 'pt' ? 'active' : ''}`} 
+                onClick={() => { onLanguageChange('pt'); closeMenu(); }}
+              >
+                <svg className="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" style={{ margin: 0 }}>
+                  <rect width="600" height="400" fill="#006600"/>
+                  <polygon points="300,50 550,200 300,350 50,200" fill="#FFCC00"/>
+                  <circle cx="300" cy="200" r="100" fill="#003399"/>
+                </svg>
+                <span>PT</span>
               </button>
             </div>
           </div>
