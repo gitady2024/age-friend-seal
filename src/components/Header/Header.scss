@@ -123,8 +123,30 @@
     transform: translateY(-9px) rotate(-45deg);
 }
 
+/* Ocultar/mostrar selectores según el dispositivo */
+.desktop-only-lang {
+    display: inline-flex;
+}
+.mobile-only-lang {
+    display: none;
+}
+
 /* Ocultar menú normal y mostrar hamburguesa en pantallas menores a 992px */
 @media (max-width: 992px) {
+    .desktop-only-lang {
+        display: none !important;
+    }
+    .mobile-only-lang {
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        margin-top: 10px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
     .menu-toggle {
         display: flex;
     }
@@ -168,6 +190,12 @@
         text-align: center;
         font-weight: 600;
         color: var(--text-primary);
+    }
+
+    .nav-dropdown-toggle {
+        justify-content: center;
+        width: 100%;
+        gap: 8px;
     }
 
     .nav-links .btn, 
@@ -250,13 +278,7 @@
     }
 }
 
-/* Ocultar/mostrar selectores según el dispositivo */
-.desktop-only-lang {
-    display: inline-flex;
-}
-.mobile-only-lang {
-    display: none;
-}
+
 
 /* ==========================================================================
    Mejoras de Limpieza Visual en Navbar

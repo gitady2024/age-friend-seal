@@ -2134,8 +2134,30 @@ export default Header;
     transform: translateY(-9px) rotate(-45deg);
 }
 
+/* Ocultar/mostrar selectores según el dispositivo */
+.desktop-only-lang {
+    display: inline-flex;
+}
+.mobile-only-lang {
+    display: none;
+}
+
 /* Ocultar menú normal y mostrar hamburguesa en pantallas menores a 992px */
 @media (max-width: 992px) {
+    .desktop-only-lang {
+        display: none !important;
+    }
+    .mobile-only-lang {
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        margin-top: 10px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
     .menu-toggle {
         display: flex;
     }
@@ -2179,6 +2201,12 @@ export default Header;
         text-align: center;
         font-weight: 600;
         color: var(--text-primary);
+    }
+
+    .nav-dropdown-toggle {
+        justify-content: center;
+        width: 100%;
+        gap: 8px;
     }
 
     .nav-links .btn, 
@@ -2261,13 +2289,7 @@ export default Header;
     }
 }
 
-/* Ocultar/mostrar selectores según el dispositivo */
-.desktop-only-lang {
-    display: inline-flex;
-}
-.mobile-only-lang {
-    display: none;
-}
+
 
 /* ==========================================================================
    Mejoras de Limpieza Visual en Navbar
@@ -4474,9 +4496,6 @@ export default Modals;
 }
 
 @media (max-width: 768px) {
-    .nav-links {
-        display: none; /* Simplificado para MVP */
-    }
     
     .hero-visual {
         flex-direction: column;
@@ -11694,7 +11713,7 @@ createRoot(document.getElementById('root')).render(
 // FILE: src/styles/base.scss
 // ==========================================
 
-﻿/* ==========================================================================
+/* ==========================================================================
    Estilos Generales & Variables (Diseño Premium & Accesibilidad)
    ========================================================================== */
 
@@ -11735,6 +11754,11 @@ createRoot(document.getElementById('root')).render(
     box-sizing: border-box;
 }
 
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
 html {
     scroll-behavior: smooth;
     font-size: 16px; /* Base accesible */
@@ -11746,7 +11770,11 @@ body {
     font-family: var(--font-body);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+}
+
+img, svg, video, canvas, iframe {
+    max-width: 100%;
+    height: auto;
 }
 
 .container {
@@ -12431,6 +12459,22 @@ p {
     
     .stats-info {
         align-items: center;
+    }
+}
+
+/* Ajustes tipográficos y de desbordamiento para pantallas muy estrechas (< 480px) */
+@media (max-width: 480px) {
+    h1, .hero-content h1 {
+        font-size: clamp(1.8rem, 8vw, 2.2rem) !important;
+        line-height: 1.2 !important;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    h2 {
+        font-size: clamp(1.4rem, 6vw, 1.8rem) !important;
+        line-height: 1.25 !important;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
 }
 

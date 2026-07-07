@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    Estilos Generales & Variables (Diseño Premium & Accesibilidad)
    ========================================================================== */
 
@@ -39,6 +39,11 @@
     box-sizing: border-box;
 }
 
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
 html {
     scroll-behavior: smooth;
     font-size: 16px; /* Base accesible */
@@ -50,7 +55,11 @@ body {
     font-family: var(--font-body);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+}
+
+img, svg, video, canvas, iframe {
+    max-width: 100%;
+    height: auto;
 }
 
 .container {
