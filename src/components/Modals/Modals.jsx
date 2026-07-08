@@ -18,7 +18,9 @@ import {
   getAllUsers,
   getCompanyDeliverables,
   saveCompanyDeliverable,
-  recoverUserPassword
+  recoverUserPassword,
+  getQuestionsList,
+  updateQuestionInDb
 } from "../../utils/firebaseHelpers.js";
 
 function Modals({ language, activeModal, contactLevel, currentUser, latestDiagnostic, onClose, onOpenAuth, onOpenAccount, onUserChange }) {
@@ -51,6 +53,10 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const [sourceFilter, setSourceFilter] = useState('All');
   const [automationLevel, setAutomationLevel] = useState(0);
   const [flaggedQuestions, setFlaggedQuestions] = useState({}); // e.g. { q7: true, q3: true }
+
+  const [adminQuestions, setAdminQuestions] = useState([]);
+  const [adminSectorFilter, setAdminSectorFilter] = useState('private');
+  const [adminVerticalFilter, setAdminVerticalFilter] = useState('Finanzas y Seguro');
 
   // Load legal alerts and admin config
   useEffect(() => {
@@ -118,6 +124,12 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       if (cachedAuto) {
         setAutomationLevel(parseInt(cachedAuto));
       }
+
+      const loadQuestionsFromDb = async () => {
+        const list = await getQuestionsList();
+        setAdminQuestions(list);
+      };
+      loadQuestionsFromDb();
     }
   }, [activeTab]);
 
@@ -127,6 +139,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       const res = await fetch(`/api/legal-scraper?source=${sourceFilter}`);
       const data = await res.json();
       if (data.status === "success" && data.alerts) {
+        // 1. Guardar alertas en el historial local
         setLegalAlerts(prev => {
           const merged = [...prev];
           data.alerts.forEach(newAlert => {
@@ -137,7 +150,70 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
           localStorage.setItem("ageFriendLegalAlerts", JSON.stringify(merged));
           return merged;
         });
-        alert(language === 'es' ? `Escaneo completado. Se encontraron ${data.alerts.length} nuevas alertas normativas.` : `Scan completed. Found ${data.alerts.length} new regulatory alerts.`);
+
+        // 2. Procesar las preguntas afectadas en base de datos
+        if (automationLevel === 100) {
+          // Autonomía total: Actualizar directamente los textos e idioma
+          for (const newAlert of data.alerts) {
+            const pilar = newAlert.pilarImpacted;
+            const targetSector = newAlert.targetSector || "both";
+            const targetVerticals = newAlert.targetVerticals || ["All"];
+
+            const matches = adminQuestions.filter(q => {
+              const matchPilar = q.pilar === pilar;
+              const matchSector = targetSector === 'both' || q.sector === targetSector;
+              const matchVertical = targetVerticals.includes('All') || 
+                q.applicable_verticals.some(v => targetVerticals.includes(v));
+              return matchPilar && matchSector && matchVertical;
+            });
+
+            for (const match of matches) {
+              const updated = {
+                ...match,
+                text_es: newAlert.newQuestionText_es || match.text_es,
+                text_en: newAlert.newQuestionText_en || match.text_en,
+                text_pt: newAlert.newQuestionText_pt || match.text_pt,
+                status: 'active',
+                flaggedAlerts: []
+              };
+              await updateQuestionInDb(match.id, updated);
+            }
+          }
+          alert(language === 'es' 
+            ? `Escaneo completado. Las normativas detectadas fueron inyectadas autónomamente al cuestionario (Automatización 100%).` 
+            : `Scan completed. Detected regulations were autonomously injected into the questionnaire (100% Automation).`);
+        } else {
+          // Semi-automático / Manual: Marcar preguntas para revisión sugiriendo cambios
+          for (const newAlert of data.alerts) {
+            const pilar = newAlert.pilarImpacted;
+            const targetSector = newAlert.targetSector || "both";
+            const targetVerticals = newAlert.targetVerticals || ["All"];
+
+            const matches = adminQuestions.filter(q => {
+              const matchPilar = q.pilar === pilar;
+              const matchSector = targetSector === 'both' || q.sector === targetSector;
+              const matchVertical = targetVerticals.includes('All') || 
+                q.applicable_verticals.some(v => targetVerticals.includes(v));
+              return matchPilar && matchSector && matchVertical;
+            });
+
+            for (const match of matches) {
+              const currentFlags = match.flaggedAlerts || [];
+              if (!currentFlags.includes(newAlert.id)) {
+                currentFlags.push(newAlert.id);
+              }
+              await updateQuestionInDb(match.id, {
+                status: 'under_review',
+                flaggedAlerts: currentFlags
+              });
+            }
+          }
+          alert(language === 'es' ? `Escaneo completado. Se encontraron ${data.alerts.length} nuevas alertas normativas.` : `Scan completed. Found ${data.alerts.length} new regulatory alerts.`);
+        }
+
+        // Recargar preguntas del estado local
+        const list = await getQuestionsList();
+        setAdminQuestions(list);
       } else {
         alert("Error: " + (data.message || "Failed to scan"));
       }
@@ -176,21 +252,44 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     }
   };
 
-  const approveAlert = (alertId, pilarImpacted) => {
+  const approveAlert = async (alertId, pilarImpacted) => {
+    // 1. Aprobar alerta en el historial
     setLegalAlerts(prev => {
       const updated = prev.map(a => a.id === alertId ? { ...a, status: 'approved' } : a);
       localStorage.setItem("ageFriendLegalAlerts", JSON.stringify(updated));
       return updated;
     });
-    setFlaggedQuestions(prev => {
-      const updated = { ...prev };
-      const qStart = (pilarImpacted - 1) * 3 + 1;
-      updated[`q${qStart}`] = true;
-      updated[`q${qStart + 1}`] = true;
-      updated[`q${qStart + 2}`] = true;
-      localStorage.setItem("ageFriendFlaggedQuestions", JSON.stringify(updated));
-      return updated;
-    });
+
+    const alertObj = legalAlerts.find(a => a.id === alertId);
+    if (alertObj) {
+      const targetSector = alertObj.targetSector || "both";
+      const targetVerticals = alertObj.targetVerticals || ["All"];
+
+      // 2. Modificar y activar las preguntas vinculadas a este pilar, sector y verticales
+      const matches = adminQuestions.filter(q => {
+        const matchPilar = q.pilar === pilarImpacted;
+        const matchSector = targetSector === 'both' || q.sector === targetSector;
+        const matchVertical = targetVerticals.includes('All') || 
+          q.applicable_verticals.some(v => targetVerticals.includes(v));
+        return matchPilar && matchSector && matchVertical;
+      });
+
+      for (const match of matches) {
+        const updated = {
+          ...match,
+          text_es: alertObj.newQuestionText_es || match.text_es,
+          text_en: alertObj.newQuestionText_en || match.text_en,
+          text_pt: alertObj.newQuestionText_pt || match.text_pt,
+          status: 'active',
+          flaggedAlerts: (match.flaggedAlerts || []).filter(id => id !== alertId)
+        };
+        await updateQuestionInDb(match.id, updated);
+      }
+
+      // Recargar lista
+      const list = await getQuestionsList();
+      setAdminQuestions(list);
+    }
   };
 
   const ignoreAlert = (alertId) => {
@@ -201,13 +300,14 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     });
   };
 
-  const resolveQuestionFlag = (qId) => {
-    setFlaggedQuestions(prev => {
-      const updated = { ...prev };
-      delete updated[qId];
-      localStorage.setItem("ageFriendFlaggedQuestions", JSON.stringify(updated));
-      return updated;
+  const resolveQuestionFlag = async (qId) => {
+    await updateQuestionInDb(qId, {
+      status: 'active',
+      flaggedAlerts: []
     });
+    // Recargar lista
+    const list = await getQuestionsList();
+    setAdminQuestions(list);
   };
 
   const handleAutomationChange = (val) => {
@@ -1730,45 +1830,121 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
 
                 {/* Audit Checklist for 15 Questions */}
                 <div style={{ marginTop: '20px', background: 'rgba(15, 23, 42, 0.2)', padding: '15px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                  <h5 style={{ margin: '0 0 10px 0', fontSize: '0.9rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    ⚠️ {language === 'es' ? 'Estado del Cuestionario de Autodiagnóstico' : 'Self-Diagnostic Questionnaire Status'}
+                  <h5 style={{ margin: '0 0 15px 0', fontSize: '0.95rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>⚙️ {language === 'es' ? 'Status del Cuestionario de Autodiagnóstico' : 'Self-Diagnostic Questionnaire Status'}</span>
                   </h5>
-                  
+
+                  {/* Tabs Selector for Sector */}
+                  <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>
+                    <button 
+                      type="button" 
+                      onClick={() => setAdminSectorFilter('private')}
+                      className={`btn ${adminSectorFilter === 'private' ? 'btn-gradient' : 'btn-outline'}`}
+                      style={{ padding: '6px 12px', fontSize: '0.8rem', margin: 0 }}
+                    >
+                      🏢 {language === 'es' ? 'Sector Privado' : 'Private Sector'}
+                    </button>
+                    <button 
+                      type="button" 
+                      onClick={() => setAdminSectorFilter('public')}
+                      className={`btn ${adminSectorFilter === 'public' ? 'btn-gradient' : 'btn-outline'}`}
+                      style={{ padding: '6px 12px', fontSize: '0.8rem', margin: 0 }}
+                    >
+                      🏛️ {language === 'es' ? 'Sector Público' : 'Public Sector'}
+                    </button>
+                  </div>
+
+                  {/* Vertical Dropdown Selector (Private Only) */}
+                  {adminSectorFilter === 'private' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginBottom: '15px' }}>
+                      <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                        {language === 'es' ? 'Vertical de Industria (9 oficiales):' : 'Industry Vertical (9 official):'}
+                      </label>
+                      <select
+                        value={adminVerticalFilter}
+                        onChange={(e) => setAdminVerticalFilter(e.target.value)}
+                        style={{ padding: '8px', borderRadius: '6px', background: 'var(--bg-main)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', maxWidth: '300px' }}
+                      >
+                        <option value="Finanzas y Seguro">Finanzas y Seguros</option>
+                        <option value="Salud y Farmacia">Salud, Farmacia y Sociosanitario</option>
+                        <option value="Tecnologia e Software">Tecnología y Software (AgeTech)</option>
+                        <option value="Comercio y Distribución">Comercio y Distribución (Retail)</option>
+                        <option value="Manufactura e Industria">Manufactura e Industria</option>
+                        <option value="Educación">Educación y Formación Continua</option>
+                        <option value="Energía y Recursos Naturales">Energía, Agua y Servicios Básicos</option>
+                        <option value="Entretenimiento, Medios y Turismo">Ocio, Entretenimiento, Medios y Turismo Silver</option>
+                        <option value="Bienes Raíces, Urbanismo y Vivienda (Senior Living)">Bienes Raíces, Urbanismo y Vivienda (Senior Living)</option>
+                      </select>
+                    </div>
+                  )}
+
+                  {/* Questions Grid */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {[...Array(15)].map((_, i) => {
-                      const qId = `q${i + 1}`;
-                      const isFlagged = !!flaggedQuestions[qId];
-                      return (
-                        <div key={qId} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.15)', padding: '8px 12px', borderRadius: '6px', fontSize: '0.8rem' }}>
-                          <span>
-                            <strong>Q{i + 1}:</strong> {
-                              language === 'es' 
-                                ? `Pregunta del Pilar ${Math.min(5, Math.floor(i / 3) + 1)}` 
-                                : `Question under Pillar ${Math.min(5, Math.floor(i / 3) + 1)}`
-                            }
-                          </span>
-                          
-                          {isFlagged ? (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                              <span style={{ color: '#fbbf24', fontWeight: 600, fontSize: '0.75rem', background: 'rgba(251, 191, 36, 0.1)', padding: '2px 8px', borderRadius: '4px' }}>
-                                ⚠️ {language === 'es' ? 'Revisión Sugerida' : 'Review Suggested'}
-                              </span>
-                              <button 
-                                className="btn btn-outline" 
-                                onClick={() => resolveQuestionFlag(qId)}
-                                style={{ padding: '2px 6px', fontSize: '0.7rem', margin: 0 }}
-                              >
-                                {language === 'es' ? 'Resolver' : 'Resolve'}
-                              </button>
+                    {(() => {
+                      const filtered = adminQuestions.filter(q => {
+                        if (adminSectorFilter === 'public') {
+                          return q.applicable_verticals.includes('PÚBLICO');
+                        } else {
+                          return q.applicable_verticals.includes(adminVerticalFilter);
+                        }
+                      });
+
+                      if (filtered.length === 0) {
+                        return (
+                          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center', padding: '10px' }}>
+                            {language === 'es' ? 'No se encontraron preguntas en la base de datos para esta combinación. Ejecute un escaneo o inicialice.' : 'No questions found in the database. Run a scan or initialize.'}
+                          </p>
+                        );
+                      }
+
+                      return filtered.map((q, idx) => {
+                        const isFlagged = q.status === 'under_review';
+                        const questionText = language === 'es' ? q.text_es : language === 'pt' ? q.text_pt : q.text_en;
+                        
+                        return (
+                          <div 
+                            key={q.id} 
+                            style={{ 
+                              background: 'rgba(0,0,0,0.15)', 
+                              padding: '12px', 
+                              borderRadius: '6px', 
+                              fontSize: '0.8rem',
+                              borderLeft: isFlagged ? '3px solid #fbbf24' : '3px solid #10b981'
+                            }}
+                          >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '15px' }}>
+                              <div style={{ flex: 1 }}>
+                                <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>Q{idx + 1}:</span> {questionText}
+                                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                                  Pilar: {q.pilar} | ID: {q.id}
+                                </div>
+                              </div>
+
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+                                {isFlagged ? (
+                                  <>
+                                    <span style={{ color: '#fbbf24', fontWeight: 600, fontSize: '0.75rem', background: 'rgba(251, 191, 36, 0.1)', padding: '2px 8px', borderRadius: '4px', whiteSpace: 'nowrap' }}>
+                                      ⚠️ {language === 'es' ? 'Revisión Sugerida' : 'Review Suggested'}
+                                    </span>
+                                    <button 
+                                      className="btn btn-outline" 
+                                      onClick={() => resolveQuestionFlag(q.id)}
+                                      style={{ padding: '2px 8px', fontSize: '0.7rem', margin: 0, whiteSpace: 'nowrap' }}
+                                    >
+                                      {language === 'es' ? 'Aprobar' : 'Approve'}
+                                    </button>
+                                  </>
+                                ) : (
+                                  <span style={{ color: '#10B981', fontWeight: 600, fontSize: '0.75rem', background: 'rgba(16, 185, 129, 0.1)', padding: '2px 8px', borderRadius: '4px', whiteSpace: 'nowrap' }}>
+                                    🟢 {language === 'es' ? 'Activa y Vigente' : 'Active & Compliant'}
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                          ) : (
-                            <span style={{ color: '#10B981', fontWeight: 600, fontSize: '0.75rem', background: 'rgba(16, 185, 129, 0.1)', padding: '2px 8px', borderRadius: '4px' }}>
-                              🟢 {language === 'es' ? 'Activa y Vigente' : 'Active & Compliant'}
-                            </span>
-                          )}
-                        </div>
-                      );
-                    })}
+                          </div>
+                        );
+                      });
+                    })()}
                   </div>
                 </div>
               </div>

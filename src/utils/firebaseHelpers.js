@@ -21,6 +21,8 @@ import {
   updateDoc
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { questions as defaultQuestions } from "../data/diagnostic.js";
+import { QUESTIONS_BY_SECTOR } from "../data/questionsBySector.js";
 
 // Helper to determine if Firebase is fully operational
 export const isFirebaseEnabled = () => {
@@ -389,4 +391,143 @@ export const recoverUserPassword = async (email) => {
     console.error("Error sending password reset email:", error);
     throw error;
   }
+};
+
+// Initialize Questions Database (Seeding)
+export const initializeQuestionsDatabase = async () => {
+  const isInitialized = localStorage.getItem("ageFriendQuestionsInitialized");
+  if (isInitialized) return;
+
+  const allQuestions = [];
+
+  // 1. Add general/default questions
+  defaultQuestions.forEach((q, idx) => {
+    allQuestions.push({
+      id: `general_q${idx + 1}`,
+      pilar: q.pilar || Math.min(5, Math.floor(idx / 3) + 1),
+      sector: 'both',
+      applicable_verticals: ['All'],
+      text_es: q.text?.es || q.text || "",
+      text_en: q.text?.en || q.text || "",
+      text_pt: q.text?.pt || q.text || "",
+      options: (q.options || []).map(o => ({
+        score: o.score,
+        text_es: o.text?.es || o.text || "",
+        text_en: o.text?.en || o.text || "",
+        text_pt: o.text?.pt || o.text || ""
+      })),
+      recommendation_es: q.recommendation?.es || "",
+      recommendation_en: q.recommendation?.en || "",
+      recommendation_pt: q.recommendation?.pt || "",
+      status: 'active',
+      flaggedAlerts: []
+    });
+  });
+
+  // 2. Add sector specific questions (including PÚBLICO)
+  for (const vertical in QUESTIONS_BY_SECTOR) {
+    const list = QUESTIONS_BY_SECTOR[vertical];
+    const isPublic = vertical === "PÚBLICO";
+    const sectorVal = isPublic ? 'public' : 'private';
+    const cleanVerticalName = isPublic ? 'PÚBLICO' : vertical;
+
+    list.forEach((q, idx) => {
+      const qId = isPublic 
+        ? `public_q${idx + 1}` 
+        : `private_${cleanVerticalName.toLowerCase().replace(/[^a-z0-9]/g, "_")}_q${idx + 1}`;
+
+      allQuestions.push({
+        id: qId,
+        pilar: Math.min(5, Math.floor(idx / 3) + 1),
+        sector: sectorVal,
+        applicable_verticals: [cleanVerticalName],
+        text_es: q.question || "",
+        text_en: q.question || "",
+        text_pt: q.question || "",
+        options: (q.options || []).map(o => ({
+          score: o.score,
+          text_es: o.text || "",
+          text_en: o.text || "",
+          text_pt: o.text || ""
+        })),
+        recommendation_es: q.recommendation || "",
+        recommendation_en: q.recommendation || "",
+        recommendation_pt: q.recommendation || "",
+        status: 'active',
+        flaggedAlerts: []
+      });
+    });
+  }
+
+  // Escribir a Firestore si está operativo
+  if (isFirebaseEnabled()) {
+    try {
+      for (const qDoc of allQuestions) {
+        await setDoc(doc(db, "questions", qDoc.id), qDoc);
+      }
+    } catch (e) {
+      console.error("Firestore questions seed failed:", e);
+    }
+  }
+
+  // Guardar en LocalStorage cache
+  localStorage.setItem("ageFriendQuestions", JSON.stringify(allQuestions));
+  localStorage.setItem("ageFriendQuestionsInitialized", "true");
+};
+
+// Obtener todas las preguntas
+export const getQuestionsList = async () => {
+  await initializeQuestionsDatabase();
+  if (isFirebaseEnabled()) {
+    try {
+      const querySnapshot = await getDocs(collection(db, "questions"));
+      if (!querySnapshot.empty) {
+        return querySnapshot.docs.map(doc => doc.data());
+      }
+    } catch (e) {
+      console.error("Firestore getQuestionsList failed:", e);
+    }
+  }
+  const cached = localStorage.getItem("ageFriendQuestions");
+  return cached ? JSON.parse(cached) : [];
+};
+
+// Actualizar una pregunta específica
+export const updateQuestionInDb = async (qId, updatedData) => {
+  if (isFirebaseEnabled()) {
+    try {
+      const qRef = doc(db, "questions", qId);
+      await setDoc(qRef, updatedData, { merge: true });
+    } catch (e) {
+      console.error("Firestore updateQuestionInDb failed:", e);
+    }
+  }
+  
+  // Actualizar LocalStorage cache
+  const cached = localStorage.getItem("ageFriendQuestions");
+  if (cached) {
+    const list = JSON.parse(cached);
+    const updatedList = list.map(q => q.id === qId ? { ...q, ...updatedData } : q);
+    localStorage.setItem("ageFriendQuestions", JSON.stringify(updatedList));
+  }
+};
+
+// Obtener preguntas filtradas para el cliente
+export const getQuestionsForClient = async (sector, vertical) => {
+  await initializeQuestionsDatabase();
+  const allQuestions = await getQuestionsList();
+  
+  if (sector === 'publico' || sector === 'public') {
+    // 15 preguntas públicas
+    return allQuestions.filter(q => q.sector === 'public' || q.applicable_verticals.includes('PÚBLICO'));
+  }
+  
+  if (sector === 'privado' || sector === 'private') {
+    const cleanVertical = vertical || 'Comercio y Distribución';
+    // 15 preguntas privadas del vertical seleccionado
+    return allQuestions.filter(q => q.applicable_verticals.includes(cleanVertical));
+  }
+  
+  // Fallback a general
+  return allQuestions.filter(q => q.sector === 'both');
 };

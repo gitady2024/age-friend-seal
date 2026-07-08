@@ -150,6 +150,11 @@ export default async function handler(req, res) {
           pilarImpacted: llmResult.pilarImpacted,
           recommendedChange: llmResult.recommendedChange,
           summary: llmResult.summary,
+          targetSector: llmResult.targetSector,
+          targetVerticals: llmResult.targetVerticals,
+          newQuestionText_es: llmResult.newQuestionText_es,
+          newQuestionText_en: llmResult.newQuestionText_en,
+          newQuestionText_pt: llmResult.newQuestionText_pt,
           status: "pending"
         });
       }
@@ -268,7 +273,12 @@ async function evaluateRelevanceWithLLM(title, description) {
             relevanceScore: parseFloat(parsed.relevanceScore || "0.0"),
             pilarImpacted: parseInt(parsed.pilarImpacted || "1"),
             recommendedChange: parsed.recommendedChange || "",
-            summary: parsed.summary || ""
+            summary: parsed.summary || "",
+            targetSector: parsed.targetSector || "both",
+            targetVerticals: parsed.targetVerticals || ["All"],
+            newQuestionText_es: parsed.newQuestionText_es || "",
+            newQuestionText_en: parsed.newQuestionText_en || "",
+            newQuestionText_pt: parsed.newQuestionText_pt || ""
           };
         }
       }
@@ -284,18 +294,24 @@ async function evaluateRelevanceWithLLM(title, description) {
 function getSystemPrompt() {
   return `Eres un analista jurídico experto en la 'Silver Economy' y normativas laborales globales. Tu tarea es analizar el siguiente texto legislativo o resolución y determinar su impacto en las políticas corporativas para trabajadores mayores de 50 años.
 
-Evalúa el texto basándote ÚNICAMENTE en estos 4 pilares:
-1. Contratación y no discriminación por edad.
-2. Adaptación ergonómica y seguridad del puesto de trabajo.
-3. Transición al retiro (jubilación flexible, reducción de jornada).
-4. Fomento de la Silver Economy / Incentivos fiscales.
+Evalúa el texto basándote ÚNICAMENTE en estos 5 pilares de inclusión y amigabilidad:
+1. Accesibilidad física y adecuación de espacios de trabajo.
+2. Trato respetuoso y atención al cliente senior.
+3. Inclusión y comunicación digital (accesibilidad web y móvil).
+4. Salud laboral y prevención del desgaste por envejecimiento.
+5. Empleabilidad, mentoría generacional y transición al retiro.
 
 FORMATO DE SALIDA (JSON Estricto):
 {
   "relevanceScore": [Float entre 0.0 y 1.0. Asigna >0.6 SOLO si la ley exige o incentiva cambios directos en cómo una empresa trata a sus empleados o clientes mayores],
-  "pilarImpacted": [Número del pilar más afectado, del 1 al 4],
+  "pilarImpacted": [Número del pilar más afectado, del 1 al 5],
   "recommendedChange": [Cadena de texto: Instrucción breve y directa de cómo debería actualizarse un cuestionario de auditoría corporativa a raíz de esta ley],
-  "summary": [Breve resumen de 2 líneas de la obligación legal]
+  "summary": [Breve resumen de 2 líneas de la obligación legal],
+  "targetSector": ["public" | "private" | "both"],
+  "targetVerticals": [Array de strings con las categorías de industria del sector privado afectadas. Usa uno o varios de: ["Finanzas y Seguro", "Salud y Farmacia", "Tecnologia e Software", "Comercio y Distribución", "Manufactura e Industria", "Educación", "Energía y Recursos Naturales", "Entretenimiento, Medios y Turismo", "Bienes Raíces, Urbanismo y Vivienda (Senior Living)"]. Si aplica a todos, colocar ["All"]],
+  "newQuestionText_es": [Pregunta redactada directamente en tono de auditoría corporativa en Español],
+  "newQuestionText_en": [Pregunta en Inglés],
+  "newQuestionText_pt": [Pregunta en Portugués]
 }`;
 }
 
@@ -307,28 +323,63 @@ function simulateLLMEvaluation(title, description) {
   let pilarImpacted = 1;
   let recommendedChange = "Revisar los procesos de contratación inclusiva.";
   let summary = "Regulación general relacionada con trabajadores maduros.";
+  let targetSector = "both";
+  let targetVerticals = ["All"];
+  let newQuestionText_es = "¿Dispone la empresa de políticas para promover el empleo sénior?";
+  let newQuestionText_en = "Does the company have policies to promote senior employment?";
+  let newQuestionText_pt = "A empresa possui políticas para promover o emprego sênior?";
 
   if (combined.includes("ergonom") || combined.includes("seguridad") || combined.includes("espacios")) {
     relevanceScore = 0.85;
-    pilarImpacted = 2; // Ergonomía/Salud
+    pilarImpacted = 4; // Pilar 4: Eje Salud
     recommendedChange = "Recomendar auditoría ergonómica obligatoria en puestos de trabajo para operarios mayores de 50 años.";
     summary = "Actualización ergonómica y diseño de puestos saludables para personal senior.";
+    targetSector = "private";
+    targetVerticals = ["Manufactura e Industria", "Salud y Farmacia"];
+    newQuestionText_es = "¿Se realizan evaluaciones ergonómicas específicas para adaptar los puestos de trabajo al envejecimiento de los operarios?";
+    newQuestionText_en = "Are specific ergonomic assessments conducted to adapt workstations to aging operators?";
+    newQuestionText_pt = "São realizadas avaliações ergonômicas específicas para adaptar os postos de trabalho ao envelhecimento dos operadores?";
   } else if (combined.includes("discrimin") || combined.includes("adea") || combined.includes("contrata")) {
     relevanceScore = 0.90;
-    pilarImpacted = 1; // Contratación
+    pilarImpacted = 5; // Pilar 5: Empleabilidad y retiro
     recommendedChange = "Eliminar filtros automáticos de fecha de nacimiento o edad en los formularios digitales de reclutamiento.";
     summary = "Enmienda para la prohibición de filtros automáticos por edad en procesos de reclutamiento.";
+    targetSector = "both";
+    targetVerticals = ["All"];
+    newQuestionText_es = "¿Están libres de filtros automáticos de edad los formularios digitales y procesos de reclutamiento de la organización?";
+    newQuestionText_en = "Are the organization's digital forms and recruitment processes free from automatic age filters?";
+    newQuestionText_pt = "Os formulários digitais e processos de recrutamento da organização estão livres de filtros automáticos de idade?";
   } else if (combined.includes("retiro") || combined.includes("jubila") || combined.includes("jornada")) {
     relevanceScore = 0.78;
-    pilarImpacted = 3; // Retiro / Jubilación flexible
+    pilarImpacted = 5; // Pilar 5: Empleabilidad y retiro
     recommendedChange = "Agregar opciones de jubilación parcial flexible y reducción de jornada progresiva a partir de los 60 años.";
     summary = "Normativa de jubilación flexible y fomento de transición gradual al retiro laboral.";
+    targetSector = "private";
+    targetVerticals = ["Finanzas y Seguro", "Tecnologia e Software"];
+    newQuestionText_es = "¿Ofrece la empresa esquemas formales de jubilación gradual y programas de mentoría inversa antes del retiro?";
+    newQuestionText_en = "Does the company offer formal gradual retirement schemes and reverse mentoring programs prior to retirement?";
+    newQuestionText_pt = "A empresa oferece esquemas formais de aposentadoria gradual e programas de mentoria reversa antes da aposentadoria?";
   } else if (combined.includes("silver") || combined.includes("prateada") || combined.includes("incentivo")) {
     relevanceScore = 0.80;
-    pilarImpacted = 4; // Fomento Silver Economy
+    pilarImpacted = 2; // Pilar 2: Trato respetuoso
     recommendedChange = "Capacitar a los equipos de ventas en trato respetuoso, evitando sesgos paternalistas o edadistas.";
     summary = "Promoción de incentivos corporativos de fomento a la Silver Economy y consumo senior.";
+    targetSector = "private";
+    targetVerticals = ["Comercio y Distribución", "Entretenimiento, Medios y Turismo"];
+    newQuestionText_es = "¿Se capacita formalmente al personal en atención inclusiva y eliminación de sesgos edadistas hacia el cliente sénior?";
+    newQuestionText_en = "Is staff formally trained in inclusive service and the elimination of ageist biases toward senior customers?";
+    newQuestionText_pt = "A equipe é formalmente treinada em atendimento inclusivo e eliminação de preconceitos de idade em relação ao cliente sênior?";
   }
 
-  return { relevanceScore, pilarImpacted, recommendedChange, summary };
+  return { 
+    relevanceScore, 
+    pilarImpacted, 
+    recommendedChange, 
+    summary, 
+    targetSector, 
+    targetVerticals, 
+    newQuestionText_es, 
+    newQuestionText_en, 
+    newQuestionText_pt 
+  };
 }

@@ -4,7 +4,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { questions as defaultQuestions } from "../../data/diagnostic.js";
 import { QUESTIONS_BY_SECTOR } from "../../data/questionsBySector.js";
 import { downloadTextFile } from "../../utils/downloads.js";
-import { signUpUser } from "../../utils/firebaseHelpers.js";
+import { signUpUser, getQuestionsForClient } from "../../utils/firebaseHelpers.js";
 
 const pilarNames = [
   { es: "Pilar 1: Eje Laboral", en: "Pillar 1: Labor Axis", pt: "Pilar 1: Eixo Trabalhista" },
@@ -99,19 +99,41 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
   });
 
   useEffect(() => {
-    let newQuestions = defaultQuestions;
-    if (currentUser && currentUser.type === 'empresa') {
-      const sectorKey = mapSectorKey(currentUser.sector === 'publico' ? 'PÚBLICO' : currentUser.subsector);
-      newQuestions = QUESTIONS_BY_SECTOR[sectorKey] || defaultQuestions;
-    }
-    
-    if (newQuestions !== currentQuestions) {
-      setCurrentQuestions(newQuestions);
-      setStep(0);
-      setAnswers(Array(newQuestions.length).fill(null));
-      setShowResults(false);
-    }
-  }, [currentUser, currentQuestions]);
+    const loadQuestions = async () => {
+      let qList = [];
+      const userSector = currentUser?.sector || sectorType;
+      const userSubsector = currentUser?.subsector || (registrationForm.privateVertical || registrationForm.publicLevel);
+      
+      if (userSector) {
+        const isPub = userSector === 'publico' || userSector === 'public';
+        const sectorVal = isPub ? 'public' : 'private';
+        const verticalVal = isPub ? 'PÚBLICO' : mapSectorKey(userSubsector);
+        qList = await getQuestionsForClient(sectorVal, verticalVal);
+      } else {
+        qList = await getQuestionsForClient('both', 'All');
+      }
+
+      // Convertir formato base de datos al formato { es, en, pt } para mantener compatibilidad
+      const mappedList = qList.map(q => ({
+        id: q.id,
+        pilar: q.pilar,
+        text: { es: q.text_es, en: q.text_en, pt: q.text_pt },
+        options: (q.options || []).map(o => ({
+          score: o.score,
+          text: { es: o.text_es, en: o.text_en, pt: o.text_pt }
+        })),
+        recommendation: { es: q.recommendation_es, en: q.recommendation_en, pt: q.recommendation_pt }
+      }));
+
+      if (mappedList.length > 0) {
+        setCurrentQuestions(mappedList);
+        setAnswers(Array(mappedList.length).fill(null));
+        setStep(0);
+        setShowResults(false);
+      }
+    };
+    loadQuestions();
+  }, [currentUser, sectorType, registrationForm.privateVertical, registrationForm.publicLevel]);
 
   const question = currentQuestions[step];
   const progress = ((step + 1) / currentQuestions.length) * 100;
