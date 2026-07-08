@@ -17,7 +17,8 @@ import {
   uploadDeliverableZip,
   getAllUsers,
   getCompanyDeliverables,
-  saveCompanyDeliverable
+  saveCompanyDeliverable,
+  recoverUserPassword
 } from "../../utils/firebaseHelpers.js";
 
 function Modals({ language, activeModal, contactLevel, currentUser, latestDiagnostic, onClose, onOpenAuth, onOpenAccount, onUserChange }) {
@@ -459,6 +460,24 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     } catch (err) {
       console.error("Settings update error:", err);
       alert(language === 'es' ? `Error al guardar: ${err.message}` : `Error saving settings: ${err.message}`);
+    }
+  };
+
+  const handleForgotPasswordSubmit = async (event) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const email = form.get('email');
+    try {
+      await recoverUserPassword(email);
+      alert(language === 'es' 
+        ? 'Se han enviado las instrucciones de restablecimiento a su correo.' 
+        : language === 'pt' 
+          ? 'Instruções de redefinição enviadas para o seu e-mail.' 
+          : 'Reset instructions have been sent to your email.');
+      setAuthView('login');
+    } catch (err) {
+      console.error("Password recovery error:", err);
+      alert(language === 'es' ? `Error al enviar correo: ${err.message}` : `Error sending email: ${err.message}`);
     }
   };
 
@@ -911,10 +930,39 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                 <input type="text" id="login-email" name="email" required placeholder={intl.formatMessage({ id: "Modals.044" })} />
               </div>
               <div className="form-group">
-                <label htmlFor="login-password"><FormattedMessage id="Modals.045" /></label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label htmlFor="login-password" style={{ margin: 0 }}><FormattedMessage id="Modals.045" /></label>
+                  <button 
+                    type="button" 
+                    onClick={() => setAuthView('forgot')} 
+                    style={{ background: 'none', border: 'none', color: 'var(--accent-color)', fontSize: '0.8rem', cursor: 'pointer', padding: 0, fontWeight: 600 }}
+                  >
+                    {language === 'es' ? '¿Olvidó su contraseña?' : language === 'pt' ? 'Esqueceu a senha?' : 'Forgot password?'}
+                  </button>
+                </div>
                 <input type="password" id="login-password" name="password" required placeholder={intl.formatMessage({ id: "Modals.046" })} />
               </div>
               <button type="submit" className="btn btn-gradient btn-block" style={{ marginTop: 12 }}><FormattedMessage id="Modals.047" /></button>
+            </form>
+          ) : authView === 'forgot' ? (
+            <form id="form-forgot" className="modal-form" style={{ textAlign: 'left', marginTop: 20 }} onSubmit={handleForgotPasswordSubmit}>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '15px', lineHeight: '1.4' }}>
+                {language === 'es' 
+                  ? 'Ingrese su correo electrónico y le enviaremos las instrucciones para restablecer su contraseña.' 
+                  : language === 'pt' 
+                    ? 'Insira seu e-mail e enviaremos as instruções para redefinir sua senha.' 
+                    : 'Enter your email and we will send you instructions to reset your password.'}
+              </p>
+              <div className="form-group">
+                <label htmlFor="forgot-email"><FormattedMessage id="Modals.043" /></label>
+                <input type="email" id="forgot-email" name="email" required placeholder={intl.formatMessage({ id: "Modals.044" })} />
+              </div>
+              <button type="submit" className="btn btn-gradient btn-block" style={{ marginTop: 12 }}>
+                {language === 'es' ? 'Enviar correo de recuperación' : language === 'pt' ? 'Enviar e-mail de recuperação' : 'Send recovery email'}
+              </button>
+              <button type="button" className="btn btn-outline btn-block" style={{ marginTop: 8 }} onClick={() => setAuthView('login')}>
+                {language === 'es' ? 'Volver al inicio de sesión' : language === 'pt' ? 'Voltar ao login' : 'Back to login'}
+              </button>
             </form>
           ) : (
             <form id="form-register" className="modal-form" style={{ textAlign: 'left', marginTop: 20 }} onSubmit={handleAuthSubmit}>

@@ -4,7 +4,8 @@ import {
   signInWithEmailAndPassword, 
   signOut, 
   onAuthStateChanged,
-  signInAnonymously
+  signInAnonymously,
+  sendPasswordResetEmail
 } from "firebase/auth";
 import { 
   doc, 
@@ -359,6 +360,21 @@ export const saveCompanyDeliverable = async (deliverableData) => {
     return deliverableId;
   } catch (error) {
     console.error("Error saving deliverable in Firestore:", error);
+    throw error;
+  }
+};
+
+// Recover User Password (Forgot Password)
+export const recoverUserPassword = async (email) => {
+  if (!isFirebaseEnabled()) {
+    console.warn("Firebase not configured. Simulating password reset email.");
+    return true; // Simulado
+  }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    return true;
+  } catch (error) {
+    console.error("Error sending password reset email:", error);
     throw error;
   }
 };
