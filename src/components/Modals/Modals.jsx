@@ -44,6 +44,176 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const [adminActiveUser, setAdminActiveUser] = useState(null); // UID of user currently being edited by admin
   const [adminDeliverables, setAdminDeliverables] = useState([]);
 
+  // Legal Scraper States
+  const [legalAlerts, setLegalAlerts] = useState([]);
+  const [loadingScraper, setLoadingScraper] = useState(false);
+  const [sourceFilter, setSourceFilter] = useState('All');
+  const [automationLevel, setAutomationLevel] = useState(0);
+  const [flaggedQuestions, setFlaggedQuestions] = useState({}); // e.g. { q7: true, q3: true }
+
+  // Load legal alerts and admin config
+  useEffect(() => {
+    if (activeTab === 'admin') {
+      const cachedAlerts = localStorage.getItem("ageFriendLegalAlerts");
+      const cachedFlagged = localStorage.getItem("ageFriendFlaggedQuestions");
+      const cachedAuto = localStorage.getItem("ageFriendAutomationLevel");
+
+      if (cachedAlerts) {
+        setLegalAlerts(JSON.parse(cachedAlerts));
+      } else {
+        const initialAlerts = [
+          {
+            id: "alert_eu_001",
+            source: "EU",
+            title: "Directiva Europea de Envejecimiento Activo y Ergonomía Laboral",
+            description: "La Unión Europea ha publicado una directiva para estandarizar espacios de trabajo inclusivos, promoviendo accesos y herramientas adaptadas para trabajadores senior (+55).",
+            link: "https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:32026D0120",
+            relevanceScore: 0.85,
+            pilarImpacted: 2, // Pilar 4: Eje Salud / Ergonomía
+            recommendedChange: "Recomendar auditoría ergonómica obligatoria en puestos de trabajo para operarios mayores de 50 años.",
+            summary: "Actualización ergonómica y diseño de puestos saludables para personal senior.",
+            status: "pending",
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: "alert_us_001",
+            source: "USA",
+            title: "US Senate Bill: Age Discrimination in Employment Act (ADEA) Compliance Update",
+            description: "Nuevas enmiendas legislativas en EE.UU. para la prohibición estricta de filtros de edad automática en plataformas digitales de contratación corporativa.",
+            link: "https://www.congress.gov/bill/118th-congress/senate-bill/1182",
+            relevanceScore: 0.90,
+            pilarImpacted: 1, // Pilar 1: Eje Laboral / Contratación
+            recommendedChange: "Eliminar filtros automáticos de fecha de nacimiento o edad en los formularios digitales de reclutamiento.",
+            summary: "Enmienda para la prohibición de filtros automáticos por edad en procesos de reclutamiento.",
+            status: "pending",
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: "alert_au_001",
+            source: "Australia",
+            title: "Australia Mature Age Workers Protection Amendment (Restart Subsidy)",
+            description: "Actualización de las normativas de retención laboral de trabajadores maduros, introduciendo subsidios Restart adicionales y auditorías de edad obligatorias en empresas con más de 200 empleados.",
+            link: "https://www.legislation.gov.au/Details/C2024A00085",
+            relevanceScore: 0.82,
+            pilarImpacted: 3, // Pilar 2: Eje Conciliación / Transición retiro
+            recommendedChange: "Agregar opciones de jubilación parcial flexible y reducción de jornada progresiva a partir de los 60 años.",
+            summary: "Normativa de jubilación flexible y fomento de transición gradual al retiro laboral.",
+            status: "pending",
+            createdAt: new Date().toISOString()
+          }
+        ];
+        setLegalAlerts(initialAlerts);
+        localStorage.setItem("ageFriendLegalAlerts", JSON.stringify(initialAlerts));
+      }
+
+      if (cachedFlagged) {
+        setFlaggedQuestions(JSON.parse(cachedFlagged));
+      } else {
+        const initialFlagged = { q3: true, q10: true };
+        setFlaggedQuestions(initialFlagged);
+        localStorage.setItem("ageFriendFlaggedQuestions", JSON.stringify(initialFlagged));
+      }
+
+      if (cachedAuto) {
+        setAutomationLevel(parseInt(cachedAuto));
+      }
+    }
+  }, [activeTab]);
+
+  const triggerScraperScan = async () => {
+    setLoadingScraper(true);
+    try {
+      const res = await fetch(`/api/legal-scraper?source=${sourceFilter}`);
+      const data = await res.json();
+      if (data.status === "success" && data.alerts) {
+        setLegalAlerts(prev => {
+          const merged = [...prev];
+          data.alerts.forEach(newAlert => {
+            if (!merged.some(a => a.id === newAlert.id)) {
+              merged.unshift(newAlert);
+            }
+          });
+          localStorage.setItem("ageFriendLegalAlerts", JSON.stringify(merged));
+          return merged;
+        });
+        alert(language === 'es' ? `Escaneo completado. Se encontraron ${data.alerts.length} nuevas alertas normativas.` : `Scan completed. Found ${data.alerts.length} new regulatory alerts.`);
+      } else {
+        alert("Error: " + (data.message || "Failed to scan"));
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error contacting legal monitor service.");
+    } finally {
+      setLoadingScraper(false);
+    }
+  };
+
+  const downloadLegalExcel = async () => {
+    try {
+      const res = await fetch('/api/export-legal-reports', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ alerts: legalAlerts })
+      });
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'historial_normativo.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      } else {
+        alert("Error exporting Excel report");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Failed to connect to export service.");
+    }
+  };
+
+  const approveAlert = (alertId, pilarImpacted) => {
+    setLegalAlerts(prev => {
+      const updated = prev.map(a => a.id === alertId ? { ...a, status: 'approved' } : a);
+      localStorage.setItem("ageFriendLegalAlerts", JSON.stringify(updated));
+      return updated;
+    });
+    setFlaggedQuestions(prev => {
+      const updated = { ...prev };
+      const qStart = (pilarImpacted - 1) * 3 + 1;
+      updated[`q${qStart}`] = true;
+      updated[`q${qStart + 1}`] = true;
+      updated[`q${qStart + 2}`] = true;
+      localStorage.setItem("ageFriendFlaggedQuestions", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const ignoreAlert = (alertId) => {
+    setLegalAlerts(prev => {
+      const updated = prev.filter(a => a.id !== alertId);
+      localStorage.setItem("ageFriendLegalAlerts", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const resolveQuestionFlag = (qId) => {
+    setFlaggedQuestions(prev => {
+      const updated = { ...prev };
+      delete updated[qId];
+      localStorage.setItem("ageFriendFlaggedQuestions", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const handleAutomationChange = (val) => {
+    setAutomationLevel(val);
+    localStorage.setItem("ageFriendAutomationLevel", val);
+  };
+
   const [settingsForm, setSettingsForm] = useState({
     name: '',
     website: '',
@@ -1321,6 +1491,217 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                     })}
                   </div>
                 )}
+
+                {/* BANDEJA DE ENTRADA NORMATIVA (LEGAL SCRAPER MONITOR) */}
+                <hr style={{ borderColor: 'var(--border-color)', margin: '20px 0' }} />
+                
+                <h4 style={{ color: 'var(--text-primary)', margin: '0 0 10px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  ⚖️ {language === 'es' ? 'Bandeja de Entrada Normativa (Legal Scraper)' : 'Regulatory Inbox (Legal Scraper)'}
+                </h4>
+                
+                {/* Stats & Route Row */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
+                  <div style={{ background: 'rgba(30, 41, 59, 0.4)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '12px', textAlign: 'center' }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      {language === 'es' ? 'Fuentes Activas' : 'Active Sources'}
+                    </div>
+                    <div style={{ fontSize: '1.8rem', fontWeight: 'bold', color: 'var(--accent-color)', marginTop: '4px' }}>4</div>
+                  </div>
+                  <div style={{ background: 'rgba(30, 41, 59, 0.4)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '12px', textAlign: 'center' }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      {language === 'es' ? 'Ruta de Actualización' : 'Update Route'}
+                    </div>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#fbbf24', marginTop: '8px' }}>
+                      {automationLevel === 100 ? (language === 'es' ? 'Automática' : 'Automatic') : (language === 'es' ? 'Revisión Manual' : 'Manual Review')}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Filters & Actions Control Row */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px', background: 'rgba(15, 23, 42, 0.3)', padding: '15px', borderRadius: '8px', border: '1px solid var(--border-color)', marginBottom: '20px' }}>
+                  {/* Dropdown Filter */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                      {language === 'es' ? 'Filtrar Jurisdicción' : 'Filter Jurisdiction'}
+                    </label>
+                    <select 
+                      value={sourceFilter} 
+                      onChange={(e) => setSourceFilter(e.target.value)}
+                      style={{ padding: '6px 12px', borderRadius: '6px', background: 'var(--bg-main)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}
+                    >
+                      <option value="All">{language === 'es' ? 'Todas' : 'All'}</option>
+                      <option value="EU">EU (EUR-Lex)</option>
+                      <option value="USA">USA (LegiScan)</option>
+                      <option value="Australia">Australia (Federal Register)</option>
+                      <option value="LatAm">LatAm (CEPAL/OIT)</option>
+                    </select>
+                  </div>
+
+                  {/* Slider Control */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flex: '1', maxWidth: '250px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                      <span>{language === 'es' ? 'Automatización' : 'Automation Level'}</span>
+                      <strong style={{ color: 'var(--accent-color)' }}>{automationLevel}%</strong>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="0" 
+                      max="100" 
+                      step="50"
+                      value={automationLevel} 
+                      onChange={(e) => handleAutomationChange(parseInt(e.target.value))}
+                      style={{ accentColor: 'var(--accent-color)', cursor: 'pointer' }}
+                    />
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                      {automationLevel === 0 ? (language === 'es' ? 'Revisión manual estricta' : 'Strict manual review') : automationLevel === 50 ? (language === 'es' ? 'Semi-automático con sugerencias' : 'Semi-automatic with suggestions') : (language === 'es' ? 'Actualización directa del scoring' : 'Direct scoring auto-update')}
+                    </span>
+                  </div>
+
+                  {/* Trigger & Export Buttons */}
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button 
+                      className="btn btn-primary" 
+                      disabled={loadingScraper} 
+                      onClick={triggerScraperScan}
+                      style={{ padding: '8px 14px', fontSize: '0.85rem' }}
+                    >
+                      {loadingScraper ? '...' : (language === 'es' ? 'Escanear Fuentes' : 'Scan Sources')}
+                    </button>
+                    <button 
+                      className="btn btn-outline" 
+                      onClick={downloadLegalExcel}
+                      style={{ padding: '8px 14px', fontSize: '0.85rem' }}
+                    >
+                      📊 {language === 'es' ? 'Exportar Excel' : 'Export Excel'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Alerts List */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <h5 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    {language === 'es' ? 'Alertas Recientes Detectadas' : 'Recent Alerts Detected'}
+                  </h5>
+                  
+                  {legalAlerts.filter(a => sourceFilter === 'All' || a.source === sourceFilter).length === 0 ? (
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textAlign: 'center', padding: '15px' }}>
+                      {language === 'es' ? 'No se encontraron alertas para este filtro.' : 'No alerts found for this filter.'}
+                    </p>
+                  ) : (
+                    legalAlerts
+                      .filter(a => sourceFilter === 'All' || a.source === sourceFilter)
+                      .map(alert => {
+                        const isApproved = alert.status === 'approved';
+                        return (
+                          <div 
+                            key={alert.id}
+                            style={{ 
+                              background: 'rgba(30, 41, 59, 0.3)', 
+                              border: isApproved ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid var(--border-color)',
+                              borderRadius: '8px', 
+                              padding: '12px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '8px'
+                            }}
+                          >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <span style={{ fontSize: '0.75rem', padding: '2px 6px', borderRadius: '4px', background: 'rgba(59, 130, 246, 0.2)', color: '#3b82f6', fontWeight: 600 }}>
+                                {alert.source}
+                              </span>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <span style={{ fontSize: '0.8rem', color: alert.relevanceScore >= 0.8 ? '#f59e0b' : '#10B981', fontWeight: 'bold' }}>
+                                  LLM: {Math.round(alert.relevanceScore * 100)}% {language === 'es' ? 'Relevancia' : 'Relevance'}
+                                </span>
+                                {isApproved && (
+                                  <span style={{ fontSize: '0.75rem', color: '#10B981', fontWeight: 600 }}>
+                                    ✓ {language === 'es' ? 'Aprobado y Vinculado' : 'Approved & Linked'}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            <h6 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-primary)' }}>{alert.title}</h6>
+                            <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+                              {alert.summary || alert.description}
+                            </p>
+
+                            <div style={{ background: 'rgba(0,0,0,0.15)', padding: '8px', borderRadius: '4px', fontSize: '0.75rem', borderLeft: '3px solid var(--accent-color)' }}>
+                              <strong style={{ color: 'var(--text-secondary)' }}>{language === 'es' ? 'Recomendación de Ajuste:' : 'Suggested Adjust:'}</strong> {alert.recommendedChange}
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '4px' }}>
+                              <a href={alert.link} target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: '#3b82f6', textDecoration: 'underline' }}>
+                                {language === 'es' ? 'Ver Publicación Oficial ↗' : 'View Official Publication ↗'}
+                              </a>
+                              {!isApproved && (
+                                <div style={{ display: 'flex', gap: '6px' }}>
+                                  <button 
+                                    className="btn btn-outline" 
+                                    onClick={() => approveAlert(alert.id, alert.pilarImpacted)}
+                                    style={{ padding: '4px 10px', fontSize: '0.75rem', borderColor: '#10B981', color: '#10B981' }}
+                                  >
+                                    {language === 'es' ? 'Aprobar e Vincular' : 'Approve & Link'}
+                                  </button>
+                                  <button 
+                                    className="btn btn-outline" 
+                                    onClick={() => ignoreAlert(alert.id)}
+                                    style={{ padding: '4px 10px', fontSize: '0.75rem', borderColor: 'var(--border-color)', color: 'var(--text-muted)' }}
+                                  >
+                                    {language === 'es' ? 'Ignorar' : 'Ignore'}
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })
+                  )}
+                </div>
+
+                {/* Audit Checklist for 15 Questions */}
+                <div style={{ marginTop: '20px', background: 'rgba(15, 23, 42, 0.2)', padding: '15px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                  <h5 style={{ margin: '0 0 10px 0', fontSize: '0.9rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    ⚠️ {language === 'es' ? 'Estado del Cuestionario de Autodiagnóstico' : 'Self-Diagnostic Questionnaire Status'}
+                  </h5>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {[...Array(15)].map((_, i) => {
+                      const qId = `q${i + 1}`;
+                      const isFlagged = !!flaggedQuestions[qId];
+                      return (
+                        <div key={qId} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.15)', padding: '8px 12px', borderRadius: '6px', fontSize: '0.8rem' }}>
+                          <span>
+                            <strong>Q{i + 1}:</strong> {
+                              language === 'es' 
+                                ? `Pregunta del Pilar ${Math.min(5, Math.floor(i / 3) + 1)}` 
+                                : `Question under Pillar ${Math.min(5, Math.floor(i / 3) + 1)}`
+                            }
+                          </span>
+                          
+                          {isFlagged ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span style={{ color: '#fbbf24', fontWeight: 600, fontSize: '0.75rem', background: 'rgba(251, 191, 36, 0.1)', padding: '2px 8px', borderRadius: '4px' }}>
+                                ⚠️ {language === 'es' ? 'Revisión Sugerida' : 'Review Suggested'}
+                              </span>
+                              <button 
+                                className="btn btn-outline" 
+                                onClick={() => resolveQuestionFlag(qId)}
+                                style={{ padding: '2px 6px', fontSize: '0.7rem', margin: 0 }}
+                              >
+                                {language === 'es' ? 'Resolver' : 'Resolve'}
+                              </button>
+                            </div>
+                          ) : (
+                            <span style={{ color: '#10B981', fontWeight: 600, fontSize: '0.75rem', background: 'rgba(16, 185, 129, 0.1)', padding: '2px 8px', borderRadius: '4px' }}>
+                              🟢 {language === 'es' ? 'Activa y Vigente' : 'Active & Compliant'}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             )}
 

@@ -45,6 +45,33 @@ const mapSectorKey = (subsector) => {
   return "Comercio y Distribución";
 };
 
+export const getAgeLimitForCountry = (country) => {
+  if (!country) return 50; // default
+  const normalized = country.toLowerCase();
+  
+  // EE.UU. (ADEA +40)
+  if (normalized.includes("ee.uu") || normalized.includes("estados unidos") || normalized.includes("usa") || normalized.includes("united states")) {
+    return 40;
+  }
+  // Latinoamérica (+60)
+  const latamCountries = ["argentina", "chile", "uruguay", "brasil", "colombia", "méxico", "mexico", "ecuador", "peru", "perú", "venezuela", "bolivia", "paraguay", "costa rica", "panamá", "panama"];
+  if (latamCountries.some(c => normalized.includes(c))) {
+    return 60;
+  }
+  // España / Europa / default (+50)
+  return 50;
+};
+
+export const localizeAgeInText = (textStr, country) => {
+  if (!textStr) return "";
+  const age = getAgeLimitForCountry(country);
+  return textStr
+    .replace(/\b50\b/g, age)
+    .replace(/\bcinquenta\b/gi, age === 40 ? "cuarenta" : age === 60 ? "sesenta" : "cincuenta")
+    .replace(/\bcinquenta\b/gi, age === 40 ? "quarenta" : age === 60 ? "sessenta" : "cincuenta") // Portuguese
+    .replace(/\bfifty\b/gi, age === 40 ? "forty" : age === 60 ? "sixty" : "fifty"); // English
+};
+
 function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPayment, onDiagnosticComplete }) {
   const intl = useIntl();
   const sectionRef = useRef(null);
@@ -89,7 +116,7 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
   const question = currentQuestions[step];
   const progress = ((step + 1) / currentQuestions.length) * 100;
 
-  const results = useMemo(() => calculateResults(answers, language, currentQuestions), [answers, language, currentQuestions]);
+  const results = useMemo(() => calculateResults(answers, language, currentQuestions, currentUser?.country || registrationForm.country), [answers, language, currentQuestions, currentUser?.country, registrationForm.country]);
 
   useEffect(() => {
     if (showResults && onDiagnosticComplete) {
@@ -272,10 +299,10 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
             </div>
 
             <div className="quiz-question-box" id="question-box">
-              <h3 id="question-title">{question.question ? question.question : getTranslation(question.text, language)}</h3>
+              <h3 id="question-title">{localizeAgeInText(question.question ? question.question : getTranslation(question.text, language), currentUser?.country || registrationForm.country)}</h3>
               <div className="quiz-options" id="quiz-options">
                 {question.options.map((option) => {
-                  const optionText = getTranslation(option.text, language);
+                  const optionText = localizeAgeInText(getTranslation(option.text, language), currentUser?.country || registrationForm.country);
                   const selected = answers[step] === option;
                   return (
                     <button
@@ -613,24 +640,49 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
   );
 }
 
-function calculateResults(answers, language, currentQuestions) {
+function calculateResults(answers, language, currentQuestions, country) {
   const safeAnswers = answers.map((answer) => answer || { score: 0 });
-  const totalScore = safeAnswers.reduce((sum, answer) => sum + answer.score, 0);
-  
-  // 15 questions, max score per question is 100 for old/generic, or 3 for sector-specific
   const isOldGeneric = currentQuestions === defaultQuestions;
-  const maxScore = isOldGeneric ? currentQuestions.length * 100 : currentQuestions.length * 3; 
-  const globalPercent = maxScore > 0 ? Math.round((totalScore / maxScore) * 100) : 0;
-  
-  // Calculate 5 pillars (each containing exactly 3 questions)
+
+  // Determinar pesos según el geofencing del país
+  const normalizedCountry = (country || "").toLowerCase();
+  const isEurope = normalizedCountry.includes("españa") || normalizedCountry.includes("europa") || normalizedCountry.includes("spain");
+  const isUSA = normalizedCountry.includes("usa") || normalizedCountry.includes("ee.uu") || normalizedCountry.includes("estados unidos") || normalizedCountry.includes("united states");
+
+  let totalWeightedScore = 0;
+  let maxWeightedScore = 0;
+
   const pillarScores = [0, 0, 0, 0, 0];
+  const pillarCounts = [0, 0, 0, 0, 0];
+
   safeAnswers.forEach((answer, index) => {
+    const question = currentQuestions[index];
+    if (!question) return;
+
+    // Obtener índice de pilar del cuestionario (0 a 4)
     const pilarIndex = Math.min(4, Math.floor(index / 3));
-    pillarScores[pilarIndex] += answer.score;
+
+    // Ponderación según la regulación de cada país
+    let weight = 1.0;
+    if (isEurope && (pilarIndex === 0 || pilarIndex === 3)) {
+      weight = 1.2; // +20% de peso a accesibilidad física y ergonomía/salud en Europa/España
+    } else if (isUSA && (pilarIndex === 0 || pilarIndex === 4)) {
+      weight = 1.2; // +20% de peso a inclusión laboral en EE.UU. (ADEA)
+    }
+
+    const questionMaxScore = isOldGeneric ? 100 : 3;
+
+    totalWeightedScore += answer.score * weight;
+    maxWeightedScore += questionMaxScore * weight;
+
+    pillarScores[pilarIndex] += answer.score * weight;
+    pillarCounts[pilarIndex] += questionMaxScore * weight;
   });
 
-  const pillarPercents = pillarScores.map((score) => {
-    const maxPillarScore = isOldGeneric ? 3 * 100 : 3 * 3;
+  const globalPercent = maxWeightedScore > 0 ? Math.round((totalWeightedScore / maxWeightedScore) * 100) : 0;
+
+  const pillarPercents = pillarScores.map((score, idx) => {
+    const maxPillarScore = pillarCounts[idx] || (isOldGeneric ? 3 * 100 : 3 * 3);
     return maxPillarScore > 0 ? Math.round((score / maxPillarScore) * 100) : 0;
   });
 
@@ -672,7 +724,7 @@ function calculateResults(answers, language, currentQuestions) {
     },
     pt: {
       basic: ["Caminho Iniciado", "Sua organização já tem uma base para avançar rumo à certificação total."],
-      medium: ["Certificação Condicional", "Há avanços significativos e algumas lacunas concretas para fechar."],
+      medium: ["Certificación Condicional", "Há avanços significativos y algumas lacunas concretas para fechar."],
       premium: ["Empresa Certificada", "Excelente desempenho. A organização cumpre com o padrão esperado."]
     }
   };
