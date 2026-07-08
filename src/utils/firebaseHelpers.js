@@ -368,7 +368,19 @@ export const saveCompanyDeliverable = async (deliverableData) => {
 export const recoverUserPassword = async (email) => {
   if (!isFirebaseEnabled()) {
     console.warn("Firebase not configured. Simulating password reset email.");
-    return true; // Simulado
+    // Validar si el email existe en los mocks para emular el comportamiento real
+    const dummyUser = JSON.parse(window.localStorage.getItem("ageFriendUser"));
+    const allowedMocks = ["admin@test.com", "demo@privado.com", "admin@agefriend.com"];
+    if (dummyUser && dummyUser.email) {
+      allowedMocks.push(dummyUser.email);
+    }
+    const matched = allowedMocks.some(e => e.toLowerCase() === email.toLowerCase());
+    if (!matched) {
+      const error = new Error("Firebase: Error (auth/user-not-found).");
+      error.code = "auth/user-not-found";
+      throw error;
+    }
+    return true; // Simulado exitoso
   }
   try {
     await sendPasswordResetEmail(auth, email);

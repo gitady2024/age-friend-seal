@@ -466,7 +466,19 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const handleForgotPasswordSubmit = async (event) => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    const email = form.get('email');
+    const email = (form.get('email') || '').trim();
+
+    // Validación Frontend mediante Regex
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailPattern.test(email)) {
+      alert(language === 'es' 
+        ? 'Por favor, ingrese una dirección de correo electrónico válida.' 
+        : language === 'pt'
+          ? 'Por favor, insira um endereço de e-mail válido.'
+          : 'Please enter a valid email address.');
+      return;
+    }
+
     try {
       await recoverUserPassword(email);
       alert(language === 'es' 
@@ -477,7 +489,16 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       setAuthView('login');
     } catch (err) {
       console.error("Password recovery error:", err);
-      alert(language === 'es' ? `Error al enviar correo: ${err.message}` : `Error sending email: ${err.message}`);
+      // Capturar error de usuario no encontrado en Firebase
+      if (err.code === 'auth/user-not-found' || err.message?.includes('user-not-found') || err.message?.includes('auth/user-not-found')) {
+        alert(language === 'es' 
+          ? 'No encontramos ninguna cuenta registrada con este correo. Por favor, verifique si utilizó otra dirección.' 
+          : language === 'pt'
+            ? 'Não encontramos nenhuma conta registrada com este e-mail. Por favor, verifique se utilizou outro endereço.'
+            : 'We could not find any account registered with this email. Please check if you used another address.');
+      } else {
+        alert(language === 'es' ? `Error al enviar correo: ${err.message}` : `Error sending email: ${err.message}`);
+      }
     }
   };
 
