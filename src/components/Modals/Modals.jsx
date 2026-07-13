@@ -61,56 +61,16 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   // Load legal alerts and admin config
   useEffect(() => {
     if (activeTab === 'admin') {
-      const cachedAlerts = localStorage.getItem("ageFriendLegalAlerts_v5");
+      const cachedAlerts = localStorage.getItem("ageFriendLegalAlerts_v6");
       const cachedFlagged = localStorage.getItem("ageFriendFlaggedQuestions");
       const cachedAuto = localStorage.getItem("ageFriendAutomationLevel");
 
       if (cachedAlerts) {
         setLegalAlerts(JSON.parse(cachedAlerts));
       } else {
-        const initialAlerts = [
-          {
-            id: "alert_eu_001",
-            source: "EU",
-            title: "Directiva Europea de Envejecimiento Activo y Ergonomía Laboral",
-            description: "La Unión Europea ha publicado una directiva para estandarizar espacios de trabajo inclusivos, promoviendo accesos y herramientas adaptadas para trabajadores senior (+55).",
-            link: "https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:32026D0120",
-            relevanceScore: 0.85,
-            pilarImpacted: 2, // Pilar 4: Eje Salud / Ergonomía
-            recommendedChange: "Recomendar auditoría ergonómica obligatoria en puestos de trabajo para operarios mayores de 50 años.",
-            summary: "Actualización ergonómica y diseño de puestos saludables para personal senior.",
-            status: "pending",
-            createdAt: new Date().toISOString()
-          },
-          {
-            id: "alert_us_001",
-            source: "USA",
-            title: "S.1632 - Protecting Older Workers Against Discrimination Act",
-            description: "Enmienda para la prohibición de filtros automáticos por edad en procesos de reclutamiento y fortalecimiento de la ADEA.",
-            link: "https://www.congress.gov/bill/118th-congress/senate-bill/1632",
-            relevanceScore: 0.90,
-            pilarImpacted: 1, // Pilar 1: Eje Laboral / Contratación
-            recommendedChange: "Eliminar filtros automáticos de fecha de nacimiento o edad en los formularios digitales de reclutamiento.",
-            summary: "Enmienda para la prohibición de filtros automáticos por edad en procesos de reclutamiento.",
-            status: "pending",
-            createdAt: new Date().toISOString()
-          },
-          {
-            id: "alert_au_001",
-            source: "Australia",
-            title: "Australia Mature Age Workers Protection Amendment (Restart Subsidy)",
-            description: "Actualización de las normativas de retención laboral de trabajadores maduros, introduciendo subsidios Restart adicionales y auditorías de edad obligatorias en empresas con más de 200 empleados.",
-            link: "https://www.legislation.gov.au/Details/C2024A00085",
-            relevanceScore: 0.82,
-            pilarImpacted: 3, // Pilar 2: Eje Conciliación / Transición retiro
-            recommendedChange: "Agregar opciones de jubilación parcial flexible y reducción de jornada progresiva a partir de los 60 años.",
-            summary: "Normativa de jubilación flexible y fomento de transición gradual al retiro laboral.",
-            status: "pending",
-            createdAt: new Date().toISOString()
-          }
-        ];
+        const initialAlerts = [];
         setLegalAlerts(initialAlerts);
-        localStorage.setItem("ageFriendLegalAlerts_v5", JSON.stringify(initialAlerts));
+        localStorage.setItem("ageFriendLegalAlerts_v6", JSON.stringify(initialAlerts));
       }
 
       if (cachedFlagged) {
@@ -147,7 +107,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
               merged.unshift(newAlert);
             }
           });
-          localStorage.setItem("ageFriendLegalAlerts_v5", JSON.stringify(merged));
+          localStorage.setItem("ageFriendLegalAlerts_v6", JSON.stringify(merged));
           return merged;
         });
 
@@ -266,7 +226,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     // 1. Aprobar alerta en el historial
     setLegalAlerts(prev => {
       const updated = prev.map(a => a.id === alertId ? { ...a, status: 'approved' } : a);
-      localStorage.setItem("ageFriendLegalAlerts_v5", JSON.stringify(updated));
+      localStorage.setItem("ageFriendLegalAlerts_v6", JSON.stringify(updated));
       return updated;
     });
 
@@ -320,7 +280,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const ignoreAlert = (alertId) => {
     setLegalAlerts(prev => {
       const updated = prev.filter(a => a.id !== alertId);
-      localStorage.setItem("ageFriendLegalAlerts_v5", JSON.stringify(updated));
+      localStorage.setItem("ageFriendLegalAlerts_v6", JSON.stringify(updated));
       return updated;
     });
   };

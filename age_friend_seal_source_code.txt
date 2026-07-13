@@ -2560,56 +2560,16 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   // Load legal alerts and admin config
   useEffect(() => {
     if (activeTab === 'admin') {
-      const cachedAlerts = localStorage.getItem("ageFriendLegalAlerts_v5");
+      const cachedAlerts = localStorage.getItem("ageFriendLegalAlerts_v6");
       const cachedFlagged = localStorage.getItem("ageFriendFlaggedQuestions");
       const cachedAuto = localStorage.getItem("ageFriendAutomationLevel");
 
       if (cachedAlerts) {
         setLegalAlerts(JSON.parse(cachedAlerts));
       } else {
-        const initialAlerts = [
-          {
-            id: "alert_eu_001",
-            source: "EU",
-            title: "Directiva Europea de Envejecimiento Activo y Ergonomía Laboral",
-            description: "La Unión Europea ha publicado una directiva para estandarizar espacios de trabajo inclusivos, promoviendo accesos y herramientas adaptadas para trabajadores senior (+55).",
-            link: "https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:32026D0120",
-            relevanceScore: 0.85,
-            pilarImpacted: 2, // Pilar 4: Eje Salud / Ergonomía
-            recommendedChange: "Recomendar auditoría ergonómica obligatoria en puestos de trabajo para operarios mayores de 50 años.",
-            summary: "Actualización ergonómica y diseño de puestos saludables para personal senior.",
-            status: "pending",
-            createdAt: new Date().toISOString()
-          },
-          {
-            id: "alert_us_001",
-            source: "USA",
-            title: "S.1632 - Protecting Older Workers Against Discrimination Act",
-            description: "Enmienda para la prohibición de filtros automáticos por edad en procesos de reclutamiento y fortalecimiento de la ADEA.",
-            link: "https://www.congress.gov/bill/118th-congress/senate-bill/1632",
-            relevanceScore: 0.90,
-            pilarImpacted: 1, // Pilar 1: Eje Laboral / Contratación
-            recommendedChange: "Eliminar filtros automáticos de fecha de nacimiento o edad en los formularios digitales de reclutamiento.",
-            summary: "Enmienda para la prohibición de filtros automáticos por edad en procesos de reclutamiento.",
-            status: "pending",
-            createdAt: new Date().toISOString()
-          },
-          {
-            id: "alert_au_001",
-            source: "Australia",
-            title: "Australia Mature Age Workers Protection Amendment (Restart Subsidy)",
-            description: "Actualización de las normativas de retención laboral de trabajadores maduros, introduciendo subsidios Restart adicionales y auditorías de edad obligatorias en empresas con más de 200 empleados.",
-            link: "https://www.legislation.gov.au/Details/C2024A00085",
-            relevanceScore: 0.82,
-            pilarImpacted: 3, // Pilar 2: Eje Conciliación / Transición retiro
-            recommendedChange: "Agregar opciones de jubilación parcial flexible y reducción de jornada progresiva a partir de los 60 años.",
-            summary: "Normativa de jubilación flexible y fomento de transición gradual al retiro laboral.",
-            status: "pending",
-            createdAt: new Date().toISOString()
-          }
-        ];
+        const initialAlerts = [];
         setLegalAlerts(initialAlerts);
-        localStorage.setItem("ageFriendLegalAlerts_v5", JSON.stringify(initialAlerts));
+        localStorage.setItem("ageFriendLegalAlerts_v6", JSON.stringify(initialAlerts));
       }
 
       if (cachedFlagged) {
@@ -2646,7 +2606,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
               merged.unshift(newAlert);
             }
           });
-          localStorage.setItem("ageFriendLegalAlerts_v5", JSON.stringify(merged));
+          localStorage.setItem("ageFriendLegalAlerts_v6", JSON.stringify(merged));
           return merged;
         });
 
@@ -2765,7 +2725,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     // 1. Aprobar alerta en el historial
     setLegalAlerts(prev => {
       const updated = prev.map(a => a.id === alertId ? { ...a, status: 'approved' } : a);
-      localStorage.setItem("ageFriendLegalAlerts_v5", JSON.stringify(updated));
+      localStorage.setItem("ageFriendLegalAlerts_v6", JSON.stringify(updated));
       return updated;
     });
 
@@ -2819,7 +2779,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const ignoreAlert = (alertId) => {
     setLegalAlerts(prev => {
       const updated = prev.filter(a => a.id !== alertId);
-      localStorage.setItem("ageFriendLegalAlerts_v5", JSON.stringify(updated));
+      localStorage.setItem("ageFriendLegalAlerts_v6", JSON.stringify(updated));
       return updated;
     });
   };
@@ -17755,7 +17715,7 @@ export const recoverUserPassword = async (email) => {
 
 // Initialize Questions Database (Seeding)
 export const initializeQuestionsDatabase = async () => {
-  const isInitialized = localStorage.getItem("ageFriendQuestionsInitialized_v5");
+  const isInitialized = localStorage.getItem("ageFriendQuestionsInitialized_v6");
   if (isInitialized) return;
 
   const allQuestions = [];
@@ -17859,7 +17819,7 @@ export const initializeQuestionsDatabase = async () => {
 
   // Guardar en LocalStorage cache
   localStorage.setItem("ageFriendQuestions", JSON.stringify(allQuestions));
-  localStorage.setItem("ageFriendQuestionsInitialized_v5", "true");
+  localStorage.setItem("ageFriendQuestionsInitialized_v6", "true");
 };
 
 // Obtener todas las preguntas
@@ -18688,61 +18648,33 @@ export default async function handler(req, res) {
   try {
     const fetchedAlerts = [];
 
-    // 1. EU EUR-Lex Fetcher
+    // 1. EU European Parliament RSS Fetcher (Real and active EU feed)
     if (source === "All" || source === "EU") {
       try {
-        const eurlexUrl = "https://eur-lex.europa.eu/op/query/ws.html"; // endpoint oficial
-        // Intentar consulta CQL simulada/real
-        const response = await fetch(eurlexUrl + "?query=text=%22active%20ageing%22&format=xml", {
-          method: "GET",
-          headers: { "Accept": "application/xml" }
-        });
+        const response = await fetch("https://www.europarl.europa.eu/rss/doc/top-stories/es.xml");
         if (response.ok) {
           const xmlText = await response.text();
           parseXmlItems(xmlText, "EU", fetchedAlerts);
         } else {
-          throw new Error("EUR-Lex API not configured or offline");
+          throw new Error("European Parliament RSS offline");
         }
       } catch (e) {
-        // Fallback a alertas reales simuladas de la UE
-        fetchedAlerts.push({
-          id: "alert_eu_001",
-          source: "EU",
-          title: "Directiva Europea de Envejecimiento Activo y Ergonomía Laboral",
-          description: "La Unión Europea ha publicado una directiva para estandarizar espacios de trabajo inclusivos, promoviendo accesos y herramientas adaptadas para trabajadores senior (+55).",
-          link: "https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:32026D0120",
-          matchingTags: ["EU-active-ageing", "ergonomia-laboral"],
-          createdAt: new Date().toISOString()
-        });
+        console.error("EU Fetcher error:", e);
       }
     }
 
-    // 2. USA LegiScan Fetcher
+    // 2. USA GovInfo Congressional Bills RSS Fetcher (Real US legislative feed)
     if (source === "All" || source === "USA") {
       try {
-        const legiscanUrl = `https://api.legiscan.com/?key=${process.env.LEGISCAN_API_KEY || "dummy"}&op=getMasterList&state=US`;
-        const response = await fetch(legiscanUrl);
+        const response = await fetch("https://www.govinfo.gov/rss/bills.xml");
         if (response.ok) {
-          const data = await response.json();
-          if (data.status === "OK" && data.masterlist) {
-            parseLegiScanItems(data.masterlist, fetchedAlerts);
-          } else {
-            throw new Error("LegiScan master list format invalid or empty");
-          }
+          const xmlText = await response.text();
+          parseXmlItems(xmlText, "USA", fetchedAlerts);
         } else {
-          throw new Error("LegiScan API not configured or offline");
+          throw new Error("GovInfo RSS offline");
         }
       } catch (e) {
-        // Fallback a alertas reales de EE.UU.
-        fetchedAlerts.push({
-          id: "alert_us_001",
-          source: "USA",
-          title: "S.1632 - Protecting Older Workers Against Discrimination Act",
-          description: "Enmienda para la prohibición de filtros automáticos por edad en procesos de reclutamiento y fortalecimiento de la ADEA.",
-          link: "https://www.congress.gov/bill/118th-congress/senate-bill/1632",
-          matchingTags: ["US-ADEA", "contratacion-no-discriminacion"],
-          createdAt: new Date().toISOString()
-        });
+        console.error("USA Fetcher error:", e);
       }
     }
 
@@ -18757,40 +18689,39 @@ export default async function handler(req, res) {
           throw new Error("Australia Legislation RSS offline");
         }
       } catch (e) {
-        // Fallback a alertas reales de Australia
-        fetchedAlerts.push({
-          id: "alert_au_001",
-          source: "Australia",
-          title: "Australia Mature Age Workers Protection Amendment (Restart Subsidy)",
-          description: "Actualización de las normativas de retención laboral de trabajadores maduros, introduciendo subsidios Restart adicionales y auditorías de edad obligatorias en empresas con más de 200 empleados.",
-          link: "https://www.legislation.gov.au/Details/C2024A00085",
-          matchingTags: ["AU-Age Discrimination Act 2004", "retencion-laboral"],
-          createdAt: new Date().toISOString()
-        });
+        console.error("Australia Fetcher error:", e);
       }
     }
 
-    // 4. LatAm CEPAL / NORMLEX Fetcher
+    // 4. LatAm CEPAL REST API Discover Search Fetcher (Real LatAm research feed)
     if (source === "All" || source === "LatAm") {
       try {
-        const response = await fetch("https://repositorio.cepal.org/oai/request?verb=ListRecords&metadataPrefix=oai_dc");
+        const response = await fetch("https://repositorio.cepal.org/server/api/discover/search/objects?size=15&sort=dc.date.accessioned,DESC");
         if (response.ok) {
-          const xmlText = await response.text();
-          parseXmlItems(xmlText, "LatAm", fetchedAlerts);
+          const json = await response.json();
+          const objects = json._embedded?.searchResult?._embedded?.objects || [];
+          objects.forEach(obj => {
+            const item = obj._embedded?.indexableObject;
+            if (item && item.name) {
+              const abstract = item.metadata?.['dc.description.abstract']?.[0]?.value || item.metadata?.['dc.title']?.[0]?.value || "";
+              const uri = item.metadata?.['dc.identifier.uri']?.[0]?.value || `https://repositorio.cepal.org/handle/11362/${item.id}`;
+              
+              fetchedAlerts.push({
+                id: `alert_latam_${item.id}`,
+                source: "LatAm",
+                title: item.name.trim(),
+                description: abstract.trim(),
+                link: uri.trim(),
+                matchingTags: ["LatAm-CEPAL"],
+                createdAt: new Date().toISOString()
+              });
+            }
+          });
         } else {
-          throw new Error("CEPAL OAI-PMH endpoint offline");
+          throw new Error("CEPAL REST API offline");
         }
       } catch (e) {
-        // Fallback a alertas reales de LatAm
-        fetchedAlerts.push({
-          id: "alert_latam_001",
-          source: "LatAm",
-          title: "CEPAL: Seguimiento de la Convención Interamericana sobre los Derechos de las Personas Mayores",
-          description: "La Convención Interamericana exige a los estados firmantes penalizar prácticas de edadismo laboral y promover programas de transición gradual a la jubilación flexible.",
-          link: "https://repositorio.cepal.org/handle/11362/39556",
-          matchingTags: ["LatAm-Convencion-Interamericana", "transicion-retiro"],
-          createdAt: new Date().toISOString()
-        });
+        console.error("LatAm Fetcher error:", e);
       }
     }
 
@@ -18803,12 +18734,12 @@ export default async function handler(req, res) {
       if (isExcluded) continue;
 
       // Validación de Lista Blanca (Domain Whitelisting) y extracción de URL canónica
-      const whitelistRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)*(eur-lex\.europa\.eu|congress\.gov|legislation\.gov\.au|cepal\.org|legiscan\.com)\b/i;
+      const whitelistRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)*(eur-lex\.europa\.eu|europarl\.europa\.eu|congress\.gov|govinfo\.gov|legislation\.gov\.au|cepal\.org|legiscan\.com)\b/i;
       let validatedLink = (alert.link || "").trim();
       if (!whitelistRegex.test(validatedLink)) {
         console.warn(`Discarding non-whitelisted URL: ${validatedLink}`);
-        if (alert.source === "EU") validatedLink = "https://eur-lex.europa.eu";
-        else if (alert.source === "USA") validatedLink = "https://www.congress.gov";
+        if (alert.source === "EU") validatedLink = "https://www.europarl.europa.eu";
+        else if (alert.source === "USA") validatedLink = "https://www.govinfo.gov";
         else if (alert.source === "Australia") validatedLink = "https://www.legislation.gov.au";
         else if (alert.source === "LatAm") validatedLink = "https://repositorio.cepal.org";
         else validatedLink = "";
@@ -18876,30 +18807,10 @@ function parseXmlItems(xmlText, source, alertsList) {
       alertsList.push({
         id: `alert_${source.toLowerCase()}_${Date.now()}_${count}`,
         source,
-        title: title.trim(),
-        description: cleanXmlText(description),
-        link: link ? link.trim() : "https://eur-lex.europa.eu",
+        title: unescapeHtml(title),
+        description: unescapeHtml(cleanXmlText(description)),
+        link: link ? link.trim() : "",
         matchingTags: [`${source}-generic-tag`],
-        createdAt: new Date().toISOString()
-      });
-      count++;
-    }
-  }
-}
-
-function parseLegiScanItems(masterlist, alertsList) {
-  let count = 0;
-  for (const billId in masterlist) {
-    if (count >= 5) break;
-    const bill = masterlist[billId];
-    if (bill && bill.title) {
-      alertsList.push({
-        id: `alert_us_legiscan_${bill.bill_id}`,
-        source: "USA",
-        title: bill.bill_number + ": " + bill.title,
-        description: bill.description || bill.title,
-        link: bill.url || "https://legiscan.com",
-        matchingTags: ["US-LegiScan"],
         createdAt: new Date().toISOString()
       });
       count++;
@@ -18916,18 +18827,29 @@ function extractTag(xml, tag) {
 function cleanXmlText(text) {
   return text
     .replace(/<[^>]*>/g, "") // remove HTML tags
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function unescapeHtml(str) {
+  if (!str) return "";
+  return str
+    .replace(/&amp;nbsp;/g, " ")
+    .replace(/&nbsp;/g, " ")
     .replace(/&quot;/g, '"')
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
     .replace(/\s+/g, ' ')
     .trim();
 }
 
 // Lógica de evaluación LLM (Gemini API o Analizador de Reglas Local)
-async function evaluateRelevanceWithLLM(title, description) {
+async function evaluateRelevanceWithLLM(description) {
   const geminiApiKey = process.env.GEMINI_API_KEY;
-  const contentToAnalyze = `Título: ${title}\nDescripción: ${description}`;
+  const contentToAnalyze = `Descripción a analizar: ${description}`;
 
   // 1. Si existe clave de Gemini, hacer la llamada real
   if (geminiApiKey) {
@@ -18940,7 +18862,7 @@ async function evaluateRelevanceWithLLM(title, description) {
         body: JSON.stringify({
           contents: [{
             parts: [{
-              text: `${getSystemPrompt()}\n\nAnaliza el siguiente texto legislativo:\n${contentToAnalyze}`
+              text: `${getSystemPrompt()}\n\nAnaliza el siguiente texto descriptivo:\n${contentToAnalyze}`
             }]
           }],
           generationConfig: {
@@ -18973,7 +18895,7 @@ async function evaluateRelevanceWithLLM(title, description) {
   }
 
   // 2. Fallback a Analizador de Reglas Local
-  return simulateLLMEvaluation(title, description);
+  return simulateLLMEvaluation(description);
 }
 
 function getSystemPrompt() {
@@ -19004,8 +18926,8 @@ FORMATO DE SALIDA (JSON Estricto):
 }
 
 // Simulación de precisión NLP
-function simulateLLMEvaluation(title, description) {
-  const combined = `${title} ${description}`.toLowerCase();
+function simulateLLMEvaluation(description) {
+  const combined = (description || "").toLowerCase();
   
   let relevanceScore = 0.50;
   let pilarImpacted = 1;
