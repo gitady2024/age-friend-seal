@@ -76,7 +76,7 @@ export default async function handler(req, res) {
           source: "USA",
           title: "US Senate Bill: Age Discrimination in Employment Act (ADEA) Compliance Update",
           description: "Nuevas enmiendas legislativas en EE.UU. para la prohibición estricta de filtros de edad automática en plataformas digitales de contratación corporativa.",
-          link: "https://www.congress.gov/bill/118th-congress/senate-bill/1182",
+          link: "https://www.congress.gov/bill/118th-congress/senate-bill/1632",
           matchingTags: ["US-ADEA", "contratacion-no-discriminacion"],
           createdAt: new Date().toISOString()
         });
@@ -322,6 +322,9 @@ Evalúa el texto basándote ÚNICAMENTE en estos 5 pilares de inclusión y amiga
 3. Inclusión y comunicación digital (accesibilidad web y móvil).
 4. Salud laboral y prevención del desgaste por envejecimiento.
 5. Empleabilidad, mentoría generacional y transición al retiro.
+
+REGLA DE SEGURIDAD CRÍTICA:
+La URL oficial del documento legislativo es tratada de forma externa e inmutable. No debes generar, inventar, alterar, o incluir ningún enlace (URL) en tu respuesta.
 
 FORMATO DE SALIDA (JSON Estricto):
 {
