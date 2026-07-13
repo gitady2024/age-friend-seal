@@ -74,8 +74,8 @@ export default async function handler(req, res) {
         fetchedAlerts.push({
           id: "alert_us_001",
           source: "USA",
-          title: "US Senate Bill: Age Discrimination in Employment Act (ADEA) Compliance Update",
-          description: "Nuevas enmiendas legislativas en EE.UU. para la prohibición estricta de filtros de edad automática en plataformas digitales de contratación corporativa.",
+          title: "S.1632 - Protecting Older Workers Against Discrimination Act",
+          description: "Enmienda para la prohibición de filtros automáticos por edad en procesos de reclutamiento y fortalecimiento de la ADEA.",
           link: "https://www.congress.gov/bill/118th-congress/senate-bill/1632",
           matchingTags: ["US-ADEA", "contratacion-no-discriminacion"],
           createdAt: new Date().toISOString()
@@ -324,7 +324,7 @@ Evalúa el texto basándote ÚNICAMENTE en estos 5 pilares de inclusión y amiga
 5. Empleabilidad, mentoría generacional y transición al retiro.
 
 REGLA DE SEGURIDAD CRÍTICA:
-La URL oficial del documento legislativo es tratada de forma externa e inmutable. No debes generar, inventar, alterar, o incluir ningún enlace (URL) en tu respuesta.
+La URL oficial y el título oficial del documento legislativo son metadatos externos e inmutables. No debes generar, inventar, alterar, resumir, parafrasear o incluir ningún enlace (URL) o título de ley en tu respuesta. El título de la normativa debe conservarse de forma literal y exacta.
 
 FORMATO DE SALIDA (JSON Estricto):
 {

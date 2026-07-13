@@ -61,7 +61,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   // Load legal alerts and admin config
   useEffect(() => {
     if (activeTab === 'admin') {
-      const cachedAlerts = localStorage.getItem("ageFriendLegalAlerts");
+      const cachedAlerts = localStorage.getItem("ageFriendLegalAlerts_v5");
       const cachedFlagged = localStorage.getItem("ageFriendFlaggedQuestions");
       const cachedAuto = localStorage.getItem("ageFriendAutomationLevel");
 
@@ -85,9 +85,9 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
           {
             id: "alert_us_001",
             source: "USA",
-            title: "US Senate Bill: Age Discrimination in Employment Act (ADEA) Compliance Update",
-            description: "Nuevas enmiendas legislativas en EE.UU. para la prohibición estricta de filtros de edad automática en plataformas digitales de contratación corporativa.",
-            link: "https://www.congress.gov/bill/118th-congress/senate-bill/1182",
+            title: "S.1632 - Protecting Older Workers Against Discrimination Act",
+            description: "Enmienda para la prohibición de filtros automáticos por edad en procesos de reclutamiento y fortalecimiento de la ADEA.",
+            link: "https://www.congress.gov/bill/118th-congress/senate-bill/1632",
             relevanceScore: 0.90,
             pilarImpacted: 1, // Pilar 1: Eje Laboral / Contratación
             recommendedChange: "Eliminar filtros automáticos de fecha de nacimiento o edad en los formularios digitales de reclutamiento.",
@@ -110,7 +110,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
           }
         ];
         setLegalAlerts(initialAlerts);
-        localStorage.setItem("ageFriendLegalAlerts", JSON.stringify(initialAlerts));
+        localStorage.setItem("ageFriendLegalAlerts_v5", JSON.stringify(initialAlerts));
       }
 
       if (cachedFlagged) {
@@ -147,7 +147,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
               merged.unshift(newAlert);
             }
           });
-          localStorage.setItem("ageFriendLegalAlerts", JSON.stringify(merged));
+          localStorage.setItem("ageFriendLegalAlerts_v5", JSON.stringify(merged));
           return merged;
         });
 
@@ -266,7 +266,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     // 1. Aprobar alerta en el historial
     setLegalAlerts(prev => {
       const updated = prev.map(a => a.id === alertId ? { ...a, status: 'approved' } : a);
-      localStorage.setItem("ageFriendLegalAlerts", JSON.stringify(updated));
+      localStorage.setItem("ageFriendLegalAlerts_v5", JSON.stringify(updated));
       return updated;
     });
 
@@ -320,7 +320,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const ignoreAlert = (alertId) => {
     setLegalAlerts(prev => {
       const updated = prev.filter(a => a.id !== alertId);
-      localStorage.setItem("ageFriendLegalAlerts", JSON.stringify(updated));
+      localStorage.setItem("ageFriendLegalAlerts_v5", JSON.stringify(updated));
       return updated;
     });
   };

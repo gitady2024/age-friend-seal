@@ -395,7 +395,7 @@ export const recoverUserPassword = async (email) => {
 
 // Initialize Questions Database (Seeding)
 export const initializeQuestionsDatabase = async () => {
-  const isInitialized = localStorage.getItem("ageFriendQuestionsInitialized_v4");
+  const isInitialized = localStorage.getItem("ageFriendQuestionsInitialized_v5");
   if (isInitialized) return;
 
   const allQuestions = [];
@@ -499,7 +499,7 @@ export const initializeQuestionsDatabase = async () => {
 
   // Guardar en LocalStorage cache
   localStorage.setItem("ageFriendQuestions", JSON.stringify(allQuestions));
-  localStorage.setItem("ageFriendQuestionsInitialized_v4", "true");
+  localStorage.setItem("ageFriendQuestionsInitialized_v5", "true");
 };
 
 // Obtener todas las preguntas

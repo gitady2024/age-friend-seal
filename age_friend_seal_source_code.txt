@@ -2560,7 +2560,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   // Load legal alerts and admin config
   useEffect(() => {
     if (activeTab === 'admin') {
-      const cachedAlerts = localStorage.getItem("ageFriendLegalAlerts");
+      const cachedAlerts = localStorage.getItem("ageFriendLegalAlerts_v5");
       const cachedFlagged = localStorage.getItem("ageFriendFlaggedQuestions");
       const cachedAuto = localStorage.getItem("ageFriendAutomationLevel");
 
@@ -2584,9 +2584,9 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
           {
             id: "alert_us_001",
             source: "USA",
-            title: "US Senate Bill: Age Discrimination in Employment Act (ADEA) Compliance Update",
-            description: "Nuevas enmiendas legislativas en EE.UU. para la prohibición estricta de filtros de edad automática en plataformas digitales de contratación corporativa.",
-            link: "https://www.congress.gov/bill/118th-congress/senate-bill/1182",
+            title: "S.1632 - Protecting Older Workers Against Discrimination Act",
+            description: "Enmienda para la prohibición de filtros automáticos por edad en procesos de reclutamiento y fortalecimiento de la ADEA.",
+            link: "https://www.congress.gov/bill/118th-congress/senate-bill/1632",
             relevanceScore: 0.90,
             pilarImpacted: 1, // Pilar 1: Eje Laboral / Contratación
             recommendedChange: "Eliminar filtros automáticos de fecha de nacimiento o edad en los formularios digitales de reclutamiento.",
@@ -2609,7 +2609,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
           }
         ];
         setLegalAlerts(initialAlerts);
-        localStorage.setItem("ageFriendLegalAlerts", JSON.stringify(initialAlerts));
+        localStorage.setItem("ageFriendLegalAlerts_v5", JSON.stringify(initialAlerts));
       }
 
       if (cachedFlagged) {
@@ -2646,7 +2646,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
               merged.unshift(newAlert);
             }
           });
-          localStorage.setItem("ageFriendLegalAlerts", JSON.stringify(merged));
+          localStorage.setItem("ageFriendLegalAlerts_v5", JSON.stringify(merged));
           return merged;
         });
 
@@ -2765,7 +2765,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     // 1. Aprobar alerta en el historial
     setLegalAlerts(prev => {
       const updated = prev.map(a => a.id === alertId ? { ...a, status: 'approved' } : a);
-      localStorage.setItem("ageFriendLegalAlerts", JSON.stringify(updated));
+      localStorage.setItem("ageFriendLegalAlerts_v5", JSON.stringify(updated));
       return updated;
     });
 
@@ -2819,7 +2819,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const ignoreAlert = (alertId) => {
     setLegalAlerts(prev => {
       const updated = prev.filter(a => a.id !== alertId);
-      localStorage.setItem("ageFriendLegalAlerts", JSON.stringify(updated));
+      localStorage.setItem("ageFriendLegalAlerts_v5", JSON.stringify(updated));
       return updated;
     });
   };
@@ -17755,7 +17755,7 @@ export const recoverUserPassword = async (email) => {
 
 // Initialize Questions Database (Seeding)
 export const initializeQuestionsDatabase = async () => {
-  const isInitialized = localStorage.getItem("ageFriendQuestionsInitialized_v4");
+  const isInitialized = localStorage.getItem("ageFriendQuestionsInitialized_v5");
   if (isInitialized) return;
 
   const allQuestions = [];
@@ -17859,7 +17859,7 @@ export const initializeQuestionsDatabase = async () => {
 
   // Guardar en LocalStorage cache
   localStorage.setItem("ageFriendQuestions", JSON.stringify(allQuestions));
-  localStorage.setItem("ageFriendQuestionsInitialized_v4", "true");
+  localStorage.setItem("ageFriendQuestionsInitialized_v5", "true");
 };
 
 // Obtener todas las preguntas
@@ -18737,8 +18737,8 @@ export default async function handler(req, res) {
         fetchedAlerts.push({
           id: "alert_us_001",
           source: "USA",
-          title: "US Senate Bill: Age Discrimination in Employment Act (ADEA) Compliance Update",
-          description: "Nuevas enmiendas legislativas en EE.UU. para la prohibición estricta de filtros de edad automática en plataformas digitales de contratación corporativa.",
+          title: "S.1632 - Protecting Older Workers Against Discrimination Act",
+          description: "Enmienda para la prohibición de filtros automáticos por edad en procesos de reclutamiento y fortalecimiento de la ADEA.",
           link: "https://www.congress.gov/bill/118th-congress/senate-bill/1632",
           matchingTags: ["US-ADEA", "contratacion-no-discriminacion"],
           createdAt: new Date().toISOString()
@@ -18987,7 +18987,7 @@ Evalúa el texto basándote ÚNICAMENTE en estos 5 pilares de inclusión y amiga
 5. Empleabilidad, mentoría generacional y transición al retiro.
 
 REGLA DE SEGURIDAD CRÍTICA:
-La URL oficial del documento legislativo es tratada de forma externa e inmutable. No debes generar, inventar, alterar, o incluir ningún enlace (URL) en tu respuesta.
+La URL oficial y el título oficial del documento legislativo son metadatos externos e inmutables. No debes generar, inventar, alterar, resumir, parafrasear o incluir ningún enlace (URL) o título de ley en tu respuesta. El título de la normativa debe conservarse de forma literal y exacta.
 
 FORMATO DE SALIDA (JSON Estricto):
 {
