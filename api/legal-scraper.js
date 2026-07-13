@@ -139,6 +139,27 @@ export default async function handler(req, res) {
       const isExcluded = keywordsExclusion.some(ex => textToAnalyze.includes(ex.toLowerCase()));
       if (isExcluded) continue;
 
+      // Validación de Lista Blanca (Domain Whitelisting) y extracción de URL canónica
+      const whitelistRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)*(eur-lex\.europa\.eu|congress\.gov|legislation\.gov\.au|cepal\.org|legiscan\.com)\b/i;
+      let validatedLink = (alert.link || "").trim();
+      if (!whitelistRegex.test(validatedLink)) {
+        console.warn(`Discarding non-whitelisted URL: ${validatedLink}`);
+        if (alert.source === "EU") validatedLink = "https://eur-lex.europa.eu";
+        else if (alert.source === "USA") validatedLink = "https://www.congress.gov";
+        else if (alert.source === "Australia") validatedLink = "https://www.legislation.gov.au";
+        else if (alert.source === "LatAm") validatedLink = "https://repositorio.cepal.org";
+        else validatedLink = "";
+      } else {
+        // Limpiar parámetros de rastreo para obtener la URL canónica
+        try {
+          const urlObj = new URL(validatedLink);
+          urlObj.search = ""; // Quitar parámetros query (utm, etc.)
+          validatedLink = urlObj.toString();
+        } catch (e) {
+          // Mantener si falla el parseo
+        }
+      }
+
       // Evaluar relevancia mediante LLM o simulador de precisión
       const llmResult = await evaluateRelevanceWithLLM(alert.title, alert.description);
       
@@ -146,6 +167,7 @@ export default async function handler(req, res) {
       if (llmResult.relevanceScore >= relevanceThreshold) {
         evaluatedAlerts.push({
           ...alert,
+          link: validatedLink,
           relevanceScore: llmResult.relevanceScore,
           pilarImpacted: llmResult.pilarImpacted,
           recommendedChange: llmResult.recommendedChange,

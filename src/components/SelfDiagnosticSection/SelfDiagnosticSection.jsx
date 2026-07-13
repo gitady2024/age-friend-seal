@@ -39,6 +39,7 @@ const mapSectorKey = (subsector) => {
   if (normalized.includes("comercio") || normalized.includes("retail")) return "Comercio y Distribución";
   if (normalized.includes("manufactura") || normalized.includes("industria")) return "Manufactura e Industria";
   if (normalized.includes("educac")) return "Educación";
+  if (normalized.includes("bienes") || normalized.includes("urbanismo") || normalized.includes("vivienda") || normalized.includes("living")) return "Bienes Raíces, Urbanismo y Vivienda (Senior Living)";
   if (normalized.includes("energia") || normalized.includes("agua") || normalized.includes("recursos")) return "Energía y Recursos Naturales";
   if (normalized.includes("ocio") || normalized.includes("entretenimiento") || normalized.includes("turismo")) return "Entretenimiento, Medios y Turismo";
   if (normalized.includes("público") || normalized.includes("publico")) return "PÚBLICO";

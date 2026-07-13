@@ -15,11 +15,53 @@ export default async function handler(req, res) {
   }
 
   // Esperar listado de alertas en req.body (POST) o generar vacías si no hay datos
-  const { alerts = [] } = req.body || {};
+  const { alerts = [], lang = "es" } = { ...req.query, ...req.body };
+
+  // Dicionarios de traducción para el reporte Excel
+  const textDict = {
+    es: {
+      sheetName: "Historial Normativo",
+      title: "AGE FRIEND SEAL - HISTORIAL DE ALERTAS NORMATIVAS",
+      headers: ["ID Alerta", "Jurisdicción", "Título de la Normativa", "Resumen Legal (LLM)", "Pilar Impactado", "Relevancia (Score)", "Recomendación de Ajuste"],
+      pillars: {
+        1: "Pilar 1: Accesibilidad física",
+        2: "Pilar 2: Trato respetuoso / Atención",
+        3: "Pilar 3: Inclusión digital / Accesibilidad web",
+        4: "Pilar 4: Salud laboral / Prevención desgaste",
+        5: "Pilar 5: Empleabilidad / Transición retiro"
+      }
+    },
+    en: {
+      sheetName: "Regulatory History",
+      title: "AGE FRIEND SEAL - REGULATORY ALERTS HISTORY",
+      headers: ["Alert ID", "Jurisdiction", "Regulation Title", "Legal Summary (LLM)", "Pillar Impacted", "Relevance Score", "Adjust Recommendation"],
+      pillars: {
+        1: "Pillar 1: Physical accessibility",
+        2: "Pillar 2: Respectful treatment / Service",
+        3: "Pillar 3: Digital inclusion / Web accessibility",
+        4: "Pillar 4: Occupational health / Wear prevention",
+        5: "Pillar 5: Employability / Retirement transition"
+      }
+    },
+    pt: {
+      sheetName: "Histórico Regulatório",
+      title: "AGE FRIEND SEAL - HISTÓRICO DE ALERTAS NORMATIVAS",
+      headers: ["ID Alerta", "Jurisdição", "Título da Norma", "Resumo Legal (LLM)", "Pilar Impactado", "Relevância (Score)", "Recomendação de Ajuste"],
+      pillars: {
+        1: "Pilar 1: Acessibilidade física",
+        2: "Pilar 2: Trato respeitoso / Atendimento",
+        3: "Pilar 3: Inclusão digital / Acessibilidade web",
+        4: "Pilar 4: Saúde ocupacional / Prevenção de desgaste",
+        5: "Pilar 5: Empregabilidade / Transição aposentadoria"
+      }
+    }
+  };
+
+  const activeDict = textDict[lang] || textDict.es;
 
   try {
     const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet("Historial Normativo");
+    const sheet = workbook.addWorksheet(activeDict.sheetName);
     sheet.views = [{ showGridLines: true }];
 
     const FONT_NAME = "Arial";
@@ -27,7 +69,7 @@ export default async function handler(req, res) {
     // Bloque del Título Principal
     sheet.mergeCells("A2:G3");
     const titleCell = sheet.getCell("A2");
-    titleCell.value = "AGE FRIEND SEAL - HISTORIAL DE ALERTAS NORMATIVAS";
+    titleCell.value = activeDict.title;
     titleCell.font = { name: FONT_NAME, size: 16, bold: true, color: { argb: "FFFFFF" } };
     titleCell.fill = {
       type: "pattern",
@@ -38,15 +80,7 @@ export default async function handler(req, res) {
 
     // Fila de Encabezados (Fila 5)
     sheet.getRow(5).height = 25;
-    const colHeaders = [
-      "ID Alerta",
-      "Jurisdicción",
-      "Título de la Normativa",
-      "Resumen Legal (LLM)",
-      "Pilar Impactado",
-      "Relevancia (Score)",
-      "Recomendación de Ajuste"
-    ];
+    const colHeaders = activeDict.headers;
 
     colHeaders.forEach((h, colIdx) => {
       const cell = sheet.getCell(5, colIdx + 1);
@@ -68,19 +102,12 @@ export default async function handler(req, res) {
     let currentRow = 6;
     alerts.forEach((alert) => {
       sheet.getRow(currentRow).height = 22;
-      
-      const pilarMap = {
-        1: "Pilar 1: Eje Laboral / Contratación",
-        2: "Pilar 4: Eje Salud / Ergonomía",
-        3: "Pilar 2: Eje Conciliación / Transición retiro",
-        4: "Pilar 3: Eje Consumidor / Silver Economy"
-      };
 
       sheet.getCell(`A${currentRow}`).value = alert.id || "";
       sheet.getCell(`B${currentRow}`).value = alert.source || "";
       sheet.getCell(`C${currentRow}`).value = alert.title || "";
       sheet.getCell(`D${currentRow}`).value = alert.summary || alert.description || "";
-      sheet.getCell(`E${currentRow}`).value = pilarMap[alert.pilarImpacted] || `Pilar ${alert.pilarImpacted}`;
+      sheet.getCell(`E${currentRow}`).value = activeDict.pillars[alert.pilarImpacted] || `Pilar ${alert.pilarImpacted}`;
       
       const scoreCell = sheet.getCell(`F${currentRow}`);
       scoreCell.value = alert.relevanceScore !== undefined ? parseFloat(alert.relevanceScore.toFixed(2)) : 0.0;

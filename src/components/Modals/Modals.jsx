@@ -167,16 +167,26 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
               return matchPilar && matchSector && matchVertical;
             });
 
+            let updatedAny = false;
             for (const match of matches) {
-              const updated = {
-                ...match,
-                text_es: newAlert.newQuestionText_es || match.text_es,
-                text_en: newAlert.newQuestionText_en || match.text_en,
-                text_pt: newAlert.newQuestionText_pt || match.text_pt,
-                status: 'active',
-                flaggedAlerts: []
-              };
-              await updateQuestionInDb(match.id, updated);
+              const duplicateExists = adminQuestions.some(other => 
+                other.id !== match.id &&
+                other.applicable_verticals.some(v => match.applicable_verticals.includes(v)) &&
+                (other.text_es === newAlert.newQuestionText_es || other.text_en === newAlert.newQuestionText_en)
+              );
+
+              if (!duplicateExists && !updatedAny) {
+                const updated = {
+                  ...match,
+                  text_es: newAlert.newQuestionText_es || match.text_es,
+                  text_en: newAlert.newQuestionText_en || match.text_en,
+                  text_pt: newAlert.newQuestionText_pt || match.text_pt,
+                  status: 'active',
+                  flaggedAlerts: []
+                };
+                await updateQuestionInDb(match.id, updated);
+                updatedAny = true;
+              }
             }
           }
           alert(language === 'es' 
@@ -227,19 +237,19 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
 
   const downloadLegalExcel = async () => {
     try {
-      const res = await fetch('/api/export-legal-reports', {
+      const res = await fetch(`/api/export-legal-reports?lang=${language}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ alerts: legalAlerts })
+        body: JSON.stringify({ alerts: legalAlerts, lang: language })
       });
       if (res.ok) {
         const blob = await res.blob();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'historial_normativo.xlsx';
+        a.download = language === 'en' ? 'regulatory_history.xlsx' : language === 'pt' ? 'historico_regulatorio.xlsx' : 'historial_normativo.xlsx';
         document.body.appendChild(a);
         a.click();
         a.remove();
@@ -248,7 +258,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       }
     } catch (e) {
       console.error(e);
-      alert("Failed to connect to export service.");
+      alert("Error exporting report.");
     }
   };
 
@@ -265,7 +275,6 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       const targetSector = alertObj.targetSector || "both";
       const targetVerticals = alertObj.targetVerticals || ["All"];
 
-      // 2. Modificar y activar las preguntas vinculadas a este pilar, sector y verticales
       const matches = adminQuestions.filter(q => {
         const matchPilar = q.pilar === pilarImpacted;
         const matchSector = targetSector === 'both' || q.sector === targetSector;
@@ -274,16 +283,32 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
         return matchPilar && matchSector && matchVertical;
       });
 
+      let updatedAny = false;
       for (const match of matches) {
-        const updated = {
-          ...match,
-          text_es: alertObj.newQuestionText_es || match.text_es,
-          text_en: alertObj.newQuestionText_en || match.text_en,
-          text_pt: alertObj.newQuestionText_pt || match.text_pt,
-          status: 'active',
-          flaggedAlerts: (match.flaggedAlerts || []).filter(id => id !== alertId)
-        };
-        await updateQuestionInDb(match.id, updated);
+        const duplicateExists = adminQuestions.some(other => 
+          other.id !== match.id &&
+          other.applicable_verticals.some(v => match.applicable_verticals.includes(v)) &&
+          (other.text_es === alertObj.newQuestionText_es || other.text_en === alertObj.newQuestionText_en)
+        );
+
+        if (!duplicateExists && !updatedAny) {
+          const updated = {
+            ...match,
+            text_es: alertObj.newQuestionText_es || match.text_es,
+            text_en: alertObj.newQuestionText_en || match.text_en,
+            text_pt: alertObj.newQuestionText_pt || match.text_pt,
+            status: 'active',
+            flaggedAlerts: (match.flaggedAlerts || []).filter(id => id !== alertId)
+          };
+          await updateQuestionInDb(match.id, updated);
+          updatedAny = true;
+        } else {
+          // just remove the flag without duplicating text
+          await updateQuestionInDb(match.id, {
+            flaggedAlerts: (match.flaggedAlerts || []).filter(id => id !== alertId),
+            status: (match.flaggedAlerts || []).filter(id => id !== alertId).length > 0 ? 'under_review' : 'active'
+          });
+        }
       }
 
       // Recargar lista
