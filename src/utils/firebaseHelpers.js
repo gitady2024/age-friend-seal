@@ -22,7 +22,7 @@ import {
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { questions as defaultQuestions } from "../data/diagnostic.js";
-import { QUESTIONS_BY_SECTOR } from "../data/questionsBySector.js";
+import { QUESTIONS_BY_SECTOR_TRANSLATED } from "../data/questionsBySectorTranslated.js";
 
 // Helper to determine if Firebase is fully operational
 export const isFirebaseEnabled = () => {
@@ -393,166 +393,9 @@ export const recoverUserPassword = async (email) => {
   }
 };
 
-// Heuristic translator helper for seeding translations
-const translateTo = (text, lang) => {
-  if (!text) return "";
-  if (lang === 'es') return text;
-
-  const dict = {
-    // Specific theme headers & questions
-    "Atracción y Selección de Talento: ¿Cómo gestiona la empresa la contratación de mayores de 50 años?": {
-      en: "Attraction & Selection of Talent: How does the company manage hiring people over 50?",
-      pt: "Atração e Seleção de Talentos: Como a empresa gerencia a contratação de maiores de 50 anos?"
-    },
-    "Mentoría y Diversidad Generacional: ¿Existen programas estructurados para el intercambio generacional?": {
-      en: "Mentorship & Generational Diversity: Are there structured programs for generational exchange?",
-      pt: "Mentoria e Diversidade Geracional: Existem programas estruturados para intercâmbio geracional?"
-    },
-    "Transición a la Jubilación: ¿Qué medidas ofrece la empresa a los empleados próximos al retiro?": {
-      en: "Transition to Retirement: What measures does the company offer to employees near retirement?",
-      pt: "Transição para a Aposentadoria: Quais medidas a empresa oferece aos funcionários próximos da aposentadoria?"
-    },
-    "Formación y Reskilling: ¿Cómo se garantiza la actualización tecnológica en empleados sénior?": {
-      en: "Training & Reskilling: How is technological updating guaranteed for senior employees?",
-      pt: "Treinamento e Reskilling: Como a atualização tecnológica é garantida para funcionários seniores?"
-    },
-    "Salud Laboral y Ergonomía: ¿Las políticas previenen el desgaste por la edad?": {
-      en: "Occupational Health & Ergonomics: Do policies prevent age-related wear and tear?",
-      pt: "Saúde Ocupacional e Ergonomia: As políticas previnem o desgaste devido à idade?"
-    },
-    "Retención del Conocimiento Crítico: ¿Qué ocurre con el \"saber hacer\" al jubilarse un empleado?": {
-      en: "Retention of Critical Knowledge: What happens to the 'know-how' when an employee retires?",
-      pt: "Retenção de Conhecimento Crítico: O que acontece com o 'saber-fazer' quando um funcionário se aposenta?"
-    },
-    "Cultura Organizacional y Edadismo: ¿Existe compromiso directivo contra la discriminación por edad?": {
-      en: "Organizational Culture & Ageism: Is there executive commitment against age discrimination?",
-      pt: "Cultura Organizacional e Etarismo: Existe compromisso executivo contra a discriminação por idade?"
-    },
-    "Accesibilidad Física en Sucursales: ¿Están diseñadas bajo accesibilidad universal?": {
-      en: "Physical Accessibility in Branches: Are they designed under universal accessibility?",
-      pt: "Acessibilidade Física em Filiais: Elas são projetadas sob acessibilidade universal?"
-    },
-    "Modelo de Atención al Cliente: ¿Existen protocolos para el segmento sénior?": {
-      en: "Customer Service Model: Are there protocols for the senior segment?",
-      pt: "Modelo de Atendimento ao Cliente: Existem protocolos para o segmento sênior?"
-    },
-    "Accesibilidad Digital (UX/UI): ¿Cómo de accesibles son la App y la banca web?": {
-      en: "Digital Accessibility (UX/UI): How accessible are the App and web banking?",
-      pt: "Acessibilidade Digital (UX/UI): Quão acessíveis são o App e o internet banking?"
-    },
-    "Seguridad Financiera y Prevención de Fraudes: ¿Existen alertas específicas de fraude para mayores?": {
-      en: "Financial Security & Fraud Prevention: Are there specific fraud alerts for seniors?",
-      pt: "Segurança Financeira e Prevenção de Fraudes: Existem alertas de fraude específicos para idosos?"
-    },
-    "Diseño Inclusivo de Productos: ¿Están adaptados los productos a la pérdida de capacidades cognitivas o físicas?": {
-      en: "Inclusive Product Design: Are products adapted to the loss of cognitive or physical capabilities?",
-      pt: "Design de Produto Inclusivo: Os produtos são adaptados à perda de capacidades cognitivas ou físicas?"
-    },
-    "Canales de Soporte: ¿Se ofrece soporte telefónico o presencial directo humano?": {
-      en: "Support Channels: Is direct human telephone or face-to-face support offered?",
-      pt: "Canais de Suporte: É oferecido suporte telefônico ou presencial direto humano?"
-    },
-    "Campañas de Marketing y Comunicación: ¿Evitan los sesgos edadistas o paternalistas?": {
-      en: "Marketing & Communication Campaigns: Do they avoid ageist or paternalistic biases?",
-      pt: "Campanhas de Marketing e Comunicação: Evitam preconceitos etaristas ou paternalistas?"
-    },
-    "Monitoreo y Cumplimiento: ¿Se evalúan métricas de satisfacción y quejas del cliente sénior?": {
-      en: "Monitoring & Compliance: Are satisfaction metrics and complaints from senior customers evaluated?",
-      pt: "Monitoramento e Conformidade: Métricas de satisfação e reclamações do cliente sênior são avaliadas?"
-    },
-
-    // Standard options
-    "El conocimiento se pierde.": { en: "Knowledge is lost.", pt: "O conhecimento é perdido." },
-    "Breve documentación de tareas antes de la salida.": { en: "Brief documentation of tasks before departure.", pt: "Breve documentação das tarefas antes da partida." },
-    "\"Bancos de Conocimiento\" y transición estructurada usando al sénior como asesor interno.": {
-      en: "'Knowledge Banks' and structured transition using the senior as an internal advisor.",
-      pt: "'Bancos de Conhecimento' e transição estruturada usando o sênior como consultor interno."
-    },
-    "No se aborda la edad como factor de diversidad.": { en: "Age is not addressed as a diversity factor.", pt: "A idade não é abordada como um fator de diversidade." },
-    "RRHH realiza campañas aisladas.": { en: "HR conducts isolated campaigns.", pt: "O RH realiza campanhas isoladas." },
-    "La Alta Dirección integra la inclusión generacional en sus objetivos ESG.": {
-      en: "Senior Management integrates generational inclusion into ESG objectives.",
-      pt: "A Alta Diretoria integra a inclusão geracional nos objetivos ESG."
-    },
-    "Cumplen norma básica pero tienen barreras arquitectónicas.": {
-      en: "They comply with basic standards but have architectural barriers.",
-      pt: "Cumprem as normas básicas, mas possuem barreiras arquitetônicas."
-    },
-    "Rampas y asientos, pero la atención exige estar de pie.": {
-      en: "Ramps and seats, but service requires standing.",
-      pt: "Rampas e assentos, mas o atendimento exige ficar de pé."
-    },
-    "Mostradores rebajados, pasillos anchos y cajeros a baja altura.": {
-      en: "Lowered counters, wide aisles, and low-height ATMs.",
-      pt: "Balcões rebaixados, corredores largos e caixas eletrônicos em altura reduzida."
-    },
-    "Mismas filas y canales automatizados que el resto.": {
-      en: "Same lines and automated channels as everyone else.",
-      pt: "Mesmas filas e canais automatizados que os demais."
-    },
-    "Personal asiste si hay reclamo, pero los tiempos son idénticos.": {
-      en: "Staff assists if there is a complaint, but processing times are identical.",
-      pt: "A equipe atende se houver reclamação, mas os tempos são idênticos."
-    },
-    "Línea telefónica directa con humanos y turnos preferenciales presenciales sin estigma.": {
-      en: "Direct telephone line with humans and priority in-person turns without stigma.",
-      pt: "Linha telefônica direta com humanos e turnos preferenciais presenciais sem estigma."
-    },
-    "Versión única y compleja para todos.": { en: "Single complex version for everyone.", pt: "Versão única e complexa para todos." },
-    "Permite hacer zoom.": { en: "Allows zooming.", pt: "Permite fazer zoom." },
-    "Cuentan con un \"Modo Sencillo\" con letras grandes y acceso directo a operaciones básicas.": {
-      en: "They have a 'Simple Mode' with large fonts and direct access to basic operations.",
-      pt: "Eles têm um 'Modo Simples' com letras grandes e acesso direto a operações básicas."
-    }
-  };
-
-  if (dict[text] && dict[text][lang]) {
-    return dict[text][lang];
-  }
-
-  // Dynamic heuristic replacement for other texts
-  let translated = text;
-  if (lang === 'en') {
-    translated = translated
-      .replace(/¿/g, "").replace(/\?/g, "?")
-      .replace(/¿Cómo gestiona la empresa/gi, "How does the company manage")
-      .replace(/¿Existen programas/gi, "Are there programs")
-      .replace(/¿Qué ocurre con/gi, "What happens to")
-      .replace(/¿Existe/gi, "Is there")
-      .replace(/¿Están/gi, "Are they")
-      .replace(/¿Cómo/gi, "How")
-      .replace(/¿Se/gi, "Is it")
-      .replace(/sénior/gi, "senior")
-      .replace(/empresa/gi, "company")
-      .replace(/mayores de 50 años/gi, "people over 50")
-      .replace(/persona/gi, "person")
-      .replace(/adulto mayor/gi, "older adult")
-      .replace(/jubilación/gi, "retirement")
-      .replace(/Pilar/gi, "Pillar");
-  } else if (lang === 'pt') {
-    translated = translated
-      .replace(/¿/g, "").replace(/\?/g, "?")
-      .replace(/¿Cómo gestiona la empresa/gi, "Como a empresa gerencia")
-      .replace(/¿Existen programas/gi, "Existem programas")
-      .replace(/¿Qué ocurre con/gi, "O que acontece com")
-      .replace(/¿Existe/gi, "Existe")
-      .replace(/¿Están/gi, "Estão")
-      .replace(/¿Cómo/gi, "Como")
-      .replace(/¿Se/gi, "Se")
-      .replace(/sénior/gi, "sênior")
-      .replace(/empresa/gi, "empresa")
-      .replace(/mayores de 50 años/gi, "maiores de 50 anos")
-      .replace(/persona/gi, "pessoa")
-      .replace(/adulto mayor/gi, "idoso")
-      .replace(/jubilación/gi, "aposentadoria")
-      .replace(/Pilar/gi, "Pillar");
-  }
-  return translated;
-};
-
 // Initialize Questions Database (Seeding)
 export const initializeQuestionsDatabase = async () => {
-  const isInitialized = localStorage.getItem("ageFriendQuestionsInitialized_v3");
+  const isInitialized = localStorage.getItem("ageFriendQuestionsInitialized_v4");
   if (isInitialized) return;
 
   const allQuestions = [];
@@ -582,10 +425,10 @@ export const initializeQuestionsDatabase = async () => {
   });
 
   // 2. Add sector specific questions (including PÚBLICO)
-  const sectorsToSeed = { ...QUESTIONS_BY_SECTOR };
+  const sectorsToSeed = { ...QUESTIONS_BY_SECTOR_TRANSLATED };
   if (!sectorsToSeed["Bienes Raíces, Urbanismo y Vivienda (Senior Living)"]) {
     // Clone Comercio y Distribución questions as initial data for the 9th vertical
-    sectorsToSeed["Bienes Raíces, Urbanismo y Vivienda (Senior Living)"] = QUESTIONS_BY_SECTOR["Comercio y Distribución"] || [];
+    sectorsToSeed["Bienes Raíces, Urbanismo y Vivienda (Senior Living)"] = QUESTIONS_BY_SECTOR_TRANSLATED["Comercio y Distribución"] || [];
   }
 
   for (const vertical in sectorsToSeed) {
@@ -600,7 +443,20 @@ export const initializeQuestionsDatabase = async () => {
         : `private_${cleanVerticalName.toLowerCase().replace(/[^a-z0-9]/g, "_")}_q${idx + 1}`;
 
       const questionTextEs = q.question || "";
+      const questionTextEn = q.question_en || "";
+      const questionTextPt = q.question_pt || "";
+
       const recommendationEs = q.recommendation || "";
+      const recommendationEn = q.recommendation_en || "";
+      const recommendationPt = q.recommendation_pt || "";
+
+      // Strict validation to avoid identical English/Spanish translations (prevents silent failures)
+      if (qId.startsWith("private_") || qId.startsWith("public_")) {
+        if (questionTextEs && questionTextEn === questionTextEs) {
+          console.error(`DATABASE_SEED_INTEGRITY_ERROR: English question text is identical to Spanish for question ${qId}: "${questionTextEs}"`);
+          throw new Error(`DATABASE_SEED_INTEGRITY_ERROR: Question ${qId} lacks English translation.`);
+        }
+      }
 
       allQuestions.push({
         id: qId,
@@ -608,20 +464,22 @@ export const initializeQuestionsDatabase = async () => {
         sector: sectorVal,
         applicable_verticals: [cleanVerticalName],
         text_es: questionTextEs,
-        text_en: translateTo(questionTextEs, 'en'),
-        text_pt: translateTo(questionTextEs, 'pt'),
+        text_en: questionTextEn,
+        text_pt: questionTextPt,
         options: (q.options || []).map(o => {
           const optionTextEs = o.text || "";
+          const optionTextEn = o.text_en || "";
+          const optionTextPt = o.text_pt || "";
           return {
             score: o.score,
             text_es: optionTextEs,
-            text_en: translateTo(optionTextEs, 'en'),
-            text_pt: translateTo(optionTextEs, 'pt')
+            text_en: optionTextEn,
+            text_pt: optionTextPt
           };
         }),
         recommendation_es: recommendationEs,
-        recommendation_en: translateTo(recommendationEs, 'en'),
-        recommendation_pt: translateTo(recommendationEs, 'pt'),
+        recommendation_en: recommendationEn,
+        recommendation_pt: recommendationPt,
         status: 'active',
         flaggedAlerts: []
       });
@@ -641,7 +499,7 @@ export const initializeQuestionsDatabase = async () => {
 
   // Guardar en LocalStorage cache
   localStorage.setItem("ageFriendQuestions", JSON.stringify(allQuestions));
-  localStorage.setItem("ageFriendQuestionsInitialized_v3", "true");
+  localStorage.setItem("ageFriendQuestionsInitialized_v4", "true");
 };
 
 // Obtener todas las preguntas
