@@ -54,7 +54,7 @@ function Footer({ language, onLanguageChange }) {
             textDecoration: 'none'
           }}>
             <img 
-              src="/assets/logo.svg" 
+              src="/assets/logo.png" 
               alt={intl.formatMessage({ id: "Footer.001" })} 
               style={{ height: '100%', width: 'auto' }} 
             />

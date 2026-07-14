@@ -33,7 +33,7 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
       <div className="container nav-container">
         <a href="#" className="logo" onClick={closeMenu} style={{ display: 'flex', alignItems: 'center', height: '42px', textDecoration: 'none' }}>
           <img
-            src="/assets/logo.svg"
+            src="/assets/logo.png"
             alt={intl.formatMessage({ id: 'brand.logoAlt' })}
             style={{ height: '100%', width: 'auto' }}
           />
