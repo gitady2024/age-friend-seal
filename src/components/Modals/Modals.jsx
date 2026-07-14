@@ -43,6 +43,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   // Admin Panel States
   const [adminUsers, setAdminUsers] = useState([]);
   const [loadingAdminUsers, setLoadingAdminUsers] = useState(false);
+  const [exportingUsers, setExportingUsers] = useState(false);
   const [uploadingDeliverable, setUploadingDeliverable] = useState(false);
   const [adminActiveUser, setAdminActiveUser] = useState(null); // UID of user currently being edited by admin
   const [adminDeliverables, setAdminDeliverables] = useState([]);
@@ -263,6 +264,46 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       );
     } finally {
       setSyncingToDrive(false);
+    }
+  };
+
+  const downloadUsersExcel = async () => {
+    setExportingUsers(true);
+    try {
+      const res = await fetch(`/api/export-users-excel?lang=${language}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ users: adminUsers, lang: language })
+      });
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = language === 'en' ? 'registered_users.xlsx' : language === 'pt' ? 'usuarios_registrados.xlsx' : 'usuarios_registrados.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        showToast(
+          language === 'es' ? 'Descarga Exitosa' : 'Download Successful',
+          language === 'es' ? 'El listado de usuarios se ha descargado correctamente.' : 'The list of users has been successfully downloaded.'
+        );
+      } else {
+        showToast(
+          language === 'es' ? 'Error de Descarga' : 'Download Error',
+          language === 'es' ? 'Error al exportar el reporte de usuarios.' : 'Error exporting users report.'
+        );
+      }
+    } catch (e) {
+      console.error(e);
+      showToast(
+        language === 'es' ? 'Error de Red' : 'Network Error',
+        language === 'es' ? 'Error al conectar con el servidor.' : 'Failed to connect to the server.'
+      );
+    } finally {
+      setExportingUsers(false);
     }
   };
 
@@ -1577,6 +1618,34 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                 <h4 style={{ color: 'var(--text-primary)', margin: 0 }}>
                   {language === 'es' ? 'Panel de Control de Certificaciones' : 'Certifications Master Control'}
                 </h4>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '5px' }}>
+                  <button 
+                    className="btn btn-outline" 
+                    disabled={exportingUsers || loadingAdminUsers} 
+                    onClick={downloadUsersExcel}
+                    style={{ padding: '8px 14px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+                  >
+                    {exportingUsers ? (
+                      <>
+                        <span style={{ 
+                          width: '12px', 
+                          height: '12px', 
+                          border: '2px solid currentColor', 
+                          borderTopColor: 'transparent', 
+                          borderRadius: '50%', 
+                          display: 'inline-block', 
+                          animation: 'spin 1s linear infinite' 
+                        }} />
+                        <span>{language === 'es' ? 'Descargando...' : 'Downloading...'}</span>
+                      </>
+                    ) : (
+                      <>
+                        👥 {language === 'es' ? 'Exportar Usuarios' : 'Export Users'}
+                      </>
+                    )}
+                  </button>
+                </div>
                 
                 {loadingAdminUsers ? (
                   <p>{language === 'es' ? 'Cargando empresas...' : 'Loading companies...'}</p>
