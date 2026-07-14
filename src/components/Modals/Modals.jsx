@@ -50,6 +50,8 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   // Legal Scraper States
   const [legalAlerts, setLegalAlerts] = useState([]);
   const [loadingScraper, setLoadingScraper] = useState(false);
+  const [syncingToDrive, setSyncingToDrive] = useState(false);
+  const [toast, setToast] = useState(null);
   const [sourceFilter, setSourceFilter] = useState('All');
   const [automationLevel, setAutomationLevel] = useState(0);
   const [flaggedQuestions, setFlaggedQuestions] = useState({}); // e.g. { q7: true, q3: true }
@@ -219,6 +221,48 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     } catch (e) {
       console.error(e);
       alert("Error exporting report.");
+    }
+  };
+
+  const showToast = (title, desc) => {
+    setToast({ title, desc });
+    setTimeout(() => {
+      setToast(null);
+    }, 4000);
+  };
+
+  const syncExcelToDrive = async () => {
+    setSyncingToDrive(true);
+    try {
+      const res = await fetch("/api/sync-to-drive", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ alerts: legalAlerts, lang: language })
+      });
+      const data = await res.json();
+      if (res.ok && data.status === "success") {
+        showToast(
+          language === "es" ? "Sincronización exitosa" : "Sync Successful",
+          language === "es" 
+            ? "El reporte de normativas en Google Drive ha sido actualizado." 
+            : "The regulatory report in Google Drive has been updated."
+        );
+      } else {
+        showToast(
+          language === "es" ? "Error de Sincronización" : "Sync Error",
+          data.message || (language === "es" ? "Error al sincronizar con Drive. Reintente." : "Failed to sync with Drive. Please retry.")
+        );
+      }
+    } catch (e) {
+      console.error(e);
+      showToast(
+        language === "es" ? "Error de Red/Sistema" : "Network/System Error",
+        language === "es" ? "Error al conectar con el servidor." : "Could not connect to the server."
+      );
+    } finally {
+      setSyncingToDrive(false);
     }
   };
 
@@ -1728,6 +1772,31 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                     >
                       📊 {language === 'es' ? 'Exportar Excel' : 'Export Excel'}
                     </button>
+                    <button 
+                      className="btn btn-outline" 
+                      disabled={syncingToDrive} 
+                      onClick={syncExcelToDrive}
+                      style={{ padding: '8px 14px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      {syncingToDrive ? (
+                        <>
+                          <span style={{ 
+                            width: '12px', 
+                            height: '12px', 
+                            border: '2px solid currentColor', 
+                            borderTopColor: 'transparent', 
+                            borderRadius: '50%', 
+                            display: 'inline-block', 
+                            animation: 'spin 1s linear infinite' 
+                          }} />
+                          <span>{language === 'es' ? 'Sincronizando...' : 'Syncing...'}</span>
+                        </>
+                      ) : (
+                        <>
+                          💾 {language === 'es' ? 'Sincronizar con Drive' : 'Sync with Drive'}
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
 
@@ -2043,6 +2112,13 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
           </div>
         </div>
       </div>
+
+      {toast && (
+        <div className="toast-notification">
+          <div className="toast-title">{toast.title}</div>
+          <div className="toast-desc">{toast.desc}</div>
+        </div>
+      )}
     </div>
   );
 }
