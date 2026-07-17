@@ -1,5 +1,6 @@
 import { generateExcelWorkbook } from "./excelHelper.js";
 import nodemailer from "nodemailer";
+import { verifyFirebaseToken } from "./auth.js";
 
 export default async function handler(req, res) {
   // Configurar cabeceras CORS
@@ -8,7 +9,7 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,PATCH,DELETE,POST,PUT");
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
+    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization"
   );
 
   if (req.method === "OPTIONS") {
@@ -17,6 +18,12 @@ export default async function handler(req, res) {
 
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
+  }
+
+  // Validar sesión del usuario (Bearer Token de Firebase)
+  const authResult = verifyFirebaseToken(req.headers.authorization);
+  if (!authResult.valid) {
+    return res.status(401).json({ error: "Unauthorized", details: authResult.error });
   }
 
   const { 

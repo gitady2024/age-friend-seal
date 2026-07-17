@@ -9,6 +9,7 @@ import NormativasSection from './components/NormativasSection/NormativasSection.
 import ComparisonSection from './components/ComparisonSection/ComparisonSection.jsx';
 import NewsRadarSection from './components/NewsRadarSection/NewsRadarSection.jsx';
 import SelfDiagnosticSection from './components/SelfDiagnosticSection/SelfDiagnosticSection.jsx';
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute.jsx';
 import AlliancesSection from './components/AlliancesSection/AlliancesSection.jsx';
 import Modals from './components/Modals/Modals.jsx';
 import Footer from './components/Footer/Footer.jsx';
@@ -108,6 +109,60 @@ function App() {
     }
   }, [currentUser]);
 
+  // Intercept navigation/clicks to #autodiagnostico for unauthenticated users
+  useEffect(() => {
+    const isAuth = currentUser && currentUser.type !== 'anonymous';
+
+    const handleHashChange = () => {
+      if (window.location.hash === '#autodiagnostico' && !isAuth) {
+        // Remove hash to prevent scrolling
+        window.history.pushState("", document.title, window.location.pathname + window.location.search);
+        window.sessionStorage.setItem('redirectAfterAuth', '#autodiagnostico');
+        setActiveModal('auth');
+      }
+    };
+
+    const handleGlobalClick = (e) => {
+      const target = e.target.closest('a');
+      if (target && target.getAttribute('href') === '#autodiagnostico') {
+        if (!isAuth) {
+          e.preventDefault();
+          window.sessionStorage.setItem('redirectAfterAuth', '#autodiagnostico');
+          setActiveModal('auth');
+        }
+      }
+    };
+
+    // Check on load/mount
+    handleHashChange();
+
+    window.addEventListener('hashchange', handleHashChange);
+    document.addEventListener('click', handleGlobalClick, true); // Use capture phase
+
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+      document.removeEventListener('click', handleGlobalClick, true);
+    };
+  }, [currentUser]);
+
+  // Handle redirection/auto-scroll to #autodiagnostico after login/registration
+  useEffect(() => {
+    const isAuth = currentUser && currentUser.type !== 'anonymous';
+    if (isAuth) {
+      const pendingRedirect = window.sessionStorage.getItem('redirectAfterAuth');
+      if (pendingRedirect === '#autodiagnostico') {
+        window.sessionStorage.removeItem('redirectAfterAuth');
+        setActiveModal(null);
+        setTimeout(() => {
+          const element = document.getElementById('autodiagnostico');
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 200);
+      }
+    }
+  }, [currentUser]);
+
   const openContactModal = (level) => {
     setContactLevel(level);
     setActiveModal('contact');
@@ -129,13 +184,19 @@ function App() {
       <NormativasSection language={language} />
       <ComparisonSection language={language} />
       <NewsRadarSection language={language} />
-      <SelfDiagnosticSection
-        language={language}
+      <ProtectedRoute
         currentUser={currentUser}
-        onUserChange={setCurrentUser}
-        onOpenPayment={() => setActiveModal('payment')}
-        onDiagnosticComplete={setLatestDiagnostic}
-      />
+        onRedirect={() => setActiveModal('auth')}
+        language={language}
+      >
+        <SelfDiagnosticSection
+          language={language}
+          currentUser={currentUser}
+          onUserChange={setCurrentUser}
+          onOpenPayment={() => setActiveModal('payment')}
+          onDiagnosticComplete={setLatestDiagnostic}
+        />
+      </ProtectedRoute>
       <AlliancesSection language={language} onOpenPitch={() => setActiveModal(currentUser ? 'pitch' : 'auth')} />
       <Modals
         language={language}

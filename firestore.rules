@@ -10,34 +10,39 @@ service cloud.firestore {
          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
       );
     }
+
+    // Helper para verificar si el usuario está autenticado y NO es anónimo
+    function isRegistered() {
+      return request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
     
-    // Reglas para la colección 'users' (Fase 2):
+    // Reglas para la colección 'users':
     // El ID del documento debe coincidir con el UID del usuario autenticado o ser admin.
     match /users/{userId} {
-      allow read, write: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      allow read, write: if (isRegistered() && request.auth.uid == userId) || isAdmin();
     }
 
-    // Reglas para la colección 'evaluations' (Fase 2):
+    // Reglas para la colección 'evaluations':
     // El campo 'uid' debe coincidir con el UID del usuario autenticado o ser admin.
     match /evaluations/{evaluationId} {
-      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
-      allow read, update, delete: if request.auth != null && (resource.data.uid == request.auth.uid || isAdmin());
+      allow create: if isRegistered() && request.resource.data.uid == request.auth.uid;
+      allow read, update, delete: if (isRegistered() && resource.data.uid == request.auth.uid) || isAdmin();
     }
     
     // Reglas legacy para la colección 'empresas':
     match /empresas/{userId} {
-      allow read, write: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      allow read, write: if (isRegistered() && request.auth.uid == userId) || isAdmin();
     }
 
     // Reglas legacy para la colección 'diagnosticos':
     match /diagnosticos/{diagnosticoId} {
-      allow create: if request.auth != null && request.resource.data.id_empresa == request.auth.uid;
-      allow read, update, delete: if request.auth != null && (resource.data.id_empresa == request.auth.uid || isAdmin());
+      allow create: if isRegistered() && request.resource.data.id_empresa == request.auth.uid;
+      allow read, update, delete: if (isRegistered() && resource.data.id_empresa == request.auth.uid) || isAdmin();
     }
 
     // Reglas para la colección 'entregables_b2b':
     match /entregables_b2b/{entregableId} {
-      allow read: if request.auth != null && (resource.data.id_empresa == request.auth.uid || isAdmin());
+      allow read: if (isRegistered() && resource.data.id_empresa == request.auth.uid) || isAdmin();
       allow write: if isAdmin();
     }
   }

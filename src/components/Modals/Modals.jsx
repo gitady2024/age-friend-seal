@@ -781,10 +781,18 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     }
 
     try {
+      let token = "";
+      if (auth && auth.currentUser) {
+        token = await auth.currentUser.getIdToken();
+      } else if (currentUser && currentUser.uid && currentUser.uid.startsWith("dummy_")) {
+        token = currentUser.uid;
+      }
+
       const response = await fetch("/api/generate-excel", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          ...(token ? { "Authorization": `Bearer ${token}` } : {})
         },
         body: JSON.stringify({
           email: currentUser?.email || "demo@example.com",
@@ -973,10 +981,18 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
 
         // 3. Enviar el informe en Excel llamando a la API Serverless de Vercel (Brevo sync + SMTP)
         try {
+          let token = "";
+          if (auth && auth.currentUser) {
+            token = await auth.currentUser.getIdToken();
+          } else if (currentUser && currentUser.uid && currentUser.uid.startsWith("dummy_")) {
+            token = currentUser.uid;
+          }
+
           const response = await fetch("/api/send-email", {
             method: "POST",
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
+              ...(token ? { "Authorization": `Bearer ${token}` } : {})
             },
             body: JSON.stringify({
               email: currentUser?.email || auth?.currentUser?.email || "",
