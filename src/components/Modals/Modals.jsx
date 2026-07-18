@@ -23,7 +23,7 @@ import {
   updateQuestionInDb
 } from "../../utils/firebaseHelpers.js";
 
-function Modals({ language, activeModal, contactLevel, currentUser, latestDiagnostic, onClose, onOpenAuth, onOpenAccount, onUserChange }) {
+function Modals({ language, activeModal, contactLevel, currentUser, latestDiagnostic, onClose, onOpenAuth, onOpenAccount, onUserChange, directPitchDownload, onClearDirectPitch, onOpenPitchSuccess }) {
   const intl = useIntl();
   const [authView, setAuthView] = useState('login');
   const [registerType, setRegisterType] = useState('personal');
@@ -458,10 +458,76 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     }
   }, [currentUser]);
 
+  // Hook for direct pitch download when logged-in B2B/Personal user clicks download
+  useEffect(() => {
+    if (directPitchDownload) {
+      const downloadPitchDirectly = async () => {
+        const html = buildDossierHtml(language);
+        try {
+          const { default: html2pdf } = await import('html2pdf.js');
+          const parsed = new DOMParser().parseFromString(html, 'text/html');
+          const printHost = document.createElement('div');
+          printHost.setAttribute('aria-hidden', 'true');
+          printHost.style.position = 'fixed';
+          printHost.style.left = '-10000px';
+          printHost.style.top = '0';
+          printHost.style.width = '794px';
+          printHost.style.background = '#ffffff';
+          printHost.style.color = '#111827';
+          printHost.innerHTML = `${parsed.head.innerHTML}${parsed.body.innerHTML}`;
+          document.body.appendChild(printHost);
+          
+          const container = printHost.querySelector('.dossier-page');
+          await html2pdf()
+            .from(container)
+            .set({
+              filename: language === 'es' || language === 'pt' ? 'Dossier_AgeFriendSeal.pdf' : 'Dossier_AgeFriendSeal_EN.pdf',
+              margin: 0,
+              image: { type: 'jpeg', quality: 0.98 },
+              html2canvas: {
+                scale: 2,
+                backgroundColor: '#ffffff',
+                useCORS: true
+              },
+              jsPDF: {
+                unit: 'pt',
+                format: 'a4',
+                orientation: 'portrait'
+              },
+              pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+            })
+            .save();
+          printHost.remove();
+        } catch (err) {
+          console.error("Direct HTML2PDF fallback:", err);
+          downloadTextFile(html, language === 'es' || language === 'pt' ? 'Dossier_AgeFriendSeal.html' : 'Dossier_AgeFriendSeal_EN.html', 'text/html;charset=utf-8');
+        }
+      };
+      
+      downloadPitchDirectly();
+      if (onClearDirectPitch) {
+        onClearDirectPitch();
+      }
+    }
+  }, [directPitchDownload, language, onClearDirectPitch]);
+
   const handlePitchSubmit = async (event) => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    const name = form.get('name');
+    const company = form.get('company');
+    const email = form.get('email');
     const format = form.get('format');
+    
+    // Call backend API to capture the guest lead
+    fetch("/api/capture-lead", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ name, email, company })
+    }).catch(err => console.error("Error capturing B2B lead via form:", err));
+
     const html = buildDossierHtml(language);
     if (format === 'pdf') {
       let printHost;
@@ -507,7 +573,11 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     } else {
       downloadTextFile(html, language === 'es' || language === 'pt' ? 'Dossier_AgeFriendSeal.html' : 'Dossier_AgeFriendSeal_EN.html', 'text/html;charset=utf-8');
     }
+    
     onClose();
+    if (onOpenPitchSuccess) {
+      onOpenPitchSuccess();
+    }
   };
 
   const handleContactSubmit = (event) => {
@@ -1059,15 +1129,17 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
           <form id="pitch-form" className="modal-form" style={{ textAlign: 'left', marginTop: 24 }} onSubmit={handlePitchSubmit}>
             <div className="form-group">
               <label htmlFor="pitch-name"><FormattedMessage id="Modals.005" /></label>
-              <input type="text" id="pitch-name" name="name" required defaultValue={currentUser?.name || ''} placeholder={intl.formatMessage({ id: "Modals.006" })} />
+              <input type="text" id="pitch-name" name="name" required placeholder={intl.formatMessage({ id: "Modals.006" })} />
             </div>
             <div className="form-group">
-              <label htmlFor="pitch-phone"><FormattedMessage id="Modals.007" /></label>
-              <input type="tel" id="pitch-phone" name="phone" required placeholder={intl.formatMessage({ id: "Modals.008" })} />
+              <label htmlFor="pitch-company">
+                {language === 'es' ? 'Nombre de la Empresa *' : (language === 'pt' ? 'Nome da Empresa *' : 'Company Name *')}
+              </label>
+              <input type="text" id="pitch-company" name="company" required placeholder={language === 'es' ? 'Ej. Mi Empresa' : 'e.g. My Company'} />
             </div>
             <div className="form-group">
               <label htmlFor="pitch-corp-email"><FormattedMessage id="Modals.009" /></label>
-              <input type="email" id="pitch-corp-email" name="email" required defaultValue={currentUser?.email || ''} placeholder={intl.formatMessage({ id: "Modals.010" })} />
+              <input type="email" id="pitch-corp-email" name="email" required placeholder={intl.formatMessage({ id: "Modals.010" })} />
             </div>
             <div className="form-group">
               <label htmlFor="pitch-format"><FormattedMessage id="Modals.011" /></label>
@@ -1078,6 +1150,42 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
             </div>
             <button type="submit" className="btn btn-gradient btn-block" style={{ marginTop: 12 }}><FormattedMessage id="Modals.014" /></button>
           </form>
+        </div>
+      </div>
+
+      <div className={`modal-overlay ${isOpen('pitch-success') ? '' : 'hidden'}`} id="pitch-success-modal">
+        <div className="glass-card modal-content text-center" style={{ maxWidth: 500 }}>
+          <button className="modal-close" id="btn-pitch-success-close" onClick={onClose}><FormattedMessage id="Modals.001" /></button>
+          <div style={{ fontSize: '4rem', marginBottom: 16 }}>📩</div>
+          <h3>
+            {language === 'es' ? '¡Pitch en camino!' : (language === 'pt' ? '¡Pitch a caminho!' : 'Pitch on the way!')}
+          </h3>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: 24, fontSize: '0.95rem', lineHeight: '1.5' }}>
+            {language === 'es'
+              ? 'El material del Pitch Corporativo se ha generado e iniciado su descarga. ¿Desea adelantar el proceso y agendar una conversación con nuestro equipo?'
+              : language === 'pt'
+                ? 'O material do Pitch Corporativo foi gerado e o download foi iniciado. Deseja adiantar o processo e agendar uma conversa com nossa equipe?'
+                : 'The Corporate Pitch material has been generated and the download has started. Would you like to speed up the process and schedule a call with our team?'}
+          </p>
+          <a
+            href="https://calendar.app.google/EoYVThhGqyJb2VsRA"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-gradient btn-block"
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
+          >
+            {language === 'es' 
+              ? 'Agendar reunión de 15 min' 
+              : (language === 'pt' ? 'Agendar reunião de 15 min' : 'Schedule a 15 min meeting')}
+          </a>
+          <button 
+            type="button" 
+            className="btn btn-outline btn-block" 
+            style={{ marginTop: 12 }} 
+            onClick={onClose}
+          >
+            {language === 'es' ? 'Cerrar' : (language === 'pt' ? 'Fechar' : 'Close')}
+          </button>
         </div>
       </div>
 

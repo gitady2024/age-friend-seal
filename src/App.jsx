@@ -48,6 +48,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState(getSavedUser);
   const [latestDiagnostic, setLatestDiagnostic] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
+  const [directPitchDownload, setDirectPitchDownload] = useState(false);
 
   useEffect(() => {
     if (!auth) {
@@ -193,6 +194,30 @@ function App() {
     setActiveModal('contact');
   };
 
+  const handleOpenPitch = () => {
+    const isAuth = currentUser && currentUser.type !== 'anonymous';
+    if (isAuth) {
+      setDirectPitchDownload(true);
+      setActiveModal('pitch-success');
+      
+      const leadData = {
+        name: currentUser.name || "Usuario",
+        email: currentUser.email || "",
+        company: currentUser.companyName || currentUser.name || "Empresa"
+      };
+      
+      fetch("/api/capture-lead", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(leadData)
+      }).catch(err => console.error("Error capturing B2B lead directly:", err));
+    } else {
+      setActiveModal('pitch');
+    }
+  };
+
   return (
     <IntlProvider locale={language} messages={messages[language]}>
       <Header
@@ -224,7 +249,7 @@ function App() {
           onDiagnosticComplete={setLatestDiagnostic}
         />
       </ProtectedRoute>
-      <AlliancesSection language={language} onOpenPitch={() => setActiveModal(currentUser ? 'pitch' : 'auth')} />
+      <AlliancesSection onOpenPitch={handleOpenPitch} />
       <Modals
         language={language}
         activeModal={activeModal}
@@ -235,6 +260,9 @@ function App() {
         onOpenAuth={() => setActiveModal('auth')}
         onOpenAccount={() => setActiveModal('account')}
         onUserChange={setCurrentUser}
+        directPitchDownload={directPitchDownload}
+        onClearDirectPitch={() => setDirectPitchDownload(false)}
+        onOpenPitchSuccess={() => setActiveModal('pitch-success')}
       />
       <Footer language={language} onLanguageChange={setLanguage} />
       <AccessibilityWidget language={language} />
