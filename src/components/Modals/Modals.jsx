@@ -1392,6 +1392,28 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                   <div id="upgrade-section" style={{ borderTop: '1px dashed var(--border-color)', paddingTop: 20 }}>
                     <h4 style={{ color: 'var(--accent-blue)', marginBottom: 8 }}><FormattedMessage id="Modals.098" /></h4>
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 16 }}><FormattedMessage id="Modals.099" /></p>
+                    
+                    <div className="info-callout" style={{
+                      background: 'rgba(59, 130, 246, 0.08)',
+                      border: '1px solid rgba(59, 130, 246, 0.2)',
+                      borderRadius: '12px',
+                      padding: '16px 20px',
+                      marginBottom: '20px',
+                      display: 'flex',
+                      gap: '12px',
+                      alignItems: 'flex-start',
+                      textAlign: 'left'
+                    }}>
+                      <span style={{ fontSize: '1.2rem', lineHeight: '1' }}>ℹ️</span>
+                      <p style={{ margin: 0, fontSize: '0.88rem', lineHeight: '1.5', color: '#93c5fd' }}>
+                        {language === 'es'
+                          ? 'Para habilitar el acceso al Autodiagnóstico y poder descargar su reporte de resultados, es un requisito indispensable registrar los datos de su organización. Por favor, actualice su cuenta a perfil corporativo completando la siguiente información.'
+                          : language === 'pt'
+                            ? 'Para habilitar o acesso ao Autodiagnóstico e poder baixar seu relatório de resultados, é um requisito indispensável registrar os dados da sua organização. Por favor, atualize sua conta para perfil corporativo preenchendo as seguintes informações.'
+                            : 'To enable access to the Self-Assessment and download your results report, it is an essential requirement to register your organization\'s data. Please upgrade your account to a corporate profile by completing the information below.'}
+                      </p>
+                    </div>
+
                     <form id="form-upgrade" className="modal-form" onSubmit={handleUpgrade}>
                       <div className="form-group">
                         <label htmlFor="upg-website">{language === 'es' ? 'Web de la Empresa *' : 'Company Website *'}</label>
