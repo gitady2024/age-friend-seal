@@ -1,14 +1,15 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-export default function ProtectedRoute({ children, currentUser, onRedirect, language }) {
-  const isAuth = currentUser && currentUser.type !== 'anonymous';
+export default function ProtectedRoute({ children, currentUser, loadingUser, onRedirect, onUpgrade, language }) {
+  
+  // Estilos premium reutilizados
+  const sectionStyle = {
+    padding: '100px 0',
+    background: 'radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.04) 0%, transparent 60%)',
+    borderTop: '1px solid var(--border-color)'
+  };
 
-  if (isAuth) {
-    return children;
-  }
-
-  // Estilo premium de tarjeta glassmorphic para encajar con el diseño de la landing
   const cardStyle = {
     background: 'rgba(30, 41, 59, 0.4)',
     backdropFilter: 'blur(16px)',
@@ -23,8 +24,7 @@ export default function ProtectedRoute({ children, currentUser, onRedirect, lang
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    gap: '20px',
-    transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+    gap: '20px'
   };
 
   const titleStyle = {
@@ -45,11 +45,88 @@ export default function ProtectedRoute({ children, currentUser, onRedirect, lang
     maxWidth: '480px'
   };
 
+  // 1. Estado de carga asíncrono
+  if (loadingUser) {
+    return (
+      <section id="autodiagnostico" style={sectionStyle}>
+        <div className="container container-narrow">
+          <div style={cardStyle} className="glass-card">
+            <div className="loading-spinner-wrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
+              <div style={{
+                width: '50px',
+                height: '50px',
+                border: '4px solid rgba(255, 255, 255, 0.1)',
+                borderTop: '4px solid var(--accent-color, #3b82f6)',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite'
+              }}></div>
+              <p style={{ color: 'var(--text-muted)', fontSize: '1rem', fontWeight: '500' }}>
+                {language === 'es' 
+                  ? 'Cargando perfil de usuario...' 
+                  : language === 'pt' 
+                    ? 'Carregando perfil de usuário...' 
+                    : 'Loading user profile...'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const isAuth = currentUser && currentUser.type !== 'anonymous';
+  const isB2B = isAuth && currentUser.type === 'empresa';
+
+  // 2. Si el usuario es de tipo Empresa, renderizar el diagnóstico
+  if (isB2B) {
+    return children;
+  }
+
+  // 3. Si el usuario está autenticado pero es tipo Personal
+  if (isAuth && !isB2B) {
+    return (
+      <section id="autodiagnostico" style={sectionStyle}>
+        <div className="container container-narrow">
+          <div style={cardStyle} className="glass-card">
+            <div style={{ fontSize: '4.5rem', filter: 'drop-shadow(0 10px 20px rgba(59, 130, 246, 0.2))' }}>🏢</div>
+            <h2 style={titleStyle}>
+              {language === 'es' 
+                ? 'Cuenta Personal Detectada' 
+                : language === 'pt' 
+                  ? 'Conta Pessoal Detectada' 
+                  : 'Personal Account Detected'}
+            </h2>
+            <p style={textStyle}>
+              {language === 'es'
+                ? 'El Autodiagnóstico requiere una cuenta de tipo Empresa. Convierta su cuenta ahora para completar el cuestionario y descargar el sello de su organización.'
+                : language === 'pt'
+                  ? 'O Autodiagnóstico requer uma conta de tipo Empresa. Converta sua conta agora para completar o questionário e baixar o selo de sua organização.'
+                  : 'The Self-Diagnostic requires a Company account. Convert your account now to complete the questionnaire and download your organization\'s seal.'}
+            </p>
+            <button 
+              type="button" 
+              className="btn btn-gradient btn-lg" 
+              onClick={onUpgrade}
+              style={{ padding: '14px 40px', fontSize: '1.1rem', fontWeight: '600' }}
+            >
+              {language === 'es'
+                ? 'Convertir en Cuenta de Empresa'
+                : language === 'pt'
+                  ? 'Converter para Conta de Empresa'
+                  : 'Convert to Company Account'}
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // 4. Si el usuario no está autenticado (Anónimo)
   return (
-    <section id="autodiagnostico" className="diagnostico-section">
+    <section id="autodiagnostico" style={sectionStyle}>
       <div className="container container-narrow">
         <div style={cardStyle} className="glass-card">
-          <div style={{ fontSize: '4.5rem', filter: 'drop-shadow(0 10px 20px rgba(251, 191, 36, 0.2))', animation: 'pulse 2s infinite' }}>🔒</div>
+          <div style={{ fontSize: '4.5rem', filter: 'drop-shadow(0 10px 20px rgba(251, 191, 36, 0.2))' }}>🔒</div>
           <h2 style={titleStyle}>
             {language === 'es' 
               ? 'Acceso Restringido' 

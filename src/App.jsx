@@ -47,10 +47,15 @@ function App() {
   const [contactLevel, setContactLevel] = useState('silver');
   const [currentUser, setCurrentUser] = useState(getSavedUser);
   const [latestDiagnostic, setLatestDiagnostic] = useState(null);
+  const [loadingUser, setLoadingUser] = useState(true);
 
   useEffect(() => {
-    if (!auth) return;
+    if (!auth) {
+      setLoadingUser(false);
+      return;
+    }
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setLoadingUser(true);
       if (user) {
         if (user.isAnonymous) {
           setCurrentUser(curr => {
@@ -59,6 +64,7 @@ function App() {
             }
             return { ...curr, uid: user.uid };
           });
+          setLoadingUser(false);
         } else {
           // Recuperar el perfil real desde Firestore
           try {
@@ -81,12 +87,18 @@ function App() {
           } catch (error) {
             console.error("Error recuperando perfil de usuario de Firestore:", error);
             setCurrentUser(curr => curr || { uid: user.uid, email: user.email || "", name: user.displayName || user.email?.split("@")[0] || "Usuario" });
+          } finally {
+            setLoadingUser(false);
           }
         }
       } else {
-        signInAnonymously(auth).catch((error) => {
-          console.error("Error signing in anonymously to Firebase Auth:", error);
-        });
+        signInAnonymously(auth)
+          .catch((error) => {
+            console.error("Error signing in anonymously to Firebase Auth:", error);
+          })
+          .finally(() => {
+            setLoadingUser(false);
+          });
       }
     });
     return () => unsubscribe();
@@ -109,16 +121,25 @@ function App() {
     }
   }, [currentUser]);
 
-  // Intercept navigation/clicks to #autodiagnostico for unauthenticated users
+  // Intercept navigation/clicks to #autodiagnostico for unauthenticated or personal users
   useEffect(() => {
+    if (loadingUser) return;
+
     const isAuth = currentUser && currentUser.type !== 'anonymous';
+    const isB2B = isAuth && currentUser.type === 'empresa';
 
     const handleHashChange = () => {
-      if (window.location.hash === '#autodiagnostico' && !isAuth) {
-        // Remove hash to prevent scrolling
-        window.history.pushState("", document.title, window.location.pathname + window.location.search);
-        window.sessionStorage.setItem('redirectAfterAuth', '#autodiagnostico');
-        setActiveModal('auth');
+      if (window.location.hash === '#autodiagnostico') {
+        if (!isAuth) {
+          // Remove hash to prevent scrolling
+          window.history.pushState("", document.title, window.location.pathname + window.location.search);
+          window.sessionStorage.setItem('redirectAfterAuth', '#autodiagnostico');
+          setActiveModal('auth');
+        } else if (!isB2B) {
+          // Remove hash to prevent scrolling
+          window.history.pushState("", document.title, window.location.pathname + window.location.search);
+          setActiveModal('account');
+        }
       }
     };
 
@@ -129,6 +150,9 @@ function App() {
           e.preventDefault();
           window.sessionStorage.setItem('redirectAfterAuth', '#autodiagnostico');
           setActiveModal('auth');
+        } else if (!isB2B) {
+          e.preventDefault();
+          setActiveModal('account');
         }
       }
     };
@@ -143,12 +167,13 @@ function App() {
       window.removeEventListener('hashchange', handleHashChange);
       document.removeEventListener('click', handleGlobalClick, true);
     };
-  }, [currentUser]);
+  }, [currentUser, loadingUser]);
 
   // Handle redirection/auto-scroll to #autodiagnostico after login/registration
   useEffect(() => {
     const isAuth = currentUser && currentUser.type !== 'anonymous';
-    if (isAuth) {
+    const isB2B = isAuth && currentUser.type === 'empresa';
+    if (isB2B) {
       const pendingRedirect = window.sessionStorage.getItem('redirectAfterAuth');
       if (pendingRedirect === '#autodiagnostico') {
         window.sessionStorage.removeItem('redirectAfterAuth');
@@ -186,7 +211,9 @@ function App() {
       <NewsRadarSection language={language} />
       <ProtectedRoute
         currentUser={currentUser}
+        loadingUser={loadingUser}
         onRedirect={() => setActiveModal('auth')}
+        onUpgrade={() => setActiveModal('account')}
         language={language}
       >
         <SelfDiagnosticSection
