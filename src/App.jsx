@@ -200,10 +200,20 @@ function App() {
       setDirectPitchDownload(true);
       setActiveModal('pitch-success');
       
+      let userTypeStr = "Anónimo";
+      if (currentUser) {
+        if (currentUser.userType === 'empresa' || currentUser.companyName || currentUser.economicSector || currentUser.sector) {
+          userTypeStr = "Empresa";
+        } else {
+          userTypeStr = "Personal";
+        }
+      }
+
       const leadData = {
-        name: currentUser.name || "Usuario",
+        name: currentUser.name || [currentUser.firstName, currentUser.lastName].filter(Boolean).join(" ") || "Usuario",
         email: currentUser.email || "",
-        company: currentUser.companyName || currentUser.name || "Empresa"
+        company: currentUser.companyName || currentUser.name || "N/A",
+        userType: userTypeStr
       };
       
       fetch("/api/capture-lead", {

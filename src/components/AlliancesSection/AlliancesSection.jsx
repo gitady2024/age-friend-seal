@@ -47,17 +47,18 @@ function AlliancesSection({ onOpenPitch }) {
         </div>
 
         <div style={{ marginTop: 40, display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button className="btn btn-gradient btn-lg" id="btn-open-pitch" onClick={onOpenPitch}>
+          <button className="btn btn-outline btn-lg" id="btn-open-pitch" onClick={onOpenPitch}>
             <FormattedMessage id="AlliancesSection.015" />
           </button>
           <a
             href="https://calendar.app.google/EoYVThhGqyJb2VsRA"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn btn-outline btn-lg"
+            className="btn btn-gradient btn-lg"
             id="btn-agenda-reunion"
-            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
           >
+            <span>🗓️</span>
             <FormattedMessage id="AlliancesSection.agendaReunion" defaultMessage="Agendar Reunión Exploratoria" />
           </a>
         </div>

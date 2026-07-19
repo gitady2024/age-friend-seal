@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: "Method Not Allowed" });
   }
 
-  const { name, email, company } = req.body;
+  const { name, email, company, userType } = req.body || {};
 
   if (!email) {
     return res.status(400).json({ success: false, error: "Email parameter is required" });
@@ -41,10 +41,10 @@ export default async function handler(req, res) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        fecha: new Date().toISOString(),
-        nombre: name || "",
-        email: email,
-        empresa: company || ""
+        name: name || "",
+        email: email || "",
+        company: company || "",
+        userType: userType || "Anónimo"
       })
     });
     

@@ -519,13 +519,22 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     const email = form.get('email');
     const format = form.get('format');
     
+    let userTypeStr = "Anónimo";
+    if (currentUser) {
+      if (currentUser.userType === 'empresa' || currentUser.companyName || currentUser.economicSector || currentUser.sector) {
+        userTypeStr = "Empresa";
+      } else {
+        userTypeStr = "Personal";
+      }
+    }
+
     // Call backend API to capture the guest lead
     fetch("/api/capture-lead", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ name, email, company })
+      body: JSON.stringify({ name, email, company, userType: userTypeStr })
     }).catch(err => console.error("Error capturing B2B lead via form:", err));
 
     const html = buildDossierHtml(language);
@@ -1172,11 +1181,14 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-gradient btn-block"
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', textDecoration: 'none' }}
           >
-            {language === 'es' 
-              ? 'Agendar reunión de 15 min' 
-              : (language === 'pt' ? 'Agendar reunião de 15 min' : 'Schedule a 15 min meeting')}
+            <span>🗓️</span>
+            <span>
+              {language === 'es' 
+                ? 'Agendar reunión de 15 min' 
+                : (language === 'pt' ? 'Agendar reunião de 15 min' : 'Schedule a 15 min meeting')}
+            </span>
           </a>
           <button 
             type="button" 
