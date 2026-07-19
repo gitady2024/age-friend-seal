@@ -209,11 +209,18 @@ function App() {
         }
       }
 
+      const userName = (currentUser.name || [currentUser.firstName, currentUser.lastName].filter(Boolean).join(" ") || currentUser.companyName || "Usuario Registrado").trim();
+      const userCompany = (currentUser.companyName || currentUser.name || "Empresa Registrada").trim();
+      const userEmail = (currentUser.email || "").trim();
+
       const leadData = {
-        name: currentUser.name || [currentUser.firstName, currentUser.lastName].filter(Boolean).join(" ") || "Usuario",
-        email: currentUser.email || "",
-        company: currentUser.companyName || currentUser.name || "N/A",
-        userType: userTypeStr
+        name: userName,
+        nombre: userName,
+        email: userEmail,
+        company: userCompany,
+        empresa: userCompany,
+        userType: userTypeStr,
+        tipoUsuario: userTypeStr
       };
       
       fetch("/api/capture-lead", {

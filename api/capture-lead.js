@@ -21,9 +21,14 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: "Method Not Allowed" });
   }
 
-  const { name, email, company, userType } = req.body || {};
+  const { name, nombre, email, company, empresa, userType, tipoUsuario } = req.body || {};
 
-  if (!email) {
+  const finalName = String(name || nombre || "").trim();
+  const finalEmail = String(email || "").trim();
+  const finalCompany = String(company || empresa || "").trim();
+  const finalUserType = String(userType || tipoUsuario || "Anónimo").trim();
+
+  if (!finalEmail) {
     return res.status(400).json({ success: false, error: "Email parameter is required" });
   }
 
@@ -41,10 +46,14 @@ export default async function handler(req, res) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        name: name || "",
-        email: email || "",
-        company: company || "",
-        userType: userType || "Anónimo"
+        name: finalName || "No especificado",
+        nombre: finalName || "No especificado",
+        email: finalEmail,
+        company: finalCompany || "No especificado",
+        empresa: finalCompany || "No especificado",
+        userType: finalUserType,
+        tipoUsuario: finalUserType,
+        fecha: new Date().toISOString()
       })
     });
     

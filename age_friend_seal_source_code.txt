@@ -381,11 +381,18 @@ function App() {
         }
       }
 
+      const userName = (currentUser.name || [currentUser.firstName, currentUser.lastName].filter(Boolean).join(" ") || currentUser.companyName || "Usuario Registrado").trim();
+      const userCompany = (currentUser.companyName || currentUser.name || "Empresa Registrada").trim();
+      const userEmail = (currentUser.email || "").trim();
+
       const leadData = {
-        name: currentUser.name || [currentUser.firstName, currentUser.lastName].filter(Boolean).join(" ") || "Usuario",
-        email: currentUser.email || "",
-        company: currentUser.companyName || currentUser.name || "N/A",
-        userType: userTypeStr
+        name: userName,
+        nombre: userName,
+        email: userEmail,
+        company: userCompany,
+        empresa: userCompany,
+        userType: userTypeStr,
+        tipoUsuario: userTypeStr
       };
       
       fetch("/api/capture-lead", {
@@ -721,7 +728,7 @@ function AlliancesSection({ onOpenPitch }) {
           })}
         </div>
 
-        <div style={{ marginTop: 40, display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+        <div className="alliances-cta-container">
           <button className="btn btn-outline btn-lg" id="btn-open-pitch" onClick={onOpenPitch}>
             <FormattedMessage id="AlliancesSection.015" />
           </button>
@@ -729,9 +736,8 @@ function AlliancesSection({ onOpenPitch }) {
             href="https://calendar.app.google/EoYVThhGqyJb2VsRA"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn btn-gradient btn-lg"
+            className="btn btn-lg btn-agenda-reunion-primary"
             id="btn-agenda-reunion"
-            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
           >
             <span>🗓️</span>
             <FormattedMessage id="AlliancesSection.agendaReunion" defaultMessage="Agendar Reunión Exploratoria" />
@@ -751,8 +757,54 @@ export default AlliancesSection;
 // FILE: src/components/AlliancesSection/AlliancesSection.scss
 // ==========================================
 
-﻿/* Alliances-specific rules can live here as the section is refined. */
+/* Alliances-specific CTA and mobile responsive styling */
 
+.alliances-cta-container {
+    margin-top: 40px;
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+
+    .btn-agenda-reunion-primary {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: #ffffff !important;
+        font-weight: 700;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(37, 99, 235, 0.6);
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+        }
+    }
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        width: 100%;
+
+        .btn, a {
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .btn-agenda-reunion-primary {
+            order: -1; /* Agendar Reunión takes top priority on mobile! */
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 1rem;
+        }
+    }
+}
 
 
 
@@ -3155,13 +3207,13 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const handlePitchSubmit = async (event) => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    const name = form.get('name');
-    const company = form.get('company');
-    const email = form.get('email');
-    const format = form.get('format');
+    const formName = String(form.get('name') || '').trim();
+    const formCompany = String(form.get('company') || '').trim();
+    const formEmail = String(form.get('email') || '').trim();
+    const format = String(form.get('format') || 'pdf').trim();
     
     let userTypeStr = "Anónimo";
-    if (currentUser) {
+    if (currentUser && currentUser.type !== 'anonymous') {
       if (currentUser.userType === 'empresa' || currentUser.companyName || currentUser.economicSector || currentUser.sector) {
         userTypeStr = "Empresa";
       } else {
@@ -3169,13 +3221,25 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       }
     }
 
+    const finalName = formName || (currentUser ? (currentUser.name || [currentUser.firstName, currentUser.lastName].filter(Boolean).join(" ")) : '') || 'Contacto Prospecto';
+    const finalCompany = formCompany || (currentUser ? (currentUser.companyName || currentUser.name) : '') || 'Empresa Prospecto';
+    const finalEmail = formEmail || (currentUser ? currentUser.email : '') || '';
+
     // Call backend API to capture the guest lead
     fetch("/api/capture-lead", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ name, email, company, userType: userTypeStr })
+      body: JSON.stringify({
+        name: finalName,
+        nombre: finalName,
+        email: finalEmail,
+        company: finalCompany,
+        empresa: finalCompany,
+        userType: userTypeStr,
+        tipoUsuario: userTypeStr
+      })
     }).catch(err => console.error("Error capturing B2B lead via form:", err));
 
     const html = buildDossierHtml(language);
@@ -18589,9 +18653,14 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: "Method Not Allowed" });
   }
 
-  const { name, email, company, userType } = req.body || {};
+  const { name, nombre, email, company, empresa, userType, tipoUsuario } = req.body || {};
 
-  if (!email) {
+  const finalName = String(name || nombre || "").trim();
+  const finalEmail = String(email || "").trim();
+  const finalCompany = String(company || empresa || "").trim();
+  const finalUserType = String(userType || tipoUsuario || "Anónimo").trim();
+
+  if (!finalEmail) {
     return res.status(400).json({ success: false, error: "Email parameter is required" });
   }
 
@@ -18609,10 +18678,14 @@ export default async function handler(req, res) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        name: name || "",
-        email: email || "",
-        company: company || "",
-        userType: userType || "Anónimo"
+        name: finalName || "No especificado",
+        nombre: finalName || "No especificado",
+        email: finalEmail,
+        company: finalCompany || "No especificado",
+        empresa: finalCompany || "No especificado",
+        userType: finalUserType,
+        tipoUsuario: finalUserType,
+        fecha: new Date().toISOString()
       })
     });
     

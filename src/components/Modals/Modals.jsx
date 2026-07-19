@@ -514,13 +514,13 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const handlePitchSubmit = async (event) => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    const name = form.get('name');
-    const company = form.get('company');
-    const email = form.get('email');
-    const format = form.get('format');
+    const formName = String(form.get('name') || '').trim();
+    const formCompany = String(form.get('company') || '').trim();
+    const formEmail = String(form.get('email') || '').trim();
+    const format = String(form.get('format') || 'pdf').trim();
     
     let userTypeStr = "Anónimo";
-    if (currentUser) {
+    if (currentUser && currentUser.type !== 'anonymous') {
       if (currentUser.userType === 'empresa' || currentUser.companyName || currentUser.economicSector || currentUser.sector) {
         userTypeStr = "Empresa";
       } else {
@@ -528,13 +528,25 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       }
     }
 
+    const finalName = formName || (currentUser ? (currentUser.name || [currentUser.firstName, currentUser.lastName].filter(Boolean).join(" ")) : '') || 'Contacto Prospecto';
+    const finalCompany = formCompany || (currentUser ? (currentUser.companyName || currentUser.name) : '') || 'Empresa Prospecto';
+    const finalEmail = formEmail || (currentUser ? currentUser.email : '') || '';
+
     // Call backend API to capture the guest lead
     fetch("/api/capture-lead", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ name, email, company, userType: userTypeStr })
+      body: JSON.stringify({
+        name: finalName,
+        nombre: finalName,
+        email: finalEmail,
+        company: finalCompany,
+        empresa: finalCompany,
+        userType: userTypeStr,
+        tipoUsuario: userTypeStr
+      })
     }).catch(err => console.error("Error capturing B2B lead via form:", err));
 
     const html = buildDossierHtml(language);
