@@ -449,6 +449,7 @@ function App() {
         onOpenAuth={() => setActiveModal('auth')}
         onOpenAccount={() => setActiveModal('account')}
         onUserChange={setCurrentUser}
+        onOpenPitch={handleOpenPitch}
         directPitchDownload={directPitchDownload}
         onClearDirectPitch={() => setDirectPitchDownload(false)}
         onOpenPitchSuccess={() => setActiveModal('pitch-success')}
@@ -3370,29 +3371,21 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const handleUpgrade = async (event) => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    const website = form.get('website') || '';
-    const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
-    if (!urlPattern.test(website)) {
-      alert(language === 'es' 
-        ? 'Por favor, ingrese una dirección web válida (ej. miempresa.com o https://miempresa.com).' 
-        : language === 'pt'
-          ? 'Por favor, insira um endereço web válido (ex. minhaempresa.com).'
-          : 'Please enter a valid website address (e.g. mycompany.com or https://mycompany.com).');
-      return;
-    }
+    const existingWebsite = currentUser?.website || currentUser?.websiteUrl || '';
 
     try {
       const upgradeData = {
         type: 'empresa',
-        sector: form.get('sector'),
-        subsector: form.get('subsector'),
-        role: form.get('role'),
-        website: website,
-        companySize: form.get('companySize')
+        userType: 'empresa',
+        sector: form.get('sector') || '',
+        subsector: form.get('subsector') || '',
+        role: form.get('role') || '',
+        website: existingWebsite,
+        companySize: form.get('companySize') || ''
       };
       const updatedProfile = await updateUserProfile(currentUser.uid, upgradeData);
       onUserChange(updatedProfile);
-      alert(language === 'es' ? 'Cuenta actualizada a empresa.' : (language === 'pt' ? 'Conta atualizada para empresa.' : 'Account upgraded to company.'));
+      alert(language === 'es' ? 'Cuenta actualizada a empresa con éxito.' : (language === 'pt' ? 'Conta atualizada para empresa com sucesso.' : 'Account upgraded to company successfully.'));
     } catch (err) {
       console.error("Upgrade error:", err);
       alert(language === 'es' ? `Error al actualizar: ${err.message}` : `Error upgrading: ${err.message}`);
@@ -4181,35 +4174,67 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                                 <span className="pilar-pct" style={{ minWidth: '35px', textAlign: 'right', fontSize: '0.85rem', fontWeight: 600 }}>{pScores.pilar5}%</span>
                               </div>
                             </div>
+
+                            <div style={{ display: 'flex', gap: '16px', marginTop: '15px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-start' }}>
+                              <a href="#autodiagnostico" onClick={onClose} style={{ color: '#10B981', textDecoration: 'underline', fontWeight: 600, fontSize: '0.9rem' }}>
+                                {language === 'es' ? 'Ir al Autodiagnóstico' : language === 'pt' ? 'Ir para o Autodiagnóstico' : 'Go to Self-Assessment'}
+                              </a>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  onClose();
+                                  if (onOpenPitch) onOpenPitch();
+                                }}
+                                style={{
+                                  background: 'transparent',
+                                  border: 'none',
+                                  padding: 0,
+                                  color: '#3b82f6',
+                                  textDecoration: 'underline',
+                                  fontWeight: 600,
+                                  cursor: 'pointer',
+                                  fontSize: '0.9rem'
+                                }}
+                              >
+                                📄 {language === 'es' ? 'Descargar Pitch Corporativo' : language === 'pt' ? 'Baixar Pitch Corporativo' : 'Download Corporate Pitch'}
+                              </button>
+                            </div>
                           </div>
                         );
                       })()
                     ) : (
                       <div className="no-evaluation-box" style={{ background: 'rgba(251, 191, 36, 0.05)', padding: '15px', borderRadius: '8px', border: '1px solid rgba(251, 191, 36, 0.2)' }}>
                         <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                          {language === 'es' ? (
-                            <>
-                              Aún no has completado un autodiagnóstico. Completa el cuestionario en la página principal para ver tus métricas.
-                              <a href="#autodiagnostico" onClick={onClose} style={{ color: '#10B981', textDecoration: 'underline', fontWeight: 600, marginLeft: '8px' }}>
-                                Ir al Autodiagnóstico
-                              </a>
-                            </>
-                          ) : language === 'pt' ? (
-                            <>
-                              Você ainda não concluiu um autodiagnóstico. Preencha o questionário na página principal para ver suas métricas.
-                              <a href="#autodiagnostico" onClick={onClose} style={{ color: '#10B981', textDecoration: 'underline', fontWeight: 600, marginLeft: '8px' }}>
-                                Ir para o Autodiagnóstico
-                              </a>
-                            </>
-                          ) : (
-                            <>
-                              You have not completed a self-assessment yet. Run the diagnostic on the home page to view metrics.
-                              <a href="#autodiagnostico" onClick={onClose} style={{ color: '#10B981', textDecoration: 'underline', fontWeight: 600, marginLeft: '8px' }}>
-                                Go to Self-Assessment
-                              </a>
-                            </>
-                          )}
+                          {language === 'es' 
+                            ? 'Aún no has completado un autodiagnóstico. Completa el cuestionario en la página principal para ver tus métricas.'
+                            : language === 'pt'
+                              ? 'Você ainda não concluiu um autodiagnóstico. Preencha o questionário na página principal para ver suas métricas.'
+                              : 'You have not completed a self-assessment yet. Run the diagnostic on the home page to view metrics.'}
                         </p>
+                        <div style={{ display: 'flex', gap: '16px', marginTop: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+                          <a href="#autodiagnostico" onClick={onClose} style={{ color: '#10B981', textDecoration: 'underline', fontWeight: 600, fontSize: '0.9rem' }}>
+                            {language === 'es' ? 'Ir al Autodiagnóstico' : language === 'pt' ? 'Ir para o Autodiagnóstico' : 'Go to Self-Assessment'}
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              onClose();
+                              if (onOpenPitch) onOpenPitch();
+                            }}
+                            style={{
+                              background: 'transparent',
+                              border: 'none',
+                              padding: 0,
+                              color: '#3b82f6',
+                              textDecoration: 'underline',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              fontSize: '0.9rem'
+                            }}
+                          >
+                            📄 {language === 'es' ? 'Descargar Pitch Corporativo' : language === 'pt' ? 'Baixar Pitch Corporativo' : 'Download Corporate Pitch'}
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -4232,18 +4257,14 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                       <span style={{ fontSize: '1.2rem', lineHeight: '1' }}>ℹ️</span>
                       <p style={{ margin: 0, fontSize: '0.88rem', lineHeight: '1.5', color: '#93c5fd' }}>
                         {language === 'es'
-                          ? 'Para habilitar el acceso al Autodiagnóstico y poder descargar su reporte de resultados, es un requisito indispensable registrar los datos de su organización. Por favor, actualice su cuenta a perfil corporativo completando la siguiente información.'
+                          ? 'Estimado Usuario: para acceder al Autodiagnóstico de Certificación o descargar el Pitch Corporativo, es necesario ingresar los datos de su organización. Por favor complete los siguientes datos.'
                           : language === 'pt'
-                            ? 'Para habilitar o acesso ao Autodiagnóstico e poder baixar seu relatório de resultados, é um requisito indispensável registrar os dados da sua organização. Por favor, atualize sua conta para perfil corporativo preenchendo as seguintes informações.'
-                            : 'To enable access to the Self-Assessment and download your results report, it is an essential requirement to register your organization\'s data. Please upgrade your account to a corporate profile by completing the information below.'}
+                            ? 'Prezado Usuário: para acessar o Autodiagnóstico de Certificação ou baixar o Pitch Corporativo, é necessário inserir os dados da sua organização. Por favor, preencha os seguintes dados.'
+                            : 'Dear User: to access the Certification Self-Diagnostic or download the Corporate Pitch, it is necessary to enter your organization\'s information. Please complete the following details.'}
                       </p>
                     </div>
 
                     <form id="form-upgrade" className="modal-form" onSubmit={handleUpgrade}>
-                      <div className="form-group">
-                        <label htmlFor="upg-website">{language === 'es' ? 'Web de la Empresa *' : 'Company Website *'}</label>
-                        <input type="text" id="upg-website" name="website" required placeholder="ej. https://miempresa.com" />
-                      </div>
                       <div className="form-group">
                         <label htmlFor="upg-company-size-select">{language === 'es' ? 'Tamaño de la Empresa *' : 'Company Size *'}</label>
                         <select id="upg-company-size-select" name="companySize" required>

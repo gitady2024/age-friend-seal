@@ -277,6 +277,7 @@ function App() {
         onOpenAuth={() => setActiveModal('auth')}
         onOpenAccount={() => setActiveModal('account')}
         onUserChange={setCurrentUser}
+        onOpenPitch={handleOpenPitch}
         directPitchDownload={directPitchDownload}
         onClearDirectPitch={() => setDirectPitchDownload(false)}
         onOpenPitchSuccess={() => setActiveModal('pitch-success')}
