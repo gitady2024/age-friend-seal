@@ -38,6 +38,9 @@ export const signUpUser = async (email, password, profileData) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiresAt = Date.now() + 15 * 60 * 1000; // 15 mins
+
     // Write profile to /users collection
     const userDocRef = doc(db, "users", user.uid);
     const finalProfile = {
@@ -52,9 +55,29 @@ export const signUpUser = async (email, password, profileData) => {
       },
       createdAt: new Date().toISOString(),
       ...profileData,
+      isVerified: false,
+      otpCode,
+      otpExpiresAt,
       role: email.toLowerCase().startsWith("admin") ? "admin" : (profileData.role || "user")
     };
     await setDoc(userDocRef, finalProfile);
+
+    // Call /api/send-otp to deliver verification code
+    try {
+      await fetch("/api/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          name: profileData.name || profileData.companyName || email,
+          otpCode,
+          action: "send"
+        })
+      });
+    } catch (err) {
+      console.error("Error sending OTP email:", err);
+    }
+
     return finalProfile;
   } catch (error) {
     console.error("Firebase SignUp failed, attempting simulation fallback:", error);
@@ -68,6 +91,9 @@ export const signUpUser = async (email, password, profileData) => {
 const simulateSignUp = (email, profileData) => {
   console.warn("Using simulated signup.");
   const role = email.toLowerCase().startsWith("admin") ? "admin" : (profileData.role || "user");
+  const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+  const otpExpiresAt = Date.now() + 15 * 60 * 1000;
+
   const dummyUser = {
     uid: "dummy_" + Date.now(),
     email,
@@ -79,11 +105,102 @@ const simulateSignUp = (email, profileData) => {
       hexSecondary: "#10b981"
     },
     ...profileData,
+    isVerified: false,
+    otpCode,
+    otpExpiresAt,
     role: email.toLowerCase().startsWith("admin") ? "admin" : (profileData.role || "user"),
     type: profileData.type || "personal"
   };
   window.localStorage.setItem("ageFriendUser", JSON.stringify(dummyUser));
+
+  // Trigger send-otp
+  fetch("/api/send-otp", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email,
+      name: profileData.name || profileData.companyName || email,
+      otpCode,
+      action: "send"
+    })
+  }).catch(err => console.error("Simulated OTP email send failed:", err));
+
   return dummyUser;
+};
+
+export const verifyUserOtp = async (user, enteredCode) => {
+  if (!user) return { success: false, error: "Usuario no autenticado." };
+  
+  const storedCode = user.otpCode;
+  const expiresAt = user.otpExpiresAt;
+  
+  if (expiresAt && Date.now() > expiresAt) {
+    return { success: false, error: "El código de 6 dígitos ha expirado. Solicite uno nuevo." };
+  }
+  
+  if (String(storedCode).trim() !== String(enteredCode).trim()) {
+    return { success: false, error: "El código de 6 dígitos introducido es incorrecto." };
+  }
+  
+  const updatedData = {
+    isVerified: true,
+    otpCode: null,
+    otpExpiresAt: null
+  };
+  
+  if (isFirebaseEnabled() && user.uid && !user.uid.startsWith("dummy_")) {
+    try {
+      const userDocRef = doc(db, "users", user.uid);
+      await updateDoc(userDocRef, updatedData);
+    } catch (err) {
+      console.warn("Firestore updateDoc for OTP failed, applying local state:", err);
+    }
+  }
+  
+  const updatedProfile = { ...user, ...updatedData };
+  window.localStorage.setItem("ageFriendUser", JSON.stringify(updatedProfile));
+  return { success: true, updatedProfile };
+};
+
+export const resendUserOtp = async (user) => {
+  if (!user) return { success: false, error: "Usuario no encontrado." };
+  const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+  const newExpiresAt = Date.now() + 15 * 60 * 1000;
+  
+  const updatedData = {
+    otpCode: newOtp,
+    otpExpiresAt: newExpiresAt,
+    isVerified: false
+  };
+  
+  if (isFirebaseEnabled() && user.uid && !user.uid.startsWith("dummy_")) {
+    try {
+      const userDocRef = doc(db, "users", user.uid);
+      await updateDoc(userDocRef, updatedData);
+    } catch (err) {
+      console.warn("Firestore updateDoc for OTP resend failed, applying local state:", err);
+    }
+  }
+  
+  const updatedProfile = { ...user, ...updatedData };
+  window.localStorage.setItem("ageFriendUser", JSON.stringify(updatedProfile));
+  
+  try {
+    await fetch("/api/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: user.email,
+        name: user.name || user.companyName || user.email,
+        otpCode: newOtp,
+        action: "send"
+      })
+    });
+  } catch (err) {
+    console.error("Error al enviar OTP:", err);
+  }
+  
+  return { success: true, updatedProfile };
 };
 
 // SIGN IN

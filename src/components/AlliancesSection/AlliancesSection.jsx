@@ -47,7 +47,7 @@ function AlliancesSection({ onOpenPitch }) {
         </div>
 
         <div className="alliances-cta-container">
-          <button className="btn btn-outline btn-lg" id="btn-open-pitch" onClick={onOpenPitch}>
+          <button className="btn btn-lg btn-pitch-green" id="btn-open-pitch" onClick={onOpenPitch}>
             <FormattedMessage id="AlliancesSection.015" />
           </button>
           <a

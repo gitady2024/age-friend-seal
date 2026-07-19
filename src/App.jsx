@@ -172,19 +172,21 @@ function App() {
 
   // Handle redirection/auto-scroll to #autodiagnostico after login/registration
   useEffect(() => {
-    const isAuth = currentUser && currentUser.type !== 'anonymous';
-    const isB2B = isAuth && currentUser.type === 'empresa';
-    if (isB2B) {
-      const pendingRedirect = window.sessionStorage.getItem('redirectAfterAuth');
-      if (pendingRedirect === '#autodiagnostico') {
-        window.sessionStorage.removeItem('redirectAfterAuth');
-        setActiveModal(null);
-        setTimeout(() => {
-          const element = document.getElementById('autodiagnostico');
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-          }
-        }, 200);
+    if (currentUser && currentUser.type !== 'anonymous') {
+      if (currentUser.isVerified === false) {
+        setActiveModal('otp');
+      } else {
+        const pendingRedirect = window.sessionStorage.getItem('redirectAfterAuth');
+        if (pendingRedirect === 'autodiagnostico') {
+          window.sessionStorage.removeItem('redirectAfterAuth');
+          setActiveModal(null);
+          setTimeout(() => {
+            const element = document.getElementById('autodiagnostico');
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth' });
+            }
+          }, 200);
+        }
       }
     }
   }, [currentUser]);
@@ -276,6 +278,7 @@ function App() {
         onClose={() => setActiveModal(null)}
         onOpenAuth={() => setActiveModal('auth')}
         onOpenAccount={() => setActiveModal('account')}
+        onOpenOtp={() => setActiveModal('otp')}
         onUserChange={setCurrentUser}
         onOpenPitch={handleOpenPitch}
         directPitchDownload={directPitchDownload}

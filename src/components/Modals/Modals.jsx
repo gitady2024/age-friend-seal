@@ -20,14 +20,23 @@ import {
   saveCompanyDeliverable,
   recoverUserPassword,
   getQuestionsList,
-  updateQuestionInDb
+  updateQuestionInDb,
+  verifyUserOtp,
+  resendUserOtp
 } from "../../utils/firebaseHelpers.js";
 
-function Modals({ language, activeModal, contactLevel, currentUser, latestDiagnostic, onClose, onOpenAuth, onOpenAccount, onUserChange, directPitchDownload, onClearDirectPitch, onOpenPitchSuccess }) {
+function Modals({ language, activeModal, contactLevel, currentUser, latestDiagnostic, onClose, onOpenAuth, onOpenAccount, onOpenOtp, onUserChange, directPitchDownload, onClearDirectPitch, onOpenPitchSuccess, onOpenPitch }) {
   const intl = useIntl();
   const [authView, setAuthView] = useState('login');
   const [registerType, setRegisterType] = useState('personal');
   const [upgradeSector, setUpgradeSector] = useState('');
+
+  // 6-digit OTP states
+  const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
+  const [otpError, setOtpError] = useState('');
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+  const [resendingOtp, setResendingOtp] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
   
   // Phase 2 & 3: User Portal States
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -607,6 +616,100 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     onClose();
   };
 
+  // OTP 6-Digit Navigation & Submission Handlers
+  const handleOtpChange = (index, value) => {
+    if (!/^\d*$/.test(value)) return;
+    const newDigits = [...otpDigits];
+    newDigits[index] = value.slice(-1);
+    setOtpDigits(newDigits);
+    setOtpError('');
+
+    if (value && index < 5) {
+      const nextInput = document.getElementById(`otp-input-${index + 1}`);
+      if (nextInput) nextInput.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !otpDigits[index] && index > 0) {
+      const prevInput = document.getElementById(`otp-input-${index - 1}`);
+      if (prevInput) prevInput.focus();
+    }
+  };
+
+  const handleOtpPaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').trim();
+    if (/^\d{6}$/.test(pastedData)) {
+      const digits = pastedData.split('');
+      setOtpDigits(digits);
+      setOtpError('');
+      const lastInput = document.getElementById('otp-input-5');
+      if (lastInput) lastInput.focus();
+    }
+  };
+
+  const handleVerifyOtpSubmit = async (e) => {
+    if (e) e.preventDefault();
+    const code = otpDigits.join('');
+    if (code.length !== 6) {
+      setOtpError(language === 'es' ? 'Por favor ingrese el código completo de 6 dígitos.' : 'Please enter the complete 6-digit code.');
+      return;
+    }
+    setVerifyingOtp(true);
+    setOtpError('');
+    try {
+      const res = await verifyUserOtp(currentUser, code);
+      if (res.success) {
+        onUserChange(res.updatedProfile);
+        showToast(
+          language === 'es' ? 'Cuenta Activada' : 'Account Verified',
+          language === 'es' ? '¡Tu cuenta ha sido verificada y activada con éxito!' : 'Your account has been successfully verified!'
+        );
+        onClose();
+        if (onOpenAccount) onOpenAccount();
+      } else {
+        setOtpError(res.error || (language === 'es' ? 'Código incorrecto.' : 'Invalid code.'));
+      }
+    } catch (err) {
+      setOtpError(err.message || 'Error de verificación.');
+    } finally {
+      setVerifyingOtp(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (resendCooldown > 0 || resendingOtp) return;
+    setResendingOtp(true);
+    setOtpError('');
+    try {
+      const res = await resendUserOtp(currentUser);
+      if (res.success) {
+        onUserChange(res.updatedProfile);
+        showToast(
+          language === 'es' ? 'Código Enviado' : 'Code Sent',
+          language === 'es' ? 'Hemos enviado un nuevo código de 6 dígitos a su correo.' : 'A new 6-digit verification code has been sent to your email.'
+        );
+        setResendCooldown(30);
+        const interval = setInterval(() => {
+          setResendCooldown((prev) => {
+            if (prev <= 1) {
+              clearInterval(interval);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      } else {
+        setOtpError(res.error || 'Error al reenviar el código.');
+      }
+    } catch (err) {
+      setOtpError(err.message || 'Error enviando el código.');
+    } finally {
+      setResendingOtp(false);
+    }
+  };
+
   const handleAuthSubmit = async (event) => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
@@ -616,9 +719,20 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       try {
         const user = await signInUser(email, password);
         onUserChange(user);
-        alert(language === 'es' ? 'Sesión iniciada con éxito.' : 'Logged in successfully.');
-        onClose();
-        onOpenAccount();
+        if (user && user.isVerified === false) {
+          showToast(
+            language === 'es' ? 'Activación Requerida' : 'Activation Required',
+            language === 'es' ? 'Introduzca el código de 6 dígitos enviado a su correo.' : 'Enter the 6-digit code sent to your email.'
+          );
+          if (onOpenOtp) onOpenOtp();
+        } else {
+          showToast(
+            language === 'es' ? 'Sesión Iniciada' : 'Logged In',
+            language === 'es' ? 'Sesión iniciada con éxito.' : 'Logged in successfully.'
+          );
+          onClose();
+          onOpenAccount();
+        }
       } catch (err) {
         console.error("Login error:", err);
         alert(language === 'es' ? `Error al iniciar sesión: ${err.message}` : `Error logging in: ${err.message}`);
@@ -637,15 +751,6 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       const role = form.get('role') || '';
       const companySize = form.get('companySize') || '';
       const website = form.get('website') || '';
-      const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
-      if (!urlPattern.test(website)) {
-        alert(language === 'es' 
-          ? 'Por favor, ingrese una dirección web válida (ej. miempresa.com o https://miempresa.com).' 
-          : language === 'pt'
-            ? 'Por favor, insira um endereço web válido (ex. minhaempresa.com).'
-            : 'Please enter a valid website address (e.g. mycompany.com or https://mycompany.com).');
-        return;
-      }
 
       try {
         const profileData = {
@@ -664,9 +769,11 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
         };
         const user = await signUpUser(email, password, profileData);
         onUserChange(user);
-        alert(language === 'es' ? 'Registro completado con éxito.' : 'Registered successfully.');
-        onClose();
-        onOpenAccount();
+        showToast(
+          language === 'es' ? 'Registro Completado' : 'Registered Successfully',
+          language === 'es' ? 'Hemos enviado un código de activación de 6 dígitos a su correo.' : 'We sent a 6-digit activation code to your email.'
+        );
+        if (onOpenOtp) onOpenOtp();
       } catch (err) {
         console.error("Signup error:", err);
         alert(language === 'es' ? `Error al registrarse: ${err.message}` : `Error signing up: ${err.message}`);
@@ -1202,6 +1309,85 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
           >
             {language === 'es' ? 'Cerrar' : (language === 'pt' ? 'Fechar' : 'Close')}
           </button>
+        </div>
+      </div>
+
+      {/* MODAL: OTP ACCOUNT ACTIVATION */}
+      <div className={`modal-overlay ${isOpen('otp') ? '' : 'hidden'}`} id="otp-modal">
+        <div className="glass-card modal-content text-center" style={{ maxWidth: 460 }}>
+          <button className="modal-close" id="btn-otp-modal-close" onClick={onClose}><FormattedMessage id="Modals.001" /></button>
+          <div style={{ fontSize: '3.5rem', marginBottom: 12 }}>🔐</div>
+          <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 8, color: 'var(--text-primary)' }}>
+            {language === 'es' ? 'Activación de Seguridad' : (language === 'pt' ? 'Ativação de Segurança' : 'Security Verification')}
+          </h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.5', marginBottom: 20 }}>
+            {language === 'es'
+              ? 'Hemos enviado un código de 6 dígitos a su correo. Introdúzcalo para activar su cuenta.'
+              : language === 'pt'
+                ? 'Enviamos um código de 6 dígitos para o seu e-mail. Insira-o para ativar sua conta.'
+                : 'We have sent a 6-digit code to your email. Enter it below to verify your account.'}
+          </p>
+          <div style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '8px', padding: '8px 12px', marginBottom: 20, fontSize: '0.85rem', color: '#93c5fd', fontWeight: 600 }}>
+            📧 {currentUser?.email || 'su.correo@empresa.com'}
+          </div>
+
+          <form onSubmit={handleVerifyOtpSubmit}>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginBottom: 20 }} onPaste={handleOtpPaste}>
+              {otpDigits.map((digit, idx) => (
+                <input
+                  key={idx}
+                  id={`otp-input-${idx}`}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => handleOtpChange(idx, e.target.value)}
+                  onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                  style={{
+                    width: '45px',
+                    height: '52px',
+                    fontSize: '1.5rem',
+                    fontWeight: '800',
+                    textAlign: 'center',
+                    borderRadius: '8px',
+                    border: digit ? '2px solid var(--accent-color, #10b981)' : '1px solid var(--border-color)',
+                    background: 'rgba(15, 23, 42, 0.6)',
+                    color: 'var(--text-primary)'
+                  }}
+                />
+              ))}
+            </div>
+
+            {otpError && (
+              <div style={{ color: '#ef4444', fontSize: '0.85rem', marginBottom: 15, fontWeight: 500 }}>
+                ⚠️ {otpError}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="btn btn-gradient btn-block"
+              disabled={verifyingOtp || otpDigits.join('').length !== 6}
+              style={{ padding: '12px', fontSize: '1rem', fontWeight: 700 }}
+            >
+              {verifyingOtp ? (language === 'es' ? 'Verificando...' : 'Verifying...') : (language === 'es' ? 'Verificar y Activar' : 'Verify & Activate')}
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-outline btn-block"
+              onClick={handleResendOtp}
+              disabled={resendCooldown > 0 || resendingOtp}
+              style={{ marginTop: 12, fontSize: '0.85rem' }}
+            >
+              {resendCooldown > 0
+                ? (language === 'es' ? `Reenviar código en (${resendCooldown}s)` : `Resend code in (${resendCooldown}s)`)
+                : resendingOtp
+                  ? (language === 'es' ? 'Enviando...' : 'Sending...')
+                  : (language === 'es' ? '🔄 Reenviar código' : '🔄 Resend code')}
+            </button>
+          </form>
         </div>
       </div>
 

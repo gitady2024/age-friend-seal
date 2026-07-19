@@ -77,7 +77,38 @@ export default function ProtectedRoute({ children, currentUser, loadingUser, onR
   const isAuth = currentUser && currentUser.type !== 'anonymous';
   const isB2B = isAuth && currentUser.type === 'empresa';
 
-  // 2. Si el usuario es de tipo Empresa, renderizar el diagnóstico
+  // 2. Si el usuario no ha verificado su cuenta con el OTP de 6 dígitos
+  if (isAuth && currentUser.isVerified === false) {
+    return (
+      <section id="autodiagnostico" style={sectionStyle}>
+        <div className="container container-narrow">
+          <div style={cardStyle} className="glass-card">
+            <div style={{ fontSize: '4.5rem', filter: 'drop-shadow(0 10px 20px rgba(234, 179, 8, 0.2))' }}>🔐</div>
+            <h2 style={titleStyle}>
+              {language === 'es' ? 'Cuenta Pendiente de Activación' : (language === 'pt' ? 'Conta Pendente de Ativação' : 'Account Activation Required')}
+            </h2>
+            <p style={textStyle}>
+              {language === 'es'
+                ? 'Hemos enviado un código de seguridad de 6 dígitos a su correo. Introdúzcalo para activar su cuenta y acceder a las funciones avanzadas.'
+                : language === 'pt'
+                  ? 'Enviamos um código de 6 dígitos para o seu e-mail. Insira-o para ativar sua conta e acessar as funções avançadas.'
+                  : 'We sent a 6-digit security code to your email. Enter it below to activate your account and access advanced features.'}
+            </p>
+            <button 
+              type="button" 
+              className="btn btn-gradient btn-lg" 
+              onClick={onRedirect}
+              style={{ padding: '14px 40px', fontSize: '1.1rem', fontWeight: '600' }}
+            >
+              {language === 'es' ? 'Introducir Código de Activación (OTP)' : (language === 'pt' ? 'Inserir Código de Ativação (OTP)' : 'Enter Activation Code (OTP)')}
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // 3. Si el usuario es de tipo Empresa y está verificado, renderizar el diagnóstico
   if (isB2B) {
     return children;
   }

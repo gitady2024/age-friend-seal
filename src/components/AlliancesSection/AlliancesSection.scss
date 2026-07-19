@@ -8,6 +8,26 @@
     align-items: center;
     flex-wrap: wrap;
 
+    .btn-pitch-green {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff !important;
+        font-weight: 700;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(16, 185, 129, 0.6);
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        }
+    }
+
     .btn-agenda-reunion-primary {
         background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
         color: #ffffff !important;
@@ -40,6 +60,12 @@
 
         .btn-agenda-reunion-primary {
             order: -1; /* Agendar Reunión takes top priority on mobile! */
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 1rem;
+        }
+
+        .btn-pitch-green {
             width: 100%;
             padding: 14px 20px;
             font-size: 1rem;

@@ -344,19 +344,21 @@ function App() {
 
   // Handle redirection/auto-scroll to #autodiagnostico after login/registration
   useEffect(() => {
-    const isAuth = currentUser && currentUser.type !== 'anonymous';
-    const isB2B = isAuth && currentUser.type === 'empresa';
-    if (isB2B) {
-      const pendingRedirect = window.sessionStorage.getItem('redirectAfterAuth');
-      if (pendingRedirect === '#autodiagnostico') {
-        window.sessionStorage.removeItem('redirectAfterAuth');
-        setActiveModal(null);
-        setTimeout(() => {
-          const element = document.getElementById('autodiagnostico');
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-          }
-        }, 200);
+    if (currentUser && currentUser.type !== 'anonymous') {
+      if (currentUser.isVerified === false) {
+        setActiveModal('otp');
+      } else {
+        const pendingRedirect = window.sessionStorage.getItem('redirectAfterAuth');
+        if (pendingRedirect === 'autodiagnostico') {
+          window.sessionStorage.removeItem('redirectAfterAuth');
+          setActiveModal(null);
+          setTimeout(() => {
+            const element = document.getElementById('autodiagnostico');
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth' });
+            }
+          }, 200);
+        }
       }
     }
   }, [currentUser]);
@@ -448,6 +450,7 @@ function App() {
         onClose={() => setActiveModal(null)}
         onOpenAuth={() => setActiveModal('auth')}
         onOpenAccount={() => setActiveModal('account')}
+        onOpenOtp={() => setActiveModal('otp')}
         onUserChange={setCurrentUser}
         onOpenPitch={handleOpenPitch}
         directPitchDownload={directPitchDownload}
@@ -730,7 +733,7 @@ function AlliancesSection({ onOpenPitch }) {
         </div>
 
         <div className="alliances-cta-container">
-          <button className="btn btn-outline btn-lg" id="btn-open-pitch" onClick={onOpenPitch}>
+          <button className="btn btn-lg btn-pitch-green" id="btn-open-pitch" onClick={onOpenPitch}>
             <FormattedMessage id="AlliancesSection.015" />
           </button>
           <a
@@ -768,6 +771,26 @@ export default AlliancesSection;
     align-items: center;
     flex-wrap: wrap;
 
+    .btn-pitch-green {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff !important;
+        font-weight: 700;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(16, 185, 129, 0.6);
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        }
+    }
+
     .btn-agenda-reunion-primary {
         background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
         color: #ffffff !important;
@@ -800,6 +823,12 @@ export default AlliancesSection;
 
         .btn-agenda-reunion-primary {
             order: -1; /* Agendar Reunión takes top priority on mobile! */
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 1rem;
+        }
+
+        .btn-pitch-green {
             width: 100%;
             padding: 14px 20px;
             font-size: 1rem;
@@ -2714,14 +2743,23 @@ import {
   saveCompanyDeliverable,
   recoverUserPassword,
   getQuestionsList,
-  updateQuestionInDb
+  updateQuestionInDb,
+  verifyUserOtp,
+  resendUserOtp
 } from "../../utils/firebaseHelpers.js";
 
-function Modals({ language, activeModal, contactLevel, currentUser, latestDiagnostic, onClose, onOpenAuth, onOpenAccount, onUserChange, directPitchDownload, onClearDirectPitch, onOpenPitchSuccess }) {
+function Modals({ language, activeModal, contactLevel, currentUser, latestDiagnostic, onClose, onOpenAuth, onOpenAccount, onOpenOtp, onUserChange, directPitchDownload, onClearDirectPitch, onOpenPitchSuccess, onOpenPitch }) {
   const intl = useIntl();
   const [authView, setAuthView] = useState('login');
   const [registerType, setRegisterType] = useState('personal');
   const [upgradeSector, setUpgradeSector] = useState('');
+
+  // 6-digit OTP states
+  const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
+  const [otpError, setOtpError] = useState('');
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+  const [resendingOtp, setResendingOtp] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
   
   // Phase 2 & 3: User Portal States
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -3301,6 +3339,100 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     onClose();
   };
 
+  // OTP 6-Digit Navigation & Submission Handlers
+  const handleOtpChange = (index, value) => {
+    if (!/^\d*$/.test(value)) return;
+    const newDigits = [...otpDigits];
+    newDigits[index] = value.slice(-1);
+    setOtpDigits(newDigits);
+    setOtpError('');
+
+    if (value && index < 5) {
+      const nextInput = document.getElementById(`otp-input-${index + 1}`);
+      if (nextInput) nextInput.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !otpDigits[index] && index > 0) {
+      const prevInput = document.getElementById(`otp-input-${index - 1}`);
+      if (prevInput) prevInput.focus();
+    }
+  };
+
+  const handleOtpPaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').trim();
+    if (/^\d{6}$/.test(pastedData)) {
+      const digits = pastedData.split('');
+      setOtpDigits(digits);
+      setOtpError('');
+      const lastInput = document.getElementById('otp-input-5');
+      if (lastInput) lastInput.focus();
+    }
+  };
+
+  const handleVerifyOtpSubmit = async (e) => {
+    if (e) e.preventDefault();
+    const code = otpDigits.join('');
+    if (code.length !== 6) {
+      setOtpError(language === 'es' ? 'Por favor ingrese el código completo de 6 dígitos.' : 'Please enter the complete 6-digit code.');
+      return;
+    }
+    setVerifyingOtp(true);
+    setOtpError('');
+    try {
+      const res = await verifyUserOtp(currentUser, code);
+      if (res.success) {
+        onUserChange(res.updatedProfile);
+        showToast(
+          language === 'es' ? 'Cuenta Activada' : 'Account Verified',
+          language === 'es' ? '¡Tu cuenta ha sido verificada y activada con éxito!' : 'Your account has been successfully verified!'
+        );
+        onClose();
+        if (onOpenAccount) onOpenAccount();
+      } else {
+        setOtpError(res.error || (language === 'es' ? 'Código incorrecto.' : 'Invalid code.'));
+      }
+    } catch (err) {
+      setOtpError(err.message || 'Error de verificación.');
+    } finally {
+      setVerifyingOtp(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (resendCooldown > 0 || resendingOtp) return;
+    setResendingOtp(true);
+    setOtpError('');
+    try {
+      const res = await resendUserOtp(currentUser);
+      if (res.success) {
+        onUserChange(res.updatedProfile);
+        showToast(
+          language === 'es' ? 'Código Enviado' : 'Code Sent',
+          language === 'es' ? 'Hemos enviado un nuevo código de 6 dígitos a su correo.' : 'A new 6-digit verification code has been sent to your email.'
+        );
+        setResendCooldown(30);
+        const interval = setInterval(() => {
+          setResendCooldown((prev) => {
+            if (prev <= 1) {
+              clearInterval(interval);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      } else {
+        setOtpError(res.error || 'Error al reenviar el código.');
+      }
+    } catch (err) {
+      setOtpError(err.message || 'Error enviando el código.');
+    } finally {
+      setResendingOtp(false);
+    }
+  };
+
   const handleAuthSubmit = async (event) => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
@@ -3310,9 +3442,20 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       try {
         const user = await signInUser(email, password);
         onUserChange(user);
-        alert(language === 'es' ? 'Sesión iniciada con éxito.' : 'Logged in successfully.');
-        onClose();
-        onOpenAccount();
+        if (user && user.isVerified === false) {
+          showToast(
+            language === 'es' ? 'Activación Requerida' : 'Activation Required',
+            language === 'es' ? 'Introduzca el código de 6 dígitos enviado a su correo.' : 'Enter the 6-digit code sent to your email.'
+          );
+          if (onOpenOtp) onOpenOtp();
+        } else {
+          showToast(
+            language === 'es' ? 'Sesión Iniciada' : 'Logged In',
+            language === 'es' ? 'Sesión iniciada con éxito.' : 'Logged in successfully.'
+          );
+          onClose();
+          onOpenAccount();
+        }
       } catch (err) {
         console.error("Login error:", err);
         alert(language === 'es' ? `Error al iniciar sesión: ${err.message}` : `Error logging in: ${err.message}`);
@@ -3331,15 +3474,6 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       const role = form.get('role') || '';
       const companySize = form.get('companySize') || '';
       const website = form.get('website') || '';
-      const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
-      if (!urlPattern.test(website)) {
-        alert(language === 'es' 
-          ? 'Por favor, ingrese una dirección web válida (ej. miempresa.com o https://miempresa.com).' 
-          : language === 'pt'
-            ? 'Por favor, insira um endereço web válido (ex. minhaempresa.com).'
-            : 'Please enter a valid website address (e.g. mycompany.com or https://mycompany.com).');
-        return;
-      }
 
       try {
         const profileData = {
@@ -3358,9 +3492,11 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
         };
         const user = await signUpUser(email, password, profileData);
         onUserChange(user);
-        alert(language === 'es' ? 'Registro completado con éxito.' : 'Registered successfully.');
-        onClose();
-        onOpenAccount();
+        showToast(
+          language === 'es' ? 'Registro Completado' : 'Registered Successfully',
+          language === 'es' ? 'Hemos enviado un código de activación de 6 dígitos a su correo.' : 'We sent a 6-digit activation code to your email.'
+        );
+        if (onOpenOtp) onOpenOtp();
       } catch (err) {
         console.error("Signup error:", err);
         alert(language === 'es' ? `Error al registrarse: ${err.message}` : `Error signing up: ${err.message}`);
@@ -3896,6 +4032,85 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
           >
             {language === 'es' ? 'Cerrar' : (language === 'pt' ? 'Fechar' : 'Close')}
           </button>
+        </div>
+      </div>
+
+      {/* MODAL: OTP ACCOUNT ACTIVATION */}
+      <div className={`modal-overlay ${isOpen('otp') ? '' : 'hidden'}`} id="otp-modal">
+        <div className="glass-card modal-content text-center" style={{ maxWidth: 460 }}>
+          <button className="modal-close" id="btn-otp-modal-close" onClick={onClose}><FormattedMessage id="Modals.001" /></button>
+          <div style={{ fontSize: '3.5rem', marginBottom: 12 }}>🔐</div>
+          <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 8, color: 'var(--text-primary)' }}>
+            {language === 'es' ? 'Activación de Seguridad' : (language === 'pt' ? 'Ativação de Segurança' : 'Security Verification')}
+          </h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.5', marginBottom: 20 }}>
+            {language === 'es'
+              ? 'Hemos enviado un código de 6 dígitos a su correo. Introdúzcalo para activar su cuenta.'
+              : language === 'pt'
+                ? 'Enviamos um código de 6 dígitos para o seu e-mail. Insira-o para ativar sua conta.'
+                : 'We have sent a 6-digit code to your email. Enter it below to verify your account.'}
+          </p>
+          <div style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '8px', padding: '8px 12px', marginBottom: 20, fontSize: '0.85rem', color: '#93c5fd', fontWeight: 600 }}>
+            📧 {currentUser?.email || 'su.correo@empresa.com'}
+          </div>
+
+          <form onSubmit={handleVerifyOtpSubmit}>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginBottom: 20 }} onPaste={handleOtpPaste}>
+              {otpDigits.map((digit, idx) => (
+                <input
+                  key={idx}
+                  id={`otp-input-${idx}`}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => handleOtpChange(idx, e.target.value)}
+                  onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                  style={{
+                    width: '45px',
+                    height: '52px',
+                    fontSize: '1.5rem',
+                    fontWeight: '800',
+                    textAlign: 'center',
+                    borderRadius: '8px',
+                    border: digit ? '2px solid var(--accent-color, #10b981)' : '1px solid var(--border-color)',
+                    background: 'rgba(15, 23, 42, 0.6)',
+                    color: 'var(--text-primary)'
+                  }}
+                />
+              ))}
+            </div>
+
+            {otpError && (
+              <div style={{ color: '#ef4444', fontSize: '0.85rem', marginBottom: 15, fontWeight: 500 }}>
+                ⚠️ {otpError}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="btn btn-gradient btn-block"
+              disabled={verifyingOtp || otpDigits.join('').length !== 6}
+              style={{ padding: '12px', fontSize: '1rem', fontWeight: 700 }}
+            >
+              {verifyingOtp ? (language === 'es' ? 'Verificando...' : 'Verifying...') : (language === 'es' ? 'Verificar y Activar' : 'Verify & Activate')}
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-outline btn-block"
+              onClick={handleResendOtp}
+              disabled={resendCooldown > 0 || resendingOtp}
+              style={{ marginTop: 12, fontSize: '0.85rem' }}
+            >
+              {resendCooldown > 0
+                ? (language === 'es' ? `Reenviar código en (${resendCooldown}s)` : `Resend code in (${resendCooldown}s)`)
+                : resendingOtp
+                  ? (language === 'es' ? 'Enviando...' : 'Sending...')
+                  : (language === 'es' ? '🔄 Reenviar código' : '🔄 Resend code')}
+            </button>
+          </form>
         </div>
       </div>
 
@@ -7208,7 +7423,38 @@ export default function ProtectedRoute({ children, currentUser, loadingUser, onR
   const isAuth = currentUser && currentUser.type !== 'anonymous';
   const isB2B = isAuth && currentUser.type === 'empresa';
 
-  // 2. Si el usuario es de tipo Empresa, renderizar el diagnóstico
+  // 2. Si el usuario no ha verificado su cuenta con el OTP de 6 dígitos
+  if (isAuth && currentUser.isVerified === false) {
+    return (
+      <section id="autodiagnostico" style={sectionStyle}>
+        <div className="container container-narrow">
+          <div style={cardStyle} className="glass-card">
+            <div style={{ fontSize: '4.5rem', filter: 'drop-shadow(0 10px 20px rgba(234, 179, 8, 0.2))' }}>🔐</div>
+            <h2 style={titleStyle}>
+              {language === 'es' ? 'Cuenta Pendiente de Activación' : (language === 'pt' ? 'Conta Pendente de Ativação' : 'Account Activation Required')}
+            </h2>
+            <p style={textStyle}>
+              {language === 'es'
+                ? 'Hemos enviado un código de seguridad de 6 dígitos a su correo. Introdúzcalo para activar su cuenta y acceder a las funciones avanzadas.'
+                : language === 'pt'
+                  ? 'Enviamos um código de 6 dígitos para o seu e-mail. Insira-o para ativar sua conta e acessar as funções avançadas.'
+                  : 'We sent a 6-digit security code to your email. Enter it below to activate your account and access advanced features.'}
+            </p>
+            <button 
+              type="button" 
+              className="btn btn-gradient btn-lg" 
+              onClick={onRedirect}
+              style={{ padding: '14px 40px', fontSize: '1.1rem', fontWeight: '600' }}
+            >
+              {language === 'es' ? 'Introducir Código de Activación (OTP)' : (language === 'pt' ? 'Inserir Código de Ativação (OTP)' : 'Enter Activation Code (OTP)')}
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // 3. Si el usuario es de tipo Empresa y está verificado, renderizar el diagnóstico
   if (isB2B) {
     return children;
   }
@@ -18056,6 +18302,9 @@ export const signUpUser = async (email, password, profileData) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiresAt = Date.now() + 15 * 60 * 1000; // 15 mins
+
     // Write profile to /users collection
     const userDocRef = doc(db, "users", user.uid);
     const finalProfile = {
@@ -18070,9 +18319,29 @@ export const signUpUser = async (email, password, profileData) => {
       },
       createdAt: new Date().toISOString(),
       ...profileData,
+      isVerified: false,
+      otpCode,
+      otpExpiresAt,
       role: email.toLowerCase().startsWith("admin") ? "admin" : (profileData.role || "user")
     };
     await setDoc(userDocRef, finalProfile);
+
+    // Call /api/send-otp to deliver verification code
+    try {
+      await fetch("/api/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          name: profileData.name || profileData.companyName || email,
+          otpCode,
+          action: "send"
+        })
+      });
+    } catch (err) {
+      console.error("Error sending OTP email:", err);
+    }
+
     return finalProfile;
   } catch (error) {
     console.error("Firebase SignUp failed, attempting simulation fallback:", error);
@@ -18086,6 +18355,9 @@ export const signUpUser = async (email, password, profileData) => {
 const simulateSignUp = (email, profileData) => {
   console.warn("Using simulated signup.");
   const role = email.toLowerCase().startsWith("admin") ? "admin" : (profileData.role || "user");
+  const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+  const otpExpiresAt = Date.now() + 15 * 60 * 1000;
+
   const dummyUser = {
     uid: "dummy_" + Date.now(),
     email,
@@ -18097,11 +18369,102 @@ const simulateSignUp = (email, profileData) => {
       hexSecondary: "#10b981"
     },
     ...profileData,
+    isVerified: false,
+    otpCode,
+    otpExpiresAt,
     role: email.toLowerCase().startsWith("admin") ? "admin" : (profileData.role || "user"),
     type: profileData.type || "personal"
   };
   window.localStorage.setItem("ageFriendUser", JSON.stringify(dummyUser));
+
+  // Trigger send-otp
+  fetch("/api/send-otp", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email,
+      name: profileData.name || profileData.companyName || email,
+      otpCode,
+      action: "send"
+    })
+  }).catch(err => console.error("Simulated OTP email send failed:", err));
+
   return dummyUser;
+};
+
+export const verifyUserOtp = async (user, enteredCode) => {
+  if (!user) return { success: false, error: "Usuario no autenticado." };
+  
+  const storedCode = user.otpCode;
+  const expiresAt = user.otpExpiresAt;
+  
+  if (expiresAt && Date.now() > expiresAt) {
+    return { success: false, error: "El código de 6 dígitos ha expirado. Solicite uno nuevo." };
+  }
+  
+  if (String(storedCode).trim() !== String(enteredCode).trim()) {
+    return { success: false, error: "El código de 6 dígitos introducido es incorrecto." };
+  }
+  
+  const updatedData = {
+    isVerified: true,
+    otpCode: null,
+    otpExpiresAt: null
+  };
+  
+  if (isFirebaseEnabled() && user.uid && !user.uid.startsWith("dummy_")) {
+    try {
+      const userDocRef = doc(db, "users", user.uid);
+      await updateDoc(userDocRef, updatedData);
+    } catch (err) {
+      console.warn("Firestore updateDoc for OTP failed, applying local state:", err);
+    }
+  }
+  
+  const updatedProfile = { ...user, ...updatedData };
+  window.localStorage.setItem("ageFriendUser", JSON.stringify(updatedProfile));
+  return { success: true, updatedProfile };
+};
+
+export const resendUserOtp = async (user) => {
+  if (!user) return { success: false, error: "Usuario no encontrado." };
+  const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+  const newExpiresAt = Date.now() + 15 * 60 * 1000;
+  
+  const updatedData = {
+    otpCode: newOtp,
+    otpExpiresAt: newExpiresAt,
+    isVerified: false
+  };
+  
+  if (isFirebaseEnabled() && user.uid && !user.uid.startsWith("dummy_")) {
+    try {
+      const userDocRef = doc(db, "users", user.uid);
+      await updateDoc(userDocRef, updatedData);
+    } catch (err) {
+      console.warn("Firestore updateDoc for OTP resend failed, applying local state:", err);
+    }
+  }
+  
+  const updatedProfile = { ...user, ...updatedData };
+  window.localStorage.setItem("ageFriendUser", JSON.stringify(updatedProfile));
+  
+  try {
+    await fetch("/api/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: user.email,
+        name: user.name || user.companyName || user.email,
+        otpCode: newOtp,
+        action: "send"
+      })
+    });
+  } catch (err) {
+    console.error("Error al enviar OTP:", err);
+  }
+  
+  return { success: true, updatedProfile };
 };
 
 // SIGN IN
@@ -20320,6 +20683,165 @@ export default async function handler(req, res) {
     console.error("Error al procesar el reporte, enviar el correo o sincronizar con Brevo:", error);
     return res.status(500).json({ error: error.message });
   }
+}
+
+
+
+
+// ==========================================
+// FILE: api/send-otp.js
+// ==========================================
+
+import nodemailer from "nodemailer";
+
+/**
+ * Serverless API: /api/send-otp
+ * Maneja el envío de códigos de activación OTP de 6 dígitos vía Brevo API / SMTP
+ * y proporciona logging en consola para desarrollo local.
+ */
+export default async function handler(req, res) {
+  // CORS Headers
+  res.setHeader("Access-Control-Allow-Credentials", true);
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,PATCH,DELETE,POST,PUT");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization"
+  );
+
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
+  if (req.method !== "POST") {
+    return res.status(405).json({ success: false, error: "Method Not Allowed" });
+  }
+
+  const { email, name, otpCode, action } = req.body || {};
+
+  if (!email) {
+    return res.status(400).json({ success: false, error: "El correo electrónico es requerido." });
+  }
+
+  const userEmail = String(email).trim().toLowerCase();
+  const userName = String(name || userEmail.split("@")[0] || "Usuario").trim();
+  const codeToDeliver = String(otpCode || Math.floor(100000 + Math.random() * 900000)).trim();
+
+  // Log visible en consola de servidor para entornos de pruebas / dev
+  console.log(`========================================================`);
+  console.log(`🔑 [SEGURIDAD B2B] CÓDIGO OTP DE ACTIVACIÓN`);
+  console.log(`📧 Destinatario: ${userEmail} (${userName})`);
+  console.log(`🔢 Código OTP (6 dígitos): ${codeToDeliver}`);
+  console.log(`⏰ Expiración: 15 minutos`);
+  console.log(`========================================================`);
+
+  if (action === "verify") {
+    return res.status(200).json({
+      success: true,
+      message: "Código verificado correctamente."
+    });
+  }
+
+  let emailSent = false;
+  let provider = "none";
+
+  // 1. Intentar envío vía Brevo API v3 Transactional Email
+  const brevoApiKey = process.env.BREVO_API_KEY;
+  if (brevoApiKey) {
+    try {
+      console.log(`Enviando código OTP vía Brevo API v3 a ${userEmail}...`);
+      const brevoResponse = await fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: {
+          "accept": "application/json",
+          "content-type": "application/json",
+          "api-key": brevoApiKey
+        },
+        body: JSON.stringify({
+          sender: {
+            name: "Age Friend Seal",
+            email: process.env.SMTP_USER || "no-reply@agefriendseal.com"
+          },
+          to: [{ email: userEmail, name: userName }],
+          subject: "🔐 Código de Activación de Cuenta - Age Friend Seal",
+          htmlContent: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; background-color: #0f172a; color: #f8fafc; border-radius: 16px; border: 1px solid #334155;">
+              <div style="text-align: center; margin-bottom: 25px;">
+                <h1 style="color: #3b82f6; font-size: 24px; margin-bottom: 10px;">Age Friend Seal</h1>
+                <p style="color: #94a3b8; font-size: 14px;">Instituto Certificador Internacional</p>
+              </div>
+              
+              <div style="background: rgba(30, 41, 59, 0.8); padding: 25px; border-radius: 12px; border: 1px solid #475569; text-align: center;">
+                <h2 style="color: #f8fafc; font-size: 18px; margin-top: 0;">Activación de Seguridad de Cuenta B2B</h2>
+                <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6;">
+                  Estimado/a <strong>${userName}</strong>,<br/>
+                  Introduzca el siguiente código de 6 dígitos en la pantalla de activación para completar la verificación de su cuenta:
+                </p>
+                
+                <div style="margin: 30px 0; background: #1e293b; border: 2px dashed #3b82f6; border-radius: 12px; padding: 20px; display: inline-block;">
+                  <span style="font-size: 36px; font-weight: 800; letter-spacing: 10px; color: #10b981; font-family: monospace;">${codeToDeliver}</span>
+                </div>
+                
+                <p style="color: #94a3b8; font-size: 12px; margin-bottom: 0;">
+                  ⚠️ Este código caducará en <strong>15 minutos</strong>. Si no solicitó esta verificación, ignore este mensaje.
+                </p>
+              </div>
+              
+              <div style="text-align: center; margin-top: 25px; font-size: 11px; color: #64748b;">
+                © Age Friend Seal. Todos los derechos reservados.
+              </div>
+            </div>
+          `
+        })
+      });
+
+      if (brevoResponse.ok) {
+        console.log("Correo OTP enviado con éxito mediante Brevo API.");
+        emailSent = true;
+        provider = "brevo";
+      } else {
+        const errTxt = await brevoResponse.text();
+        console.error("Error enviando correo OTP con Brevo:", errTxt);
+      }
+    } catch (brevoErr) {
+      console.error("Fallo de conexión enviando OTP con Brevo:", brevoErr);
+    }
+  }
+
+  // 2. Fallback a Nodemailer SMTP si Brevo no está o falló
+  if (!emailSent && process.env.SMTP_USER && process.env.SMTP_PASS) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST || "smtp.gmail.com",
+        port: parseInt(process.env.SMTP_PORT || "465"),
+        secure: process.env.SMTP_SECURE === "true",
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS
+        }
+      });
+
+      await transporter.sendMail({
+        from: `"Age Friend Seal" <${process.env.SMTP_USER}>`,
+        to: userEmail,
+        subject: "🔐 Código de Activación de Cuenta - Age Friend Seal",
+        text: `Hola ${userName},\n\nTu código de activación de 6 dígitos es: ${codeToDeliver}\n\nEste código expira en 15 minutos.`
+      });
+
+      emailSent = true;
+      provider = "smtp";
+      console.log("Correo OTP enviado con éxito vía SMTP.");
+    } catch (smtpErr) {
+      console.error("Error enviando OTP vía SMTP:", smtpErr);
+    }
+  }
+
+  return res.status(200).json({
+    success: true,
+    emailSent,
+    provider,
+    otpCode: codeToDeliver // De vuelto para simulaciones en dev
+  });
 }
 
 
