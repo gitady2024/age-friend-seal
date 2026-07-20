@@ -5,6 +5,7 @@ import {
   signOut, 
   onAuthStateChanged,
   signInAnonymously,
+  sendPasswordResetEmail,
   confirmPasswordReset
 } from "firebase/auth";
 import { 
@@ -507,26 +508,26 @@ export const saveCompanyDeliverable = async (deliverableData) => {
   }
 };
 
-// Recover User Password (Forgot Password via Brevo + In-App Deep Link)
+// Recover User Password (Ruta B: Native Firebase Client SDK + ActionCodeSettings Deep Link)
 export const recoverUserPassword = async (email) => {
   if (!email) throw new Error("El correo es requerido.");
-  console.log(`[FRONTEND DISPARO] Solicitando restablecimiento de contraseña vía Brevo para: ${email}`);
+  console.log(`[FRONTEND DISPARO] Enviando correo de restablecimiento nativo Firebase (Ruta B) para: ${email}`);
+
+  if (!isFirebaseEnabled()) {
+    console.warn("Firebase no habilitado. Simulando envío de recuperación.");
+    return true;
+  }
+
+  const actionCodeSettings = {
+    url: 'https://agefriendseal.com/?action=resetPassword',
+    handleCodeInApp: true
+  };
+
   try {
-    const res = await fetch("/api/send-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email,
-        action: "reset"
-      })
-    });
-    const data = await res.json();
-    if (!data.success) {
-      throw new Error(data.error || "No se pudo enviar el correo de restablecimiento.");
-    }
+    await sendPasswordResetEmail(auth, email, actionCodeSettings);
     return true;
   } catch (error) {
-    console.error("Error sending password reset email via Brevo API:", error);
+    console.error("Error al enviar correo de restablecimiento nativo Firebase:", error);
     throw error;
   }
 };
