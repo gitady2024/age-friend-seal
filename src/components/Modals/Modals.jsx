@@ -26,7 +26,7 @@ import {
   sendOtpEmail
 } from "../../utils/firebaseHelpers.js";
 
-function Modals({ language, activeModal, contactLevel, currentUser, latestDiagnostic, onClose, onOpenAuth, onOpenAccount, onOpenOtp, onUserChange, directPitchDownload, onClearDirectPitch, onOpenPitchSuccess, onOpenPitch }) {
+function Modals({ language, activeModal, contactLevel, currentUser, latestDiagnostic, prefillEmail, onClose, onOpenAuth, onOpenAccount, onOpenOtp, onUserChange, directPitchDownload, onClearDirectPitch, onOpenPitchSuccess, onOpenPitch }) {
   const intl = useIntl();
   const [authView, setAuthView] = useState('login');
   const [registerType, setRegisterType] = useState('personal');
@@ -38,6 +38,13 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [resendingOtp, setResendingOtp] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
+
+  // Switch to login tab if modal opens with prefillEmail
+  useEffect(() => {
+    if (activeModal === 'auth' && prefillEmail) {
+      setAuthView('login');
+    }
+  }, [activeModal, prefillEmail]);
 
   // Guarantee clean 100% empty inputs whenever the OTP modal opens
   useEffect(() => {
@@ -1455,7 +1462,16 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
             <form id="form-login" className="modal-form" style={{ textAlign: 'left', marginTop: 20 }} onSubmit={handleAuthSubmit}>
               <div className="form-group">
                 <label htmlFor="login-email"><FormattedMessage id="Modals.043" /></label>
-                <input type="text" id="login-email" name="email" required placeholder={intl.formatMessage({ id: "Modals.044" })} />
+                <input 
+                  key={prefillEmail || 'login-email-key'}
+                  type="email" 
+                  id="login-email" 
+                  name="email" 
+                  required 
+                  autoComplete="email"
+                  defaultValue={prefillEmail || ''} 
+                  placeholder={intl.formatMessage({ id: "Modals.044" })} 
+                />
               </div>
               <div className="form-group">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
@@ -1468,7 +1484,14 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                     {language === 'es' ? '¿Olvidó su contraseña?' : language === 'pt' ? 'Esqueceu a senha?' : 'Forgot password?'}
                   </button>
                 </div>
-                <input type="password" id="login-password" name="password" required placeholder={intl.formatMessage({ id: "Modals.046" })} />
+                <input 
+                  type="password" 
+                  id="login-password" 
+                  name="password" 
+                  required 
+                  autoComplete="current-password"
+                  placeholder={intl.formatMessage({ id: "Modals.046" })} 
+                />
               </div>
               <button type="submit" className="btn btn-gradient btn-block" style={{ marginTop: 12 }}><FormattedMessage id="Modals.047" /></button>
             </form>

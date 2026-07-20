@@ -49,6 +49,25 @@ function App() {
   const [latestDiagnostic, setLatestDiagnostic] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
   const [directPitchDownload, setDirectPitchDownload] = useState(false);
+  const [prefillEmail, setPrefillEmail] = useState('');
+
+  // Deep linking handler: ?action=login&email=user@domain.com
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const action = params.get('action');
+    const email = params.get('email');
+
+    if (action === 'login') {
+      if (email) {
+        setPrefillEmail(email);
+      }
+      setActiveModal('auth');
+
+      // Limpiar sutilmente los parámetros de la URL sin recargar la página
+      const cleanUrl = window.location.pathname + window.location.hash;
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
+  }, []);
 
   useEffect(() => {
     if (!auth) {
@@ -275,6 +294,7 @@ function App() {
         contactLevel={contactLevel}
         currentUser={currentUser}
         latestDiagnostic={latestDiagnostic}
+        prefillEmail={prefillEmail}
         onClose={() => setActiveModal(null)}
         onOpenAuth={() => setActiveModal('auth')}
         onOpenAccount={() => setActiveModal('account')}

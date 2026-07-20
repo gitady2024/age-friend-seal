@@ -221,6 +221,25 @@ function App() {
   const [latestDiagnostic, setLatestDiagnostic] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
   const [directPitchDownload, setDirectPitchDownload] = useState(false);
+  const [prefillEmail, setPrefillEmail] = useState('');
+
+  // Deep linking handler: ?action=login&email=user@domain.com
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const action = params.get('action');
+    const email = params.get('email');
+
+    if (action === 'login') {
+      if (email) {
+        setPrefillEmail(email);
+      }
+      setActiveModal('auth');
+
+      // Limpiar sutilmente los parámetros de la URL sin recargar la página
+      const cleanUrl = window.location.pathname + window.location.hash;
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
+  }, []);
 
   useEffect(() => {
     if (!auth) {
@@ -447,6 +466,7 @@ function App() {
         contactLevel={contactLevel}
         currentUser={currentUser}
         latestDiagnostic={latestDiagnostic}
+        prefillEmail={prefillEmail}
         onClose={() => setActiveModal(null)}
         onOpenAuth={() => setActiveModal('auth')}
         onOpenAccount={() => setActiveModal('account')}
@@ -2749,7 +2769,7 @@ import {
   sendOtpEmail
 } from "../../utils/firebaseHelpers.js";
 
-function Modals({ language, activeModal, contactLevel, currentUser, latestDiagnostic, onClose, onOpenAuth, onOpenAccount, onOpenOtp, onUserChange, directPitchDownload, onClearDirectPitch, onOpenPitchSuccess, onOpenPitch }) {
+function Modals({ language, activeModal, contactLevel, currentUser, latestDiagnostic, prefillEmail, onClose, onOpenAuth, onOpenAccount, onOpenOtp, onUserChange, directPitchDownload, onClearDirectPitch, onOpenPitchSuccess, onOpenPitch }) {
   const intl = useIntl();
   const [authView, setAuthView] = useState('login');
   const [registerType, setRegisterType] = useState('personal');
@@ -2761,6 +2781,13 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [resendingOtp, setResendingOtp] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
+
+  // Switch to login tab if modal opens with prefillEmail
+  useEffect(() => {
+    if (activeModal === 'auth' && prefillEmail) {
+      setAuthView('login');
+    }
+  }, [activeModal, prefillEmail]);
 
   // Guarantee clean 100% empty inputs whenever the OTP modal opens
   useEffect(() => {
@@ -4178,7 +4205,16 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
             <form id="form-login" className="modal-form" style={{ textAlign: 'left', marginTop: 20 }} onSubmit={handleAuthSubmit}>
               <div className="form-group">
                 <label htmlFor="login-email"><FormattedMessage id="Modals.043" /></label>
-                <input type="text" id="login-email" name="email" required placeholder={intl.formatMessage({ id: "Modals.044" })} />
+                <input 
+                  key={prefillEmail || 'login-email-key'}
+                  type="email" 
+                  id="login-email" 
+                  name="email" 
+                  required 
+                  autoComplete="email"
+                  defaultValue={prefillEmail || ''} 
+                  placeholder={intl.formatMessage({ id: "Modals.044" })} 
+                />
               </div>
               <div className="form-group">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
@@ -4191,7 +4227,14 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                     {language === 'es' ? '¿Olvidó su contraseña?' : language === 'pt' ? 'Esqueceu a senha?' : 'Forgot password?'}
                   </button>
                 </div>
-                <input type="password" id="login-password" name="password" required placeholder={intl.formatMessage({ id: "Modals.046" })} />
+                <input 
+                  type="password" 
+                  id="login-password" 
+                  name="password" 
+                  required 
+                  autoComplete="current-password"
+                  placeholder={intl.formatMessage({ id: "Modals.046" })} 
+                />
               </div>
               <button type="submit" className="btn btn-gradient btn-block" style={{ marginTop: 12 }}><FormattedMessage id="Modals.047" /></button>
             </form>
@@ -20795,7 +20838,7 @@ export default async function handler(req, res) {
             Su cuenta ha sido verificada correctamente. Ya dispone de acceso completo al Dashboard, autodiagnóstico corporativo y descarga de reportes oficiales.
           </p>
           <div style="margin-top: 25px;">
-            <a href="https://agefriendseal.com" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 12px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Acceder a la Plataforma</a>
+            <a href="https://agefriendseal.com/?action=login&amp;email=${encodeURIComponent(userEmail)}" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 12px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Acceder a la Plataforma</a>
           </div>
         </div>
         

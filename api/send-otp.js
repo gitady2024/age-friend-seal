@@ -66,7 +66,7 @@ export default async function handler(req, res) {
             Su cuenta ha sido verificada correctamente. Ya dispone de acceso completo al Dashboard, autodiagnóstico corporativo y descarga de reportes oficiales.
           </p>
           <div style="margin-top: 25px;">
-            <a href="https://agefriendseal.com" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 12px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Acceder a la Plataforma</a>
+            <a href="https://agefriendseal.com/?action=login&amp;email=${encodeURIComponent(userEmail)}" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 12px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Acceder a la Plataforma</a>
           </div>
         </div>
         
