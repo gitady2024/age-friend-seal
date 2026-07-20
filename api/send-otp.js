@@ -67,11 +67,16 @@ export default async function handler(req, res) {
     console.log(`🔑 [API RESET IAM CHECK] Service Account Email en uso: ${clientEmail} | ProjectID: ${projectId}`);
 
     try {
-      let privateKey = rawPrivateKey;
-      if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
+      let privateKey = String(rawPrivateKey || "").trim();
+      if ((privateKey.startsWith('"') && privateKey.endsWith('"')) || (privateKey.startsWith("'") && privateKey.endsWith("'"))) {
         privateKey = privateKey.slice(1, -1);
       }
       privateKey = privateKey.replace(/\\n/g, "\n");
+      if (!privateKey.includes("\n") && privateKey.includes("-----BEGIN PRIVATE KEY-----")) {
+        privateKey = privateKey
+          .replace("-----BEGIN PRIVATE KEY-----", "-----BEGIN PRIVATE KEY-----\n")
+          .replace("-----END PRIVATE KEY-----", "\n-----END PRIVATE KEY-----");
+      }
 
       const header = { alg: "RS256", typ: "JWT" };
       const payload = {
@@ -136,10 +141,12 @@ export default async function handler(req, res) {
         });
       }
     } catch (adminErr) {
-      console.error("❌ Error de Service Account:", adminErr);
+      console.error("❌ ERROR DETALLADO DE SERVICE ACCOUNT / FIREBASE:", adminErr);
+      console.error("❌ STACK TRACE COMPLETO:", adminErr.stack || adminErr);
       return res.status(500).json({
         success: false,
-        error: `Error procesando credenciales de servidor: ${adminErr.message}`
+        error: `Error procesando credenciales de servidor: ${adminErr.message || adminErr}`,
+        details: adminErr.stack || String(adminErr)
       });
     }
 
