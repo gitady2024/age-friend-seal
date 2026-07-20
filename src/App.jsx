@@ -52,10 +52,11 @@ function App() {
   const [prefillEmail, setPrefillEmail] = useState('');
   const [resetOobCode, setResetOobCode] = useState(() => window.sessionStorage.getItem('ageFriendOobCode') || '');
 
-  // Deep linking handler: ?action=login&email=user@domain.com or ?action=resetPassword&oobCode=...
+  // Deep linking handler: ?action=login&email=user@domain.com or /__/auth/action?mode=resetPassword&oobCode=...
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const action = params.get('action');
+    const mode = params.get('mode');
     const email = params.get('email');
     const oobCode = params.get('oobCode');
 
@@ -68,7 +69,7 @@ function App() {
       // Limpiar sutilmente los parámetros de la URL sin recargar la página
       const cleanUrl = window.location.pathname + window.location.hash;
       window.history.replaceState({}, document.title, cleanUrl);
-    } else if (action === 'resetPassword' || oobCode) {
+    } else if (mode === 'resetPassword' || action === 'resetPassword' || oobCode) {
       if (oobCode) {
         window.sessionStorage.setItem('ageFriendOobCode', oobCode);
         setResetOobCode(oobCode);
@@ -76,7 +77,8 @@ function App() {
       setActiveModal('auth');
 
       // Limpiar sutilmente los parámetros de la URL sin recargar la página
-      const cleanUrl = window.location.pathname + window.location.hash;
+      const cleanPath = window.location.pathname.startsWith('/__/') ? '/' : window.location.pathname;
+      const cleanUrl = cleanPath + window.location.hash;
       window.history.replaceState({}, document.title, cleanUrl);
     }
   }, []);

@@ -224,10 +224,11 @@ function App() {
   const [prefillEmail, setPrefillEmail] = useState('');
   const [resetOobCode, setResetOobCode] = useState(() => window.sessionStorage.getItem('ageFriendOobCode') || '');
 
-  // Deep linking handler: ?action=login&email=user@domain.com or ?action=resetPassword&oobCode=...
+  // Deep linking handler: ?action=login&email=user@domain.com or /__/auth/action?mode=resetPassword&oobCode=...
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const action = params.get('action');
+    const mode = params.get('mode');
     const email = params.get('email');
     const oobCode = params.get('oobCode');
 
@@ -240,7 +241,7 @@ function App() {
       // Limpiar sutilmente los parámetros de la URL sin recargar la página
       const cleanUrl = window.location.pathname + window.location.hash;
       window.history.replaceState({}, document.title, cleanUrl);
-    } else if (action === 'resetPassword' || oobCode) {
+    } else if (mode === 'resetPassword' || action === 'resetPassword' || oobCode) {
       if (oobCode) {
         window.sessionStorage.setItem('ageFriendOobCode', oobCode);
         setResetOobCode(oobCode);
@@ -248,7 +249,8 @@ function App() {
       setActiveModal('auth');
 
       // Limpiar sutilmente los parámetros de la URL sin recargar la página
-      const cleanUrl = window.location.pathname + window.location.hash;
+      const cleanPath = window.location.pathname.startsWith('/__/') ? '/' : window.location.pathname;
+      const cleanUrl = cleanPath + window.location.hash;
       window.history.replaceState({}, document.title, cleanUrl);
     }
   }, []);
@@ -9236,8 +9238,8 @@ import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "agefriendseal.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "age-friend-seal",
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
