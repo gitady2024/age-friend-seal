@@ -5,7 +5,8 @@ import {
   signOut, 
   onAuthStateChanged,
   signInAnonymously,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  confirmPasswordReset
 } from "firebase/auth";
 import { 
   doc, 
@@ -526,10 +527,29 @@ export const recoverUserPassword = async (email) => {
     return true; // Simulado exitoso
   }
   try {
-    await sendPasswordResetEmail(auth, email);
+    const actionCodeSettings = {
+      url: 'https://agefriendseal.com/?action=resetPassword',
+      handleCodeInApp: false
+    };
+    await sendPasswordResetEmail(auth, email, actionCodeSettings);
     return true;
   } catch (error) {
     console.error("Error sending password reset email:", error);
+    throw error;
+  }
+};
+
+// Confirm Password Reset (New Password Submission)
+export const confirmPasswordResetUser = async (oobCode, newPassword) => {
+  if (!isFirebaseEnabled()) {
+    console.warn("Firebase disabled. Simulating password reset confirmation.");
+    return true;
+  }
+  try {
+    await confirmPasswordReset(auth, oobCode, newPassword);
+    return true;
+  } catch (error) {
+    console.error("Error confirming password reset:", error);
     throw error;
   }
 };

@@ -19,6 +19,7 @@ import {
   getCompanyDeliverables,
   saveCompanyDeliverable,
   recoverUserPassword,
+  confirmPasswordResetUser,
   getQuestionsList,
   updateQuestionInDb,
   verifyUserOtp,
@@ -26,11 +27,12 @@ import {
   sendOtpEmail
 } from "../../utils/firebaseHelpers.js";
 
-function Modals({ language, activeModal, contactLevel, currentUser, latestDiagnostic, prefillEmail, onClose, onOpenAuth, onOpenAccount, onOpenOtp, onUserChange, directPitchDownload, onClearDirectPitch, onOpenPitchSuccess, onOpenPitch }) {
+function Modals({ language, activeModal, contactLevel, currentUser, latestDiagnostic, prefillEmail, resetOobCode, onClose, onOpenAuth, onOpenAccount, onOpenOtp, onUserChange, directPitchDownload, onClearDirectPitch, onOpenPitchSuccess, onOpenPitch }) {
   const intl = useIntl();
   const [authView, setAuthView] = useState('login');
   const [registerType, setRegisterType] = useState('personal');
   const [upgradeSector, setUpgradeSector] = useState('');
+  const [resetPasswordLoading, setResetPasswordLoading] = useState(false);
 
   // 6-digit OTP states
   const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
@@ -39,12 +41,14 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const [resendingOtp, setResendingOtp] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
 
-  // Switch to login tab if modal opens with prefillEmail
+  // Switch authView depending on resetOobCode or prefillEmail
   useEffect(() => {
-    if (activeModal === 'auth' && prefillEmail) {
+    if (activeModal === 'auth' && resetOobCode) {
+      setAuthView('resetPassword');
+    } else if (activeModal === 'auth' && prefillEmail) {
       setAuthView('login');
     }
-  }, [activeModal, prefillEmail]);
+  }, [activeModal, resetOobCode, prefillEmail]);
 
   // Guarantee clean 100% empty inputs whenever the OTP modal opens
   useEffect(() => {
@@ -879,6 +883,43 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     }
   };
 
+  const handleConfirmPasswordResetSubmit = async (event) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const newPassword = (form.get('newPassword') || '').trim();
+
+    if (!newPassword || newPassword.length < 6) {
+      alert(language === 'es' 
+        ? 'La nueva contraseña debe tener al menos 6 caracteres.' 
+        : language === 'pt' 
+          ? 'A nova senha deve ter pelo menos 6 caracteres.' 
+          : 'The new password must be at least 6 characters.');
+      return;
+    }
+
+    if (!resetOobCode) {
+      alert(language === 'es'
+        ? 'Código de restablecimiento no válido o expirado.'
+        : 'Invalid or expired password reset code.');
+      return;
+    }
+
+    setResetPasswordLoading(true);
+    try {
+      await confirmPasswordResetUser(resetOobCode, newPassword);
+      showToast(
+        language === 'es' ? 'Contraseña Actualizada' : 'Password Updated',
+        language === 'es' ? '¡Su contraseña ha sido restablecida exitosamente! Inicie sesión con su nueva clave.' : 'Your password has been reset successfully! Log in with your new password.'
+      );
+      setAuthView('login');
+    } catch (err) {
+      console.error("Confirm password reset error:", err);
+      alert(language === 'es' ? `Error al restablecer contraseña: ${err.message}` : `Error resetting password: ${err.message}`);
+    } finally {
+      setResetPasswordLoading(false);
+    }
+  };
+
   // Handle Logo Upload for Brand Customization
   const handleBrandLogoChange = async (event) => {
     const file = event.target.files[0];
@@ -1513,6 +1554,41 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
               </button>
               <button type="button" className="btn btn-outline btn-block" style={{ marginTop: 8 }} onClick={() => setAuthView('login')}>
                 {language === 'es' ? 'Volver al inicio de sesión' : language === 'pt' ? 'Voltar ao login' : 'Back to login'}
+              </button>
+            </form>
+          ) : authView === 'resetPassword' ? (
+            <form id="form-reset-password" className="modal-form" style={{ textAlign: 'left', marginTop: 20 }} onSubmit={handleConfirmPasswordResetSubmit}>
+              <h3 style={{ fontSize: '1.2rem', marginBottom: '10px', color: 'var(--text-primary)' }}>
+                {language === 'es' ? 'Establecer Nueva Contraseña' : language === 'pt' ? 'Definir Nova Senha' : 'Set New Password'}
+              </h3>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '15px', lineHeight: '1.4' }}>
+                {language === 'es' 
+                  ? 'Ingrese su nueva contraseña para actualizar las credenciales de su cuenta.' 
+                  : language === 'pt' 
+                    ? 'Insira sua nova senha para atualizar as credenciais da sua conta.' 
+                    : 'Enter your new password to update your account credentials.'}
+              </p>
+              <div className="form-group">
+                <label htmlFor="reset-new-password">
+                  {language === 'es' ? 'Nueva Contraseña' : language === 'pt' ? 'Nova Senha' : 'New Password'}
+                </label>
+                <input 
+                  type="password" 
+                  id="reset-new-password" 
+                  name="newPassword" 
+                  required 
+                  minLength={6}
+                  autoComplete="new-password"
+                  placeholder={language === 'es' ? 'Mínimo 6 caracteres' : language === 'pt' ? 'Mínimo 6 caracteres' : 'Minimum 6 characters'} 
+                />
+              </div>
+              <button type="submit" className="btn btn-gradient btn-block" style={{ marginTop: 12 }} disabled={resetPasswordLoading}>
+                {resetPasswordLoading 
+                  ? (language === 'es' ? 'Guardando...' : 'Saving...') 
+                  : (language === 'es' ? 'Guardar Nueva Contraseña' : language === 'pt' ? 'Salvar Nova Senha' : 'Save New Password')}
+              </button>
+              <button type="button" className="btn btn-outline btn-block" style={{ marginTop: 8 }} onClick={() => setAuthView('login')}>
+                {language === 'es' ? 'Cancelar y volver' : language === 'pt' ? 'Cancelar e voltar' : 'Cancel & return'}
               </button>
             </form>
           ) : (
