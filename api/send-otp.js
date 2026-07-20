@@ -66,7 +66,7 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           sender: {
             name: "Age Friend Seal",
-            email: process.env.SMTP_USER || "no-reply@agefriendseal.com"
+            email: process.env.BREVO_SENDER_EMAIL || process.env.SMTP_USER || "info@agefriendseal.com"
           },
           to: [{ email: userEmail, name: userName }],
           subject: "🔐 Código de Activación de Cuenta - Age Friend Seal",

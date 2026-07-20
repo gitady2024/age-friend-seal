@@ -22,7 +22,8 @@ import {
   getQuestionsList,
   updateQuestionInDb,
   verifyUserOtp,
-  resendUserOtp
+  resendUserOtp,
+  sendOtpEmail
 } from "../../utils/firebaseHelpers.js";
 
 function Modals({ language, activeModal, contactLevel, currentUser, latestDiagnostic, onClose, onOpenAuth, onOpenAccount, onOpenOtp, onUserChange, directPitchDownload, onClearDirectPitch, onOpenPitchSuccess, onOpenPitch }) {
@@ -720,6 +721,9 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
         const user = await signInUser(email, password);
         onUserChange(user);
         if (user && user.isVerified === false) {
+          if (user.otpCode) {
+            sendOtpEmail(user.email, user.name || user.companyName || user.email, user.otpCode);
+          }
           showToast(
             language === 'es' ? 'Activación Requerida' : 'Activation Required',
             language === 'es' ? 'Introduzca el código de 6 dígitos enviado a su correo.' : 'Enter the 6-digit code sent to your email.'
@@ -769,6 +773,12 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
         };
         const user = await signUpUser(email, password, profileData);
         onUserChange(user);
+
+        // Disparar explícitamente el envío de correo OTP desde el handler de registro
+        if (user && user.otpCode) {
+          sendOtpEmail(user.email, user.name || user.companyName || user.email, user.otpCode);
+        }
+
         showToast(
           language === 'es' ? 'Registro Completado' : 'Registered Successfully',
           language === 'es' ? 'Hemos enviado un código de activación de 6 dígitos a su correo.' : 'We sent a 6-digit activation code to your email.'

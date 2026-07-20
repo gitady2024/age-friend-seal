@@ -29,6 +29,29 @@ export const isFirebaseEnabled = () => {
   return !!auth && !!db;
 };
 
+export const sendOtpEmail = async (email, name, otpCode) => {
+  if (!email || !otpCode) return { success: false, error: "Email u OTP faltante." };
+  console.log(`[FRONTEND DISPARO] Enviando /api/send-otp -> Email: ${email}, OTP: ${otpCode}`);
+  try {
+    const res = await fetch("/api/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        name: name || email.split("@")[0],
+        otpCode: String(otpCode),
+        action: "send"
+      })
+    });
+    const data = await res.json();
+    console.log("[RESPUESTA DE /api/send-otp]:", data);
+    return data;
+  } catch (err) {
+    console.error("[ERROR AL INVOCAR /api/send-otp]:", err);
+    return { success: false, error: err.message };
+  }
+};
+
 // SIGN UP
 export const signUpUser = async (email, password, profileData) => {
   if (!isFirebaseEnabled()) {
@@ -62,21 +85,8 @@ export const signUpUser = async (email, password, profileData) => {
     };
     await setDoc(userDocRef, finalProfile);
 
-    // Call /api/send-otp to deliver verification code
-    try {
-      await fetch("/api/send-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          name: profileData.name || profileData.companyName || email,
-          otpCode,
-          action: "send"
-        })
-      });
-    } catch (err) {
-      console.error("Error sending OTP email:", err);
-    }
+    // Disparar envío de correo con código de activación OTP
+    sendOtpEmail(email, profileData.name || profileData.companyName || email, otpCode);
 
     return finalProfile;
   } catch (error) {
@@ -113,17 +123,8 @@ const simulateSignUp = (email, profileData) => {
   };
   window.localStorage.setItem("ageFriendUser", JSON.stringify(dummyUser));
 
-  // Trigger send-otp
-  fetch("/api/send-otp", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      email,
-      name: profileData.name || profileData.companyName || email,
-      otpCode,
-      action: "send"
-    })
-  }).catch(err => console.error("Simulated OTP email send failed:", err));
+  // Disparar correo OTP
+  sendOtpEmail(email, profileData.name || profileData.companyName || email, otpCode);
 
   return dummyUser;
 };
@@ -185,20 +186,7 @@ export const resendUserOtp = async (user) => {
   const updatedProfile = { ...user, ...updatedData };
   window.localStorage.setItem("ageFriendUser", JSON.stringify(updatedProfile));
   
-  try {
-    await fetch("/api/send-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: user.email,
-        name: user.name || user.companyName || user.email,
-        otpCode: newOtp,
-        action: "send"
-      })
-    });
-  } catch (err) {
-    console.error("Error al enviar OTP:", err);
-  }
+  await sendOtpEmail(user.email, user.name || user.companyName || user.email, newOtp);
   
   return { success: true, updatedProfile };
 };
