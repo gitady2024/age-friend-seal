@@ -2761,6 +2761,14 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [resendingOtp, setResendingOtp] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
+
+  // Guarantee clean 100% empty inputs whenever the OTP modal opens
+  useEffect(() => {
+    if (activeModal === 'otp') {
+      setOtpDigits(['', '', '', '', '', '']);
+      setOtpError('');
+    }
+  }, [activeModal]);
   
   // Phase 2 & 3: User Portal States
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -3497,11 +3505,6 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
         const user = await signUpUser(email, password, profileData);
         onUserChange(user);
 
-        // Disparar explícitamente el envío de correo OTP desde el handler de registro
-        if (user && user.otpCode) {
-          sendOtpEmail(user.email, user.name || user.companyName || user.email, user.otpCode);
-        }
-
         showToast(
           language === 'es' ? 'Registro Completado' : 'Registered Successfully',
           language === 'es' ? 'Hemos enviado un código de activación de 6 dígitos a su correo.' : 'We sent a 6-digit activation code to your email.'
@@ -4074,6 +4077,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                   inputMode="numeric"
                   pattern="[0-9]*"
                   maxLength={1}
+                  autoComplete="off"
                   value={digit}
                   onChange={(e) => handleOtpChange(idx, e.target.value)}
                   onKeyDown={(e) => handleOtpKeyDown(idx, e)}
@@ -18303,8 +18307,19 @@ export const isFirebaseEnabled = () => {
   return !!auth && !!db;
 };
 
+let lastSentOtp = { email: "", code: "", time: 0 };
+
 export const sendOtpEmail = async (email, name, otpCode) => {
   if (!email || !otpCode) return { success: false, error: "Email u OTP faltante." };
+  
+  const now = Date.now();
+  if (lastSentOtp.email === email && lastSentOtp.code === String(otpCode) && (now - lastSentOtp.time) < 10000) {
+    console.warn(`[OTP DEDUPLICACIÓN] Omitiendo disparo duplicado de OTP para ${email} (procesado hace menos de 10s).`);
+    return { success: true, deduplicated: true };
+  }
+  
+  lastSentOtp = { email, code: String(otpCode), time: now };
+
   console.log(`[FRONTEND DISPARO] Enviando /api/send-otp -> Email: ${email}, OTP: ${otpCode}`);
   try {
     const res = await fetch("/api/send-otp", {

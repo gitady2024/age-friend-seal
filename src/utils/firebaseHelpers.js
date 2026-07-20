@@ -29,8 +29,19 @@ export const isFirebaseEnabled = () => {
   return !!auth && !!db;
 };
 
+let lastSentOtp = { email: "", code: "", time: 0 };
+
 export const sendOtpEmail = async (email, name, otpCode) => {
   if (!email || !otpCode) return { success: false, error: "Email u OTP faltante." };
+  
+  const now = Date.now();
+  if (lastSentOtp.email === email && lastSentOtp.code === String(otpCode) && (now - lastSentOtp.time) < 10000) {
+    console.warn(`[OTP DEDUPLICACIÓN] Omitiendo disparo duplicado de OTP para ${email} (procesado hace menos de 10s).`);
+    return { success: true, deduplicated: true };
+  }
+  
+  lastSentOtp = { email, code: String(otpCode), time: now };
+
   console.log(`[FRONTEND DISPARO] Enviando /api/send-otp -> Email: ${email}, OTP: ${otpCode}`);
   try {
     const res = await fetch("/api/send-otp", {

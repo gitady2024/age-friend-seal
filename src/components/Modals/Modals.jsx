@@ -38,6 +38,14 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [resendingOtp, setResendingOtp] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
+
+  // Guarantee clean 100% empty inputs whenever the OTP modal opens
+  useEffect(() => {
+    if (activeModal === 'otp') {
+      setOtpDigits(['', '', '', '', '', '']);
+      setOtpError('');
+    }
+  }, [activeModal]);
   
   // Phase 2 & 3: User Portal States
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -774,11 +782,6 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
         const user = await signUpUser(email, password, profileData);
         onUserChange(user);
 
-        // Disparar explícitamente el envío de correo OTP desde el handler de registro
-        if (user && user.otpCode) {
-          sendOtpEmail(user.email, user.name || user.companyName || user.email, user.otpCode);
-        }
-
         showToast(
           language === 'es' ? 'Registro Completado' : 'Registered Successfully',
           language === 'es' ? 'Hemos enviado un código de activación de 6 dígitos a su correo.' : 'We sent a 6-digit activation code to your email.'
@@ -1351,6 +1354,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                   inputMode="numeric"
                   pattern="[0-9]*"
                   maxLength={1}
+                  autoComplete="off"
                   value={digit}
                   onChange={(e) => handleOtpChange(idx, e.target.value)}
                   onKeyDown={(e) => handleOtpKeyDown(idx, e)}
