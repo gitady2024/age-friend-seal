@@ -52,12 +52,12 @@ export default async function handler(req, res) {
     let oobCode = null;
 
     // Obtener el oobCode nativo oficial usando Google Service Account + Identity Toolkit Admin REST API
-    const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-    const rawPrivateKey = process.env.GOOGLE_PRIVATE_KEY;
+    const clientEmail = process.env.FIREBASE_SERVICE_ACCOUNT_EMAIL || process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+    const rawPrivateKey = process.env.FIREBASE_PRIVATE_KEY || process.env.GOOGLE_PRIVATE_KEY;
     const projectId = process.env.VITE_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID || "age-friend-seal";
 
     if (!clientEmail || !rawPrivateKey) {
-      console.error("❌ [API RESET] Credenciales de Service Account no configuradas en Vercel (GOOGLE_SERVICE_ACCOUNT_EMAIL / GOOGLE_PRIVATE_KEY)");
+      console.error("❌ [API RESET] Credenciales de Service Account no configuradas en Vercel (FIREBASE_SERVICE_ACCOUNT_EMAIL / GOOGLE_SERVICE_ACCOUNT_EMAIL / FIREBASE_PRIVATE_KEY / GOOGLE_PRIVATE_KEY)");
       return res.status(500).json({
         success: false,
         error: "Las credenciales del servidor (Service Account) no están configuradas en Vercel."
