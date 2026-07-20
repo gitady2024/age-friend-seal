@@ -51,71 +51,102 @@ export default async function handler(req, res) {
   if (action === "reset") {
     let oobCode = null;
 
-    // 1. Intentar obtener el oobCode nativo usando Google Service Account + Identity Toolkit Admin REST API
+    // Obtener el oobCode nativo oficial usando Google Service Account + Identity Toolkit Admin REST API
     const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
     const rawPrivateKey = process.env.GOOGLE_PRIVATE_KEY;
-    const projectId = process.env.VITE_FIREBASE_PROJECT_ID || "age-friend-seal";
+    const projectId = process.env.VITE_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID || "age-friend-seal";
 
-    if (clientEmail && rawPrivateKey) {
-      try {
-        const privateKey = rawPrivateKey.replace(/\\n/g, "\n");
-        const header = { alg: "RS256", typ: "JWT" };
-        const payload = {
-          iss: clientEmail,
-          scope: "https://www.googleapis.com/auth/identitytoolkit https://www.googleapis.com/auth/cloud-platform",
-          aud: "https://oauth2.googleapis.com/token",
-          exp: Math.floor(Date.now() / 1000) + 3600,
-          iat: Math.floor(Date.now() / 1000)
-        };
+    if (!clientEmail || !rawPrivateKey) {
+      console.error("❌ [API RESET] Credenciales de Service Account no configuradas en Vercel (GOOGLE_SERVICE_ACCOUNT_EMAIL / GOOGLE_PRIVATE_KEY)");
+      return res.status(500).json({
+        success: false,
+        error: "Las credenciales del servidor (Service Account) no están configuradas en Vercel."
+      });
+    }
 
-        const base64Header = Buffer.from(JSON.stringify(header)).toString("base64url");
-        const base64Payload = Buffer.from(JSON.stringify(payload)).toString("base64url");
+    try {
+      let privateKey = rawPrivateKey;
+      if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
+        privateKey = privateKey.slice(1, -1);
+      }
+      privateKey = privateKey.replace(/\\n/g, "\n");
 
-        const sign = crypto.createSign("RSA-SHA256");
-        sign.update(`${base64Header}.${base64Payload}`);
-        const signature = sign.sign(privateKey, "base64url");
-        const jwt = `${base64Header}.${base64Payload}.${signature}`;
+      const header = { alg: "RS256", typ: "JWT" };
+      const payload = {
+        iss: clientEmail,
+        scope: "https://www.googleapis.com/auth/identitytoolkit https://www.googleapis.com/auth/cloud-platform",
+        aud: "https://oauth2.googleapis.com/token",
+        exp: Math.floor(Date.now() / 1000) + 3600,
+        iat: Math.floor(Date.now() / 1000)
+      };
 
-        const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
+      const base64Header = Buffer.from(JSON.stringify(header)).toString("base64url");
+      const base64Payload = Buffer.from(JSON.stringify(payload)).toString("base64url");
+
+      const sign = crypto.createSign("RSA-SHA256");
+      sign.update(`${base64Header}.${base64Payload}`);
+      const signature = sign.sign(privateKey, "base64url");
+      const jwt = `${base64Header}.${base64Payload}.${signature}`;
+
+      const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+          assertion: jwt
+        })
+      });
+
+      if (tokenRes.ok) {
+        const tokenData = await tokenRes.json();
+        const accessToken = tokenData.access_token;
+
+        const oobRes = await fetch(`https://identitytoolkit.googleapis.com/v1/projects/${projectId}/accounts:sendOobCode`, {
           method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({
-            grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
-            assertion: jwt
+          headers: {
+            "Authorization": `Bearer ${accessToken}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            requestType: "PASSWORD_RESET",
+            email: userEmail
           })
         });
 
-        if (tokenRes.ok) {
-          const tokenData = await tokenRes.json();
-          const accessToken = tokenData.access_token;
-
-          const oobRes = await fetch(`https://identitytoolkit.googleapis.com/v1/projects/${projectId}/accounts:sendOobCode`, {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${accessToken}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              requestType: "PASSWORD_RESET",
-              email: userEmail
-            })
+        if (oobRes.ok) {
+          const oobData = await oobRes.json();
+          oobCode = oobData.oobCode || (oobData.oobLink ? new URL(oobData.oobLink).searchParams.get("oobCode") : null);
+          console.log(`🔑 [REAL FIREBASE OOBCODE]: ${oobCode}`);
+        } else {
+          const errText = await oobRes.text();
+          console.error("❌ Identity Toolkit Admin API Error:", errText);
+          return res.status(500).json({
+            success: false,
+            error: `Error de Google Identity Toolkit: ${errText}`
           });
-
-          if (oobRes.ok) {
-            const oobData = await oobRes.json();
-            oobCode = oobData.oobCode || (oobData.oobLink ? new URL(oobData.oobLink).searchParams.get("oobCode") : null);
-            console.log(`🔑 oobCode obtenido vía Service Account: ${oobCode}`);
-          } else {
-            console.error("Identity Toolkit Admin API Error:", await oobRes.text());
-          }
         }
-      } catch (adminErr) {
-        console.error("Fallo al consultar Service Account para reset code:", adminErr);
+      } else {
+        const tokenErrText = await tokenRes.text();
+        console.error("❌ OAuth2 Token Exchange Error:", tokenErrText);
+        return res.status(500).json({
+          success: false,
+          error: `Error al autenticar Service Account con Google: ${tokenErrText}`
+        });
       }
+    } catch (adminErr) {
+      console.error("❌ Error de Service Account:", adminErr);
+      return res.status(500).json({
+        success: false,
+        error: `Error procesando credenciales de servidor: ${adminErr.message}`
+      });
     }
 
     if (!oobCode) {
-      oobCode = "mock_reset_code_" + Date.now();
+      console.error("❌ ERROR CRÍTICO: No se pudo obtener el oobCode nativo de Firebase.");
+      return res.status(500).json({
+        success: false,
+        error: "No se pudo generar el código de restablecimiento oficial de Firebase."
+      });
     }
 
     const customAppUrl = `https://agefriendseal.com/?action=resetPassword&oobCode=${encodeURIComponent(oobCode)}`;
