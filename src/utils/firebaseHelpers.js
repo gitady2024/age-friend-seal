@@ -508,33 +508,26 @@ export const saveCompanyDeliverable = async (deliverableData) => {
   }
 };
 
-// Recover User Password (Forgot Password)
+// Recover User Password (Forgot Password via Brevo + In-App Deep Link)
 export const recoverUserPassword = async (email) => {
-  if (!isFirebaseEnabled()) {
-    console.warn("Firebase not configured. Simulating password reset email.");
-    // Validar si el email existe en los mocks para emular el comportamiento real
-    const dummyUser = JSON.parse(window.localStorage.getItem("ageFriendUser"));
-    const allowedMocks = ["admin@test.com", "demo@privado.com", "admin@agefriend.com"];
-    if (dummyUser && dummyUser.email) {
-      allowedMocks.push(dummyUser.email);
-    }
-    const matched = allowedMocks.some(e => e.toLowerCase() === email.toLowerCase());
-    if (!matched) {
-      const error = new Error("Firebase: Error (auth/user-not-found).");
-      error.code = "auth/user-not-found";
-      throw error;
-    }
-    return true; // Simulado exitoso
-  }
+  if (!email) throw new Error("El correo es requerido.");
+  console.log(`[FRONTEND DISPARO] Solicitando restablecimiento de contraseña vía Brevo para: ${email}`);
   try {
-    const actionCodeSettings = {
-      url: 'https://agefriendseal.com/?action=resetPassword',
-      handleCodeInApp: false
-    };
-    await sendPasswordResetEmail(auth, email, actionCodeSettings);
+    const res = await fetch("/api/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        action: "reset"
+      })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || "No se pudo enviar el correo de restablecimiento.");
+    }
     return true;
   } catch (error) {
-    console.error("Error sending password reset email:", error);
+    console.error("Error sending password reset email via Brevo API:", error);
     throw error;
   }
 };
