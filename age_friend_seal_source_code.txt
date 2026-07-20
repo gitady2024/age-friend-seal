@@ -2782,12 +2782,58 @@ import {
   sendOtpEmail
 } from "../../utils/firebaseHelpers.js";
 
+const checkPasswordPolicy = (password = '') => {
+  const minLength = password.length >= 8;
+  const hasUpper = /[A-Z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecial = /[@$!%*?&#\-_.,;:]/.test(password);
+  const isValid = minLength && hasUpper && hasNumber && hasSpecial;
+  return { minLength, hasUpper, hasNumber, hasSpecial, isValid };
+};
+
+function PasswordRequirementsBadges({ policy, language }) {
+  const requirements = [
+    { key: 'minLength', label: language === 'es' ? '8+ caracteres' : '8+ chars', pass: policy.minLength },
+    { key: 'hasUpper', label: language === 'es' ? '1 Mayúscula (A-Z)' : '1 Uppercase', pass: policy.hasUpper },
+    { key: 'hasNumber', label: language === 'es' ? '1 Número (0-9)' : '1 Number', pass: policy.hasNumber },
+    { key: 'hasSpecial', label: language === 'es' ? '1 Símbolo (@,$,!,%,*,?,&)' : '1 Special char', pass: policy.hasSpecial }
+  ];
+
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '6px', marginBottom: '8px' }}>
+      {requirements.map(req => (
+        <span 
+          key={req.key}
+          style={{
+            fontSize: '0.72rem',
+            padding: '2px 8px',
+            borderRadius: '12px',
+            fontWeight: 600,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '4px',
+            background: req.pass ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.12)',
+            color: req.pass ? '#10b981' : '#f87171',
+            border: req.pass ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(239, 68, 68, 0.25)',
+            transition: 'all 0.2s ease'
+          }}
+        >
+          {req.pass ? '✓' : '•'} {req.label}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function Modals({ language, activeModal, contactLevel, currentUser, latestDiagnostic, prefillEmail, resetOobCode, onClose, onOpenAuth, onOpenAccount, onOpenOtp, onUserChange, directPitchDownload, onClearDirectPitch, onOpenPitchSuccess, onOpenPitch }) {
   const intl = useIntl();
   const [authView, setAuthView] = useState('login');
   const [registerType, setRegisterType] = useState('personal');
   const [upgradeSector, setUpgradeSector] = useState('');
   const [resetPasswordLoading, setResetPasswordLoading] = useState(false);
+  const [regPassword, setRegPassword] = useState('');
+  const [resetNewPassword, setResetNewPassword] = useState('');
+  const [resetErrorBanner, setResetErrorBanner] = useState('');
 
   // 6-digit OTP states
   const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
@@ -3640,36 +3686,53 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
 
   const handleConfirmPasswordResetSubmit = async (event) => {
     event.preventDefault();
+    setResetErrorBanner('');
+
     const form = new FormData(event.currentTarget);
     const newPassword = (form.get('newPassword') || '').trim();
 
-    if (!newPassword || newPassword.length < 6) {
-      alert(language === 'es' 
-        ? 'La nueva contraseña debe tener al menos 6 caracteres.' 
-        : language === 'pt' 
-          ? 'A nova senha deve ter pelo menos 6 caracteres.' 
-          : 'The new password must be at least 6 characters.');
+    const policy = checkPasswordPolicy(newPassword);
+    if (!policy.isValid) {
+      setResetErrorBanner(
+        language === 'es'
+          ? 'La nueva contraseña debe incluir 8+ caracteres, 1 mayúscula, 1 número y 1 carácter especial.'
+          : 'The new password must include 8+ characters, 1 uppercase, 1 number, and 1 special character.'
+      );
       return;
     }
 
-    if (!resetOobCode) {
-      alert(language === 'es'
-        ? 'Código de restablecimiento no válido o expirado.'
-        : 'Invalid or expired password reset code.');
+    let cleanCode = String(resetOobCode || '').trim();
+    if (cleanCode.includes('%')) {
+      try { cleanCode = decodeURIComponent(cleanCode); } catch {}
+    }
+
+    if (!cleanCode) {
+      setResetErrorBanner(
+        language === 'es'
+          ? 'El enlace de recuperación ha expirado o es inválido. Por favor, solicite uno nuevo.'
+          : 'The recovery link has expired or is invalid. Please request a new one.'
+      );
       return;
     }
 
     setResetPasswordLoading(true);
     try {
-      await confirmPasswordResetUser(resetOobCode, newPassword);
+      await confirmPasswordResetUser(cleanCode, newPassword);
       showToast(
         language === 'es' ? 'Contraseña Actualizada' : 'Password Updated',
         language === 'es' ? '¡Su contraseña ha sido restablecida exitosamente! Inicie sesión con su nueva clave.' : 'Your password has been reset successfully! Log in with your new password.'
       );
+      setResetErrorBanner('');
+      setResetNewPassword('');
       setAuthView('login');
     } catch (err) {
       console.error("Confirm password reset error:", err);
-      alert(language === 'es' ? `Error al restablecer contraseña: ${err.message}` : `Error resetting password: ${err.message}`);
+      // UX Improvement: Catch invalid-action-code or expired error and show UI banner without alert()
+      setResetErrorBanner(
+        language === 'es'
+          ? 'El enlace de recuperación ha expirado o es inválido. Por favor, solicite uno nuevo.'
+          : 'The recovery link has expired or is invalid. Please request a new one.'
+      );
     } finally {
       setResetPasswordLoading(false);
     }
@@ -4323,6 +4386,11 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                     ? 'Insira sua nova senha para atualizar as credenciais da sua conta.' 
                     : 'Enter your new password to update your account credentials.'}
               </p>
+              {resetErrorBanner && (
+                <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.4)', color: '#f87171', padding: '10px 14px', borderRadius: '8px', fontSize: '0.85rem', marginBottom: '15px', textAlign: 'center', fontWeight: 600 }}>
+                  ⚠️ {resetErrorBanner}
+                </div>
+              )}
               <div className="form-group">
                 <label htmlFor="reset-new-password">
                   {language === 'es' ? 'Nueva Contraseña' : language === 'pt' ? 'Nova Senha' : 'New Password'}
@@ -4332,12 +4400,15 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                   id="reset-new-password" 
                   name="newPassword" 
                   required 
-                  minLength={6}
+                  minLength={8}
+                  value={resetNewPassword}
+                  onChange={(e) => setResetNewPassword(e.target.value)}
                   autoComplete="new-password"
-                  placeholder={language === 'es' ? 'Mínimo 6 caracteres' : language === 'pt' ? 'Mínimo 6 caracteres' : 'Minimum 6 characters'} 
+                  placeholder={language === 'es' ? 'Mínimo 8 caracteres' : language === 'pt' ? 'Mínimo 8 caracteres' : 'Minimum 8 characters'} 
                 />
+                <PasswordRequirementsBadges policy={checkPasswordPolicy(resetNewPassword)} language={language} />
               </div>
-              <button type="submit" className="btn btn-gradient btn-block" style={{ marginTop: 12 }} disabled={resetPasswordLoading}>
+              <button type="submit" className="btn btn-gradient btn-block" style={{ marginTop: 12 }} disabled={resetPasswordLoading || !checkPasswordPolicy(resetNewPassword).isValid}>
                 {resetPasswordLoading 
                   ? (language === 'es' ? 'Guardando...' : 'Saving...') 
                   : (language === 'es' ? 'Guardar Nueva Contraseña' : language === 'pt' ? 'Salvar Nova Senha' : 'Save New Password')}
@@ -4409,7 +4480,17 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="auth-reg-password"><FormattedMessage id="Modals.057" /></label>
-                  <input type="password" id="auth-reg-password" name="password" required minLength={6} placeholder={intl.formatMessage({ id: "Modals.058" })} />
+                  <input 
+                    type="password" 
+                    id="auth-reg-password" 
+                    name="password" 
+                    required 
+                    minLength={8} 
+                    value={regPassword}
+                    onChange={(e) => setRegPassword(e.target.value)}
+                    placeholder={intl.formatMessage({ id: "Modals.058" })} 
+                  />
+                  <PasswordRequirementsBadges policy={checkPasswordPolicy(regPassword)} language={language} />
                 </div>
               </div>
               {registerType === 'empresa' && (
