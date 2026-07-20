@@ -50,7 +50,7 @@ function App() {
   const [loadingUser, setLoadingUser] = useState(true);
   const [directPitchDownload, setDirectPitchDownload] = useState(false);
   const [prefillEmail, setPrefillEmail] = useState('');
-  const [resetOobCode, setResetOobCode] = useState('');
+  const [resetOobCode, setResetOobCode] = useState(() => window.sessionStorage.getItem('ageFriendOobCode') || '');
 
   // Deep linking handler: ?action=login&email=user@domain.com or ?action=resetPassword&oobCode=...
   useEffect(() => {
@@ -70,6 +70,7 @@ function App() {
       window.history.replaceState({}, document.title, cleanUrl);
     } else if (action === 'resetPassword' || oobCode) {
       if (oobCode) {
+        window.sessionStorage.setItem('ageFriendOobCode', oobCode);
         setResetOobCode(oobCode);
       }
       setActiveModal('auth');

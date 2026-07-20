@@ -90,7 +90,8 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
 
   // Switch authView depending on resetOobCode or prefillEmail
   useEffect(() => {
-    if (activeModal === 'auth' && resetOobCode) {
+    const activeOob = resetOobCode || window.sessionStorage.getItem('ageFriendOobCode');
+    if (activeModal === 'auth' && activeOob) {
       setAuthView('resetPassword');
     } else if (activeModal === 'auth' && prefillEmail) {
       setAuthView('login');
@@ -947,8 +948,9 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       return;
     }
 
-    // Preserve raw pristine oobCode without extra double-decoding
-    const cleanCode = String(resetOobCode || '').trim();
+    // Preserve raw pristine oobCode from prop or persistent sessionStorage
+    const cleanCode = String(resetOobCode || window.sessionStorage.getItem('ageFriendOobCode') || '').trim();
+    console.log('🔑 [DEBUG RESET SUBMIT] oobCode listo para enviar a Firebase:', cleanCode);
 
     if (!cleanCode) {
       setResetErrorBanner(
@@ -962,10 +964,12 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     setResetPasswordLoading(true);
     try {
       await confirmPasswordResetUser(cleanCode, newPassword);
+      console.log('✅ [EXITO RESET] Contraseña restablecida con éxito para oobCode:', cleanCode);
       showToast(
         language === 'es' ? 'Contraseña Actualizada' : 'Password Updated',
         language === 'es' ? '¡Su contraseña ha sido restablecida exitosamente! Inicie sesión con su nueva clave.' : 'Your password has been reset successfully! Log in with your new password.'
       );
+      window.sessionStorage.removeItem('ageFriendOobCode');
       setResetErrorBanner('');
       setResetNewPassword('');
       setAuthView('login');
