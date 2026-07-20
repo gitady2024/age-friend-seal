@@ -114,27 +114,6 @@ export default async function handler(req, res) {
       }
     }
 
-    // 2. Fallback: REST API pública de Firebase con API Key
-    if (!oobCode && process.env.VITE_FIREBASE_API_KEY) {
-      try {
-        const apiKey = process.env.VITE_FIREBASE_API_KEY;
-        const oobRes = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${apiKey}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            requestType: "PASSWORD_RESET",
-            email: userEmail
-          })
-        });
-        if (oobRes.ok) {
-          const oobData = await oobRes.json();
-          oobCode = oobData.oobCode || (oobData.oobLink ? new URL(oobData.oobLink).searchParams.get("oobCode") : null);
-        }
-      } catch (restErr) {
-        console.error("Fallback REST API sendOobCode error:", restErr);
-      }
-    }
-
     if (!oobCode) {
       oobCode = "mock_reset_code_" + Date.now();
     }

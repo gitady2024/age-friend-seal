@@ -5,7 +5,6 @@ import {
   signOut, 
   onAuthStateChanged,
   signInAnonymously,
-  sendPasswordResetEmail,
   confirmPasswordReset
 } from "firebase/auth";
 import { 
