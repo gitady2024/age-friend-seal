@@ -140,6 +140,27 @@ const simulateSignUp = (email, profileData) => {
   return dummyUser;
 };
 
+export const sendWelcomeEmail = async (email, name) => {
+  if (!email) return;
+  console.log(`[FRONTEND DISPARO] Enviando correo de bienvenida (welcome) a: ${email}`);
+  try {
+    const res = await fetch("/api/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        name: name || email.split("@")[0],
+        action: "welcome"
+      })
+    });
+    const data = await res.json();
+    console.log("[RESPUESTA DE CORREO BIENVENIDA]:", data);
+    return data;
+  } catch (err) {
+    console.error("[ERROR AL ENVIAR CORREO DE BIENVENIDA]:", err);
+  }
+};
+
 export const verifyUserOtp = async (user, enteredCode) => {
   if (!user) return { success: false, error: "Usuario no autenticado." };
   
@@ -171,6 +192,10 @@ export const verifyUserOtp = async (user, enteredCode) => {
   
   const updatedProfile = { ...user, ...updatedData };
   window.localStorage.setItem("ageFriendUser", JSON.stringify(updatedProfile));
+
+  // Despachar correo de confirmación de activación de cuenta (Welcome Email)
+  sendWelcomeEmail(user.email, user.name || user.companyName || user.email);
+
   return { success: true, updatedProfile };
 };
 

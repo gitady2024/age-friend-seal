@@ -2,8 +2,7 @@ import nodemailer from "nodemailer";
 
 /**
  * Serverless API: /api/send-otp
- * Maneja el envío de códigos de activación OTP de 6 dígitos vía Brevo API / SMTP
- * y proporciona logging en consola para desarrollo local.
+ * Maneja el envío de códigos OTP y correos de bienvenida de activación vía Brevo API / SMTP
  */
 export default async function handler(req, res) {
   // CORS Headers
@@ -32,13 +31,12 @@ export default async function handler(req, res) {
   const userEmail = String(email).trim().toLowerCase();
   const userName = String(name || userEmail.split("@")[0] || "Usuario").trim();
   const codeToDeliver = String(otpCode || Math.floor(100000 + Math.random() * 900000)).trim();
+  const isWelcome = action === "welcome";
 
-  // Log visible en consola de servidor para entornos de pruebas / dev
   console.log(`========================================================`);
-  console.log(`🔑 [SEGURIDAD B2B] CÓDIGO OTP DE ACTIVACIÓN`);
-  console.log(`📧 Destinatario: ${userEmail} (${userName})`);
-  console.log(`🔢 Código OTP (6 dígitos): ${codeToDeliver}`);
-  console.log(`⏰ Expiración: 15 minutos`);
+  console.log(`📧 [API CORREO BREVO] Acción: ${action || "send"}`);
+  console.log(`👤 Destinatario: ${userEmail} (${userName})`);
+  if (!isWelcome) console.log(`🔢 Código OTP (6 dígitos): ${codeToDeliver}`);
   console.log(`========================================================`);
 
   if (action === "verify") {
@@ -48,6 +46,64 @@ export default async function handler(req, res) {
     });
   }
 
+  const emailSubject = isWelcome
+    ? "🎉 ¡Cuenta Activada con Éxito - Age Friend Seal!"
+    : "🔐 Código de Activación de Cuenta - Age Friend Seal";
+
+  const emailHtml = isWelcome
+    ? `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; background-color: #0f172a; color: #f8fafc; border-radius: 16px; border: 1px solid #334155;">
+        <div style="text-align: center; margin-bottom: 25px;">
+          <h1 style="color: #10b981; font-size: 24px; margin-bottom: 5px;">¡Cuenta Activada con Éxito!</h1>
+          <p style="color: #94a3b8; font-size: 14px;">Age Friend Seal - Instituto Certificador Internacional</p>
+        </div>
+        
+        <div style="background: rgba(30, 41, 59, 0.8); padding: 25px; border-radius: 12px; border: 1px solid #475569; text-align: center;">
+          <div style="font-size: 48px; margin-bottom: 15px;">🎉</div>
+          <h2 style="color: #f8fafc; font-size: 18px; margin-top: 0;">¡Bienvenido/a a la plataforma!</h2>
+          <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6;">
+            Estimado/a <strong>${userName}</strong>,<br/>
+            Su cuenta ha sido verificada correctamente. Ya dispone de acceso completo al Dashboard, autodiagnóstico corporativo y descarga de reportes oficiales.
+          </p>
+          <div style="margin-top: 25px;">
+            <a href="https://agefriendseal.com" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 12px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Acceder a la Plataforma</a>
+          </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 25px; font-size: 11px; color: #64748b;">
+          © Age Friend Seal. Todos los derechos reservados.
+        </div>
+      </div>
+    `
+    : `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; background-color: #0f172a; color: #f8fafc; border-radius: 16px; border: 1px solid #334155;">
+        <div style="text-align: center; margin-bottom: 25px;">
+          <h1 style="color: #3b82f6; font-size: 24px; margin-bottom: 10px;">Age Friend Seal</h1>
+          <p style="color: #94a3b8; font-size: 14px;">Instituto Certificador Internacional</p>
+        </div>
+        
+        <div style="background: rgba(30, 41, 59, 0.8); padding: 25px; border-radius: 12px; border: 1px solid #475569; text-align: center;">
+          <h2 style="color: #f8fafc; font-size: 18px; margin-top: 0;">Activación de Seguridad de Cuenta B2B</h2>
+          <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6;">
+            Estimado/a <strong>${userName}</strong>,<br/>
+            Introduzca el siguiente código de 6 dígitos en la pantalla de activación para completar la verificación de su cuenta:
+          </p>
+          
+          <div style="margin: 30px 0; background: #1e293b; border: 2px dashed #3b82f6; border-radius: 12px; padding: 20px; display: inline-block;">
+            <span style="font-size: 36px; font-weight: 800; letter-spacing: 10px; color: #10b981; font-family: monospace;">${codeToDeliver}</span>
+          </div>
+          
+          <p style="color: #94a3b8; font-size: 12px; margin-bottom: 0;">
+            ⚠️ Este código caducará en <strong>15 minutos</strong>. Si no solicitó esta verificación, ignore este mensaje.
+          </p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 25px; font-size: 11px; color: #64748b;">
+          © Age Friend Seal. Todos los derechos reservados.
+        </div>
+      </div>
+    `;
+
   let emailSent = false;
   let provider = "none";
 
@@ -55,7 +111,7 @@ export default async function handler(req, res) {
   const brevoApiKey = process.env.BREVO_API_KEY;
   if (brevoApiKey) {
     try {
-      console.log(`Enviando código OTP vía Brevo API v3 a ${userEmail}...`);
+      console.log(`Enviando correo (${action || "send"}) vía Brevo API v3 a ${userEmail}...`);
       const brevoResponse = await fetch("https://api.brevo.com/v3/smtp/email", {
         method: "POST",
         headers: {
@@ -69,48 +125,21 @@ export default async function handler(req, res) {
             email: process.env.BREVO_SENDER_EMAIL || process.env.SMTP_USER || "info@agefriendseal.com"
           },
           to: [{ email: userEmail, name: userName }],
-          subject: "🔐 Código de Activación de Cuenta - Age Friend Seal",
-          htmlContent: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; background-color: #0f172a; color: #f8fafc; border-radius: 16px; border: 1px solid #334155;">
-              <div style="text-align: center; margin-bottom: 25px;">
-                <h1 style="color: #3b82f6; font-size: 24px; margin-bottom: 10px;">Age Friend Seal</h1>
-                <p style="color: #94a3b8; font-size: 14px;">Instituto Certificador Internacional</p>
-              </div>
-              
-              <div style="background: rgba(30, 41, 59, 0.8); padding: 25px; border-radius: 12px; border: 1px solid #475569; text-align: center;">
-                <h2 style="color: #f8fafc; font-size: 18px; margin-top: 0;">Activación de Seguridad de Cuenta B2B</h2>
-                <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6;">
-                  Estimado/a <strong>${userName}</strong>,<br/>
-                  Introduzca el siguiente código de 6 dígitos en la pantalla de activación para completar la verificación de su cuenta:
-                </p>
-                
-                <div style="margin: 30px 0; background: #1e293b; border: 2px dashed #3b82f6; border-radius: 12px; padding: 20px; display: inline-block;">
-                  <span style="font-size: 36px; font-weight: 800; letter-spacing: 10px; color: #10b981; font-family: monospace;">${codeToDeliver}</span>
-                </div>
-                
-                <p style="color: #94a3b8; font-size: 12px; margin-bottom: 0;">
-                  ⚠️ Este código caducará en <strong>15 minutos</strong>. Si no solicitó esta verificación, ignore este mensaje.
-                </p>
-              </div>
-              
-              <div style="text-align: center; margin-top: 25px; font-size: 11px; color: #64748b;">
-                © Age Friend Seal. Todos los derechos reservados.
-              </div>
-            </div>
-          `
+          subject: emailSubject,
+          htmlContent: emailHtml
         })
       });
 
       if (brevoResponse.ok) {
-        console.log("Correo OTP enviado con éxito mediante Brevo API.");
+        console.log(`Correo (${action || "send"}) enviado con éxito mediante Brevo API.`);
         emailSent = true;
         provider = "brevo";
       } else {
         const errTxt = await brevoResponse.text();
-        console.error("Error enviando correo OTP con Brevo:", errTxt);
+        console.error("Error enviando correo con Brevo:", errTxt);
       }
     } catch (brevoErr) {
-      console.error("Fallo de conexión enviando OTP con Brevo:", brevoErr);
+      console.error("Fallo de conexión enviando correo con Brevo:", brevoErr);
     }
   }
 
@@ -130,22 +159,21 @@ export default async function handler(req, res) {
       await transporter.sendMail({
         from: `"Age Friend Seal" <${process.env.SMTP_USER}>`,
         to: userEmail,
-        subject: "🔐 Código de Activación de Cuenta - Age Friend Seal",
-        text: `Hola ${userName},\n\nTu código de activación de 6 dígitos es: ${codeToDeliver}\n\nEste código expira en 15 minutos.`
+        subject: emailSubject,
+        html: emailHtml
       });
 
       emailSent = true;
       provider = "smtp";
-      console.log("Correo OTP enviado con éxito vía SMTP.");
+      console.log("Correo enviado con éxito vía SMTP.");
     } catch (smtpErr) {
-      console.error("Error enviando OTP vía SMTP:", smtpErr);
+      console.error("Error enviando correo vía SMTP:", smtpErr);
     }
   }
 
   return res.status(200).json({
     success: true,
     emailSent,
-    provider,
-    otpCode: codeToDeliver // De vuelto para simulaciones en dev
+    provider
   });
 }
