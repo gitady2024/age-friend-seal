@@ -64,10 +64,7 @@ export default async function handler(req, res) {
       });
     }
 
-    const maskedEmail = clientEmail.includes("@") 
-      ? clientEmail.replace(/(.{2})(.*)(@.*)/, '$1***$3') 
-      : clientEmail;
-    console.log(`🔑 [API RESET IAM CHECK] Service Account Email en uso: ${maskedEmail} | ProjectID: ${projectId}`);
+    console.log(`🔑 [API RESET IAM CHECK] Service Account Email en uso: ${clientEmail} | ProjectID: ${projectId}`);
 
     try {
       let privateKey = rawPrivateKey;
@@ -124,10 +121,10 @@ export default async function handler(req, res) {
           console.log(`🔑 [REAL FIREBASE OOBCODE]: ${oobCode}`);
         } else {
           const errText = await oobRes.text();
-          console.error("❌ Identity Toolkit Admin API Error:", errText);
+          console.error(`❌ Identity Toolkit Admin API Error para ${clientEmail} en ${projectId}:`, errText);
           return res.status(500).json({
             success: false,
-            error: `Error de Google Identity Toolkit: ${errText}`
+            error: `Error de Google Identity Toolkit: ${errText} (Service Account: ${clientEmail}, Project ID: ${projectId})`
           });
         }
       } else {
