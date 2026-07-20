@@ -134,7 +134,7 @@ export default async function handler(req, res) {
             Hemos recibido una solicitud para restablecer la contraseña de su cuenta B2B en Age Friend Seal.
           </p>
           <div style="margin-top: 25px; margin-bottom: 20px;">
-            <a href="${customAppUrl}" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);">
+            <a href="${customAppUrl}" data-mailin-track="0" data-brevo-track="0" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);">
               Restablecer mi Contraseña
             </a>
           </div>

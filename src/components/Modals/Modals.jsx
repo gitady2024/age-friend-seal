@@ -76,6 +76,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const [registerType, setRegisterType] = useState('personal');
   const [upgradeSector, setUpgradeSector] = useState('');
   const [resetPasswordLoading, setResetPasswordLoading] = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
   const [regPassword, setRegPassword] = useState('');
   const [resetNewPassword, setResetNewPassword] = useState('');
   const [resetErrorBanner, setResetErrorBanner] = useState('');
@@ -892,45 +893,45 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
 
   const handleForgotPasswordSubmit = async (event) => {
     event.preventDefault();
+    if (forgotLoading) return;
+
     const form = new FormData(event.currentTarget);
     const email = (form.get('email') || '').trim();
 
     // Validación Frontend mediante Regex
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailPattern.test(email)) {
-      alert(language === 'es' 
-        ? 'Por favor, ingrese una dirección de correo electrónico válida.' 
-        : language === 'pt'
-          ? 'Por favor, insira um endereço de e-mail válido.'
-          : 'Please enter a valid email address.');
+      showToast(
+        language === 'es' ? 'Correo Inválido' : 'Invalid Email',
+        language === 'es' ? 'Por favor, ingrese una dirección de correo válida.' : 'Please enter a valid email address.'
+      );
       return;
     }
 
+    setForgotLoading(true);
     try {
       await recoverUserPassword(email);
-      alert(language === 'es' 
-        ? 'Se han enviado las instrucciones de restablecimiento a su correo.' 
-        : language === 'pt' 
-          ? 'Instruções de redefinição enviadas para o seu e-mail.' 
-          : 'Reset instructions have been sent to your email.');
+      showToast(
+        language === 'es' ? 'Correo Enviado' : 'Email Sent',
+        language === 'es' 
+          ? 'Se han enviado las instrucciones de restablecimiento a su correo.' 
+          : 'Reset instructions have been sent to your email.'
+      );
       setAuthView('login');
     } catch (err) {
       console.error("Password recovery error:", err);
-      // Capturar error de usuario no encontrado en Firebase
-      if (err.code === 'auth/user-not-found' || err.message?.includes('user-not-found') || err.message?.includes('auth/user-not-found')) {
-        alert(language === 'es' 
-          ? 'No encontramos ninguna cuenta registrada con este correo. Por favor, verifique si utilizó otra dirección.' 
-          : language === 'pt'
-            ? 'Não encontramos nenhuma conta registrada com este e-mail. Por favor, verifique se utilizou outro endereço.'
-            : 'We could not find any account registered with this email. Please check if you used another address.');
-      } else {
-        alert(language === 'es' ? `Error al enviar correo: ${err.message}` : `Error sending email: ${err.message}`);
-      }
+      showToast(
+        language === 'es' ? 'Error al enviar correo' : 'Error sending email',
+        err.message || 'No se pudo enviar el correo de recuperación.'
+      );
+    } finally {
+      setForgotLoading(false);
     }
   };
 
   const handleConfirmPasswordResetSubmit = async (event) => {
     event.preventDefault();
+    if (resetPasswordLoading) return;
     setResetErrorBanner('');
 
     const form = new FormData(event.currentTarget);
@@ -946,10 +947,8 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       return;
     }
 
-    let cleanCode = String(resetOobCode || '').trim();
-    if (cleanCode.includes('%')) {
-      try { cleanCode = decodeURIComponent(cleanCode); } catch {}
-    }
+    // Preserve raw pristine oobCode without extra double-decoding
+    const cleanCode = String(resetOobCode || '').trim();
 
     if (!cleanCode) {
       setResetErrorBanner(
@@ -1612,8 +1611,10 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                 <label htmlFor="forgot-email"><FormattedMessage id="Modals.043" /></label>
                 <input type="email" id="forgot-email" name="email" required placeholder={intl.formatMessage({ id: "Modals.044" })} />
               </div>
-              <button type="submit" className="btn btn-gradient btn-block" style={{ marginTop: 12 }}>
-                {language === 'es' ? 'Enviar correo de recuperación' : language === 'pt' ? 'Enviar e-mail de recuperação' : 'Send recovery email'}
+              <button type="submit" className="btn btn-gradient btn-block" style={{ marginTop: 12 }} disabled={forgotLoading}>
+                {forgotLoading 
+                  ? (language === 'es' ? 'Enviando...' : 'Sending...') 
+                  : (language === 'es' ? 'Enviar correo de recuperación' : language === 'pt' ? 'Enviar e-mail de recuperação' : 'Send recovery email')}
               </button>
               <button type="button" className="btn btn-outline btn-block" style={{ marginTop: 8 }} onClick={() => setAuthView('login')}>
                 {language === 'es' ? 'Volver al inicio de sesión' : language === 'pt' ? 'Voltar ao login' : 'Back to login'}
