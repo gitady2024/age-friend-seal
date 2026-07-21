@@ -116,7 +116,9 @@ export default async function handler(req, res) {
           },
           body: JSON.stringify({
             requestType: "PASSWORD_RESET",
-            email: userEmail
+            email: userEmail,
+            continueUrl: "https://agefriendseal.com/?action=resetPassword",
+            canHandleCodeInApp: false
           })
         });
 
