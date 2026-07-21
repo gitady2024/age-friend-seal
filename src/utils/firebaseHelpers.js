@@ -520,7 +520,7 @@ export const recoverUserPassword = async (email) => {
 
   const actionCodeSettings = {
     url: 'https://agefriendseal.com/?action=resetPassword',
-    handleCodeInApp: true
+    handleCodeInApp: false
   };
 
   try {
