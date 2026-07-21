@@ -508,16 +508,43 @@ export const saveCompanyDeliverable = async (deliverableData) => {
   }
 };
 
-// Recover User Password (Ruta B: Native Firebase Client SDK + ActionCodeSettings Deep Link)
+// Recover User Password (Ruta B: Identity Toolkit REST API + Client SDK with explicit continueUrl)
 export const recoverUserPassword = async (email) => {
   if (!email) throw new Error("El correo es requerido.");
-  console.log(`[FRONTEND DISPARO] Enviando correo de restablecimiento nativo Firebase (Ruta B) para: ${email}`);
+  console.log(`[FRONTEND DISPARO] Enviando correo de restablecimiento nativo Firebase con continueUrl explícito para: ${email}`);
 
   if (!isFirebaseEnabled()) {
     console.warn("Firebase no habilitado. Simulando envío de recuperación.");
     return true;
   }
 
+  const apiKey = auth?.config?.apiKey || import.meta.env.VITE_FIREBASE_API_KEY;
+
+  // 1. Intentar envío vía Identity Toolkit REST API inyectando continueUrl explícito
+  if (apiKey) {
+    try {
+      const restRes = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${apiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          requestType: "PASSWORD_RESET",
+          email,
+          continueUrl: "https://agefriendseal.com/?action=resetPassword"
+        })
+      });
+      if (restRes.ok) {
+        console.log("✅ Correo de restablecimiento enviado exitosamente vía Identity Toolkit REST API con continueUrl.");
+        return true;
+      } else {
+        const errJson = await restRes.json();
+        console.warn("REST API sendOobCode respuesta:", errJson);
+      }
+    } catch (restErr) {
+      console.warn("REST API sendOobCode fallo, intentando SDK:", restErr);
+    }
+  }
+
+  // 2. Fallback al SDK cliente de Firebase
   const actionCodeSettings = {
     url: 'https://agefriendseal.com/?action=resetPassword',
     handleCodeInApp: false
