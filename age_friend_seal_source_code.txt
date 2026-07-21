@@ -21081,7 +21081,8 @@ export default async function handler(req, res) {
             requestType: "PASSWORD_RESET",
             email: userEmail,
             continueUrl: "https://agefriendseal.com/?action=resetPassword",
-            canHandleCodeInApp: false
+            canHandleCodeInApp: false,
+            returnOobLink: true
           })
         });
 
