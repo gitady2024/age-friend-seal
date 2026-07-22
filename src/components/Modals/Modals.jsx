@@ -535,15 +535,17 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     }
   }, [currentUser]);
 
-  // Hook for direct pitch download when logged-in B2B/Personal user clicks download
+  // Hook for pitch request when logged-in B2B/Personal user clicks download
   useEffect(() => {
     if (directPitchDownload) {
-      downloadPitchB2BPdf();
+      if (onOpenPitchSuccess) {
+        onOpenPitchSuccess();
+      }
       if (onClearDirectPitch) {
         onClearDirectPitch();
       }
     }
-  }, [directPitchDownload, language, onClearDirectPitch]);
+  }, [directPitchDownload, language, onClearDirectPitch, onOpenPitchSuccess]);
 
   const handlePitchSubmit = async (event) => {
     event.preventDefault();
@@ -566,7 +568,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     const finalCompany = formCompany || (currentUser ? (currentUser.companyName || currentUser.name) : '') || 'Empresa Prospecto';
     const finalEmail = formEmail || (currentUser ? currentUser.email : '') || '';
 
-    // Call backend API to capture the guest lead
+    // Call backend API to capture the guest lead and sync with Brevo API v3
     fetch("/api/capture-lead", {
       method: "POST",
       headers: {
@@ -583,8 +585,6 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       })
     }).catch(err => console.error("Error capturing B2B lead via form:", err));
 
-    downloadPitchB2BPdf();
-    
     onClose();
     if (onOpenPitchSuccess) {
       onOpenPitchSuccess();
@@ -1315,17 +1315,17 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
           <button className="modal-close" id="btn-pitch-success-close" onClick={onClose}><FormattedMessage id="Modals.001" /></button>
           <div style={{ fontSize: '4rem', marginBottom: 16 }}>📩</div>
           <h3>
-            {language === 'es' ? '¡Pitch en camino!' : (language === 'pt' ? '¡Pitch a caminho!' : 'Pitch on the way!')}
+            {language === 'es' ? '¡Listo! El Pitch va en camino.' : (language === 'pt' ? '¡Pronto! O Pitch está a caminho.' : 'Done! The Pitch is on its way.')}
           </h3>
           <p style={{ color: 'var(--text-secondary)', marginBottom: 24, fontSize: '0.95rem', lineHeight: '1.5' }}>
             {language === 'es'
-              ? 'El material del Pitch Corporativo se ha generado e iniciado su descarga. ¿Desea adelantar el proceso y agendar una conversación con nuestro equipo?'
+              ? 'Revisa tu bandeja de entrada. Hemos enviado el material del Pitch B2B a tu correo electrónico. ¿Deseas adelantar el proceso y agendar una sesión estratégica de 30 min con nuestro equipo?'
               : language === 'pt'
-                ? 'O material do Pitch Corporativo foi gerado e o download foi iniciado. Deseja adiantar o processo e agendar uma conversa com nossa equipe?'
-                : 'The Corporate Pitch material has been generated and the download has started. Would you like to speed up the process and schedule a call with our team?'}
+                ? 'Verifique sua caixa de entrada. Enviamos o material do Pitch B2B para o seu e-mail. Deseja adiantar o processo e agendar uma reunião estratégica de 30 min com nossa equipe?'
+                : 'Please check your inbox. We have sent the B2B Pitch material to your email address. Would you like to speed up the process and schedule a 30 min strategic call with our team?'}
           </p>
           <a
-            href="https://calendar.app.google/EoYVThhGqyJb2VsRA"
+            href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ3Z8YLn0hpMDpsIQSt6_n9LaBkNS2hIQpSgM2Anh4Vd_S6QE4tS13EBH9RrzACt0S2yNIMH6sUt"
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-gradient btn-block"
@@ -1334,8 +1334,8 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
             <span>🗓️</span>
             <span>
               {language === 'es' 
-                ? 'Agendar reunión de 15 min' 
-                : (language === 'pt' ? 'Agendar reunião de 15 min' : 'Schedule a 15 min meeting')}
+                ? 'Agendar Sesión Estratégica de 30 min' 
+                : (language === 'pt' ? 'Agendar Reunião Estratégica de 30 min' : 'Schedule 30 min Strategic Session')}
             </span>
           </a>
           <button 
