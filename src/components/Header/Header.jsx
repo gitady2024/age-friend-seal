@@ -31,11 +31,12 @@ function Header({ language, onLanguageChange, currentUser, onOpenAuth, onOpenAcc
   return (
     <header className="navbar">
       <div className="container nav-container">
-        <a href="#" className="logo" onClick={closeMenu} style={{ display: 'flex', alignItems: 'center', height: '42px', textDecoration: 'none' }}>
+        <a href="#" className="logo" onClick={closeMenu} style={{ display: 'flex', alignItems: 'center', height: '52px', textDecoration: 'none', background: 'transparent' }}>
           <img
             src="/assets/logo.png"
             alt={intl.formatMessage({ id: 'brand.logoAlt' })}
-            style={{ height: '100%', width: 'auto' }}
+            className="header-logo-img"
+            style={{ height: '50px', width: 'auto', backgroundColor: 'transparent', objectFit: 'contain' }}
           />
         </a>
 

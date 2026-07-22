@@ -29,6 +29,14 @@
     letter-spacing: -0.03em;
     color: var(--text-primary);
     text-decoration: none;
+    background: transparent !important;
+}
+
+.header-logo-img {
+    height: 50px;
+    width: auto;
+    background-color: transparent !important;
+    object-fit: contain;
 }
 
 .logo-img {
