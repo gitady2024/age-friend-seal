@@ -2776,7 +2776,7 @@ export default Hero;
 import "./Modals.scss";
 import { useState, useEffect } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { buildDossierHtml, downloadTextFile, generateDecalSvg, generateSvgMatrix } from "../../utils/downloads.js";
+import { buildDossierHtml, downloadTextFile, downloadPitchB2BPdf, generateDecalSvg, generateSvgMatrix } from "../../utils/downloads.js";
 import SVGMatrix from "../SVGMatrix/SVGMatrix.jsx";
 import { db, auth } from "../../config/firebase.js";
 import { collection, addDoc, doc, setDoc } from "firebase/firestore";
@@ -3313,50 +3313,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   // Hook for direct pitch download when logged-in B2B/Personal user clicks download
   useEffect(() => {
     if (directPitchDownload) {
-      const downloadPitchDirectly = async () => {
-        const html = buildDossierHtml(language);
-        try {
-          const { default: html2pdf } = await import('html2pdf.js');
-          const parsed = new DOMParser().parseFromString(html, 'text/html');
-          const printHost = document.createElement('div');
-          printHost.setAttribute('aria-hidden', 'true');
-          printHost.style.position = 'fixed';
-          printHost.style.left = '-10000px';
-          printHost.style.top = '0';
-          printHost.style.width = '794px';
-          printHost.style.background = '#ffffff';
-          printHost.style.color = '#111827';
-          printHost.innerHTML = `${parsed.head.innerHTML}${parsed.body.innerHTML}`;
-          document.body.appendChild(printHost);
-          
-          const container = printHost.querySelector('.dossier-page');
-          await html2pdf()
-            .from(container)
-            .set({
-              filename: language === 'es' || language === 'pt' ? 'Dossier_AgeFriendSeal.pdf' : 'Dossier_AgeFriendSeal_EN.pdf',
-              margin: 0,
-              image: { type: 'jpeg', quality: 0.98 },
-              html2canvas: {
-                scale: 2,
-                backgroundColor: '#ffffff',
-                useCORS: true
-              },
-              jsPDF: {
-                unit: 'pt',
-                format: 'a4',
-                orientation: 'portrait'
-              },
-              pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-            })
-            .save();
-          printHost.remove();
-        } catch (err) {
-          console.error("Direct HTML2PDF fallback:", err);
-          downloadTextFile(html, language === 'es' || language === 'pt' ? 'Dossier_AgeFriendSeal.html' : 'Dossier_AgeFriendSeal_EN.html', 'text/html;charset=utf-8');
-        }
-      };
-      
-      downloadPitchDirectly();
+      downloadPitchB2BPdf();
       if (onClearDirectPitch) {
         onClearDirectPitch();
       }
@@ -3401,51 +3358,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
       })
     }).catch(err => console.error("Error capturing B2B lead via form:", err));
 
-    const html = buildDossierHtml(language);
-    if (format === 'pdf') {
-      let printHost;
-      try {
-        const { default: html2pdf } = await import('html2pdf.js');
-        const parsed = new DOMParser().parseFromString(html, 'text/html');
-        printHost = document.createElement('div');
-        printHost.setAttribute('aria-hidden', 'true');
-        printHost.style.position = 'fixed';
-        printHost.style.left = '-10000px';
-        printHost.style.top = '0';
-        printHost.style.width = '794px';
-        printHost.style.background = '#ffffff';
-        printHost.style.color = '#111827';
-        printHost.innerHTML = `${parsed.head.innerHTML}${parsed.body.innerHTML}`;
-        document.body.appendChild(printHost);
-        
-        const container = printHost.querySelector('.dossier-page');
-        await html2pdf()
-          .from(container)
-          .set({
-            filename: language === 'es' || language === 'pt' ? 'Dossier_AgeFriendSeal.pdf' : 'Dossier_AgeFriendSeal_EN.pdf',
-            margin: 0,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: {
-              scale: 2,
-              backgroundColor: '#ffffff',
-              useCORS: true
-            },
-            jsPDF: {
-              unit: 'pt',
-              format: 'a4',
-              orientation: 'portrait'
-            },
-            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-          })
-          .save();
-      } catch {
-        downloadTextFile(html, language === 'es' || language === 'pt' ? 'Dossier_AgeFriendSeal.html' : 'Dossier_AgeFriendSeal_EN.html', 'text/html;charset=utf-8');
-      } finally {
-        printHost?.remove();
-      }
-    } else {
-      downloadTextFile(html, language === 'es' || language === 'pt' ? 'Dossier_AgeFriendSeal.html' : 'Dossier_AgeFriendSeal_EN.html', 'text/html;charset=utf-8');
-    }
+    downloadPitchB2BPdf();
     
     onClose();
     if (onOpenPitchSuccess) {
@@ -18501,6 +18414,16 @@ export function generateSvgMatrix(companyName, hexPrimary = "#3b82f6", hexSecond
   `}
   <circle cx="200" cy="200" r="80" fill="url(#inner-shadow)" pointer-events="none" />
 </svg>`;
+}
+
+export function downloadPitchB2BPdf() {
+  const link = document.createElement("a");
+  link.href = "/Pitch_B2B_Age_Friend_Seal.pdf";
+  link.download = "Pitch_B2B_Age_Friend_Seal.pdf";
+  link.target = "_blank";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 

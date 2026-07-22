@@ -226,3 +226,13 @@ export function generateSvgMatrix(companyName, hexPrimary = "#3b82f6", hexSecond
   <circle cx="200" cy="200" r="80" fill="url(#inner-shadow)" pointer-events="none" />
 </svg>`;
 }
+
+export function downloadPitchB2BPdf() {
+  const link = document.createElement("a");
+  link.href = "/Pitch_B2B_Age_Friend_Seal.pdf";
+  link.download = "Pitch_B2B_Age_Friend_Seal.pdf";
+  link.target = "_blank";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
