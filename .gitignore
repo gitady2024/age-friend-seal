@@ -1,5 +1,7 @@
 # Documentos y recursos de planificación/diseño pesados
 *.pdf
+!public/**/*.pdf
+!public/*.pdf
 *.pptx
 *.docx
 *.xlsx
