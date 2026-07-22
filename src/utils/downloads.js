@@ -229,8 +229,8 @@ export function generateSvgMatrix(companyName, hexPrimary = "#3b82f6", hexSecond
 
 export function downloadPitchB2BPdf() {
   const link = document.createElement("a");
-  link.href = "/Pitch_B2B_Age_Friend_Seal.pdf";
-  link.download = "Pitch_B2B_Age_Friend_Seal.pdf";
+  link.href = "/Pitch_B2B_Age_Friend_Seal_k8X9qM2.pdf";
+  link.download = "Pitch_B2B_Age_Friend_Seal_k8X9qM2.pdf";
   link.target = "_blank";
   document.body.appendChild(link);
   link.click();

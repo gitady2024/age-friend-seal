@@ -1,0 +1,2 @@
+User-agent: *
+Disallow: /*Pitch_B2B_Age_Friend_Seal*.pdf
