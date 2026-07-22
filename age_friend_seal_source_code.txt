@@ -15,7 +15,7 @@ AGE FRIEND SEAL - FULL SOURCE CODE BUNDLE
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Age Friend Seal - Instituto Certificador Internacional</title>
     <meta name="description" content="Certificación y soluciones de autodiagnóstico empresarial para capturar la oportunidad de la Economía Plateada (Silver Economy) a nivel global." />
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+    <link rel="icon" type="image/png" href="/assets/favicon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -21549,7 +21549,7 @@ export default async function handler(req, res) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Política de Privacidad - Age Friend Seal</title>
     <meta name="description" content="Política de privacidad del Instituto Certificador Age Friend Seal, redactada bajo estándares internacionales de protección de datos.">
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21762,7 +21762,7 @@ export default async function handler(req, res) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privacy Policy - Age Friend Seal</title>
     <meta name="description" content="Privacy policy of the Age Friend Seal Certification Institute, drafted under international data protection standards.">
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21981,7 +21981,7 @@ export default async function handler(req, res) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Política de Privacidade - Age Friend Seal</title>
     <meta name="description" content="Política de privacidade do Instituto Certificador Age Friend Seal, redigida sob padrões internacionais de proteção de dados.">
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22623,7 +22623,7 @@ body {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Términos y Condiciones - Age Friend Seal</title>
     <meta name="description" content="Términos y condiciones de uso del portal del Instituto Certificador Age Friend Seal, bajo estándares de validez internacional.">
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22820,7 +22820,7 @@ body {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terms and Conditions - Age Friend Seal</title>
     <meta name="description" content="Terms and conditions of use of the Age Friend Seal Certification Institute portal, under international validity standards.">
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23023,7 +23023,7 @@ body {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Termos e Condições - Age Friend Seal</title>
     <meta name="description" content="Termos e condições de uso do portal do Instituto Certificador Age Friend Seal, sob padrões de validade internacional.">
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
