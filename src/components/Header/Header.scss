@@ -29,13 +29,21 @@
     letter-spacing: -0.03em;
     color: var(--text-primary);
     text-decoration: none;
-    background: transparent !important;
+    background: transparent;
+}
+
+.header-logo-container {
+    padding: 0;
+    height: auto;
+    background: transparent;
+    display: flex;
+    align-items: center;
 }
 
 .header-logo-img {
-    height: 50px;
+    height: 52px;
     width: auto;
-    background-color: transparent !important;
+    background-color: transparent;
     object-fit: contain;
 }
 
