@@ -2561,8 +2561,8 @@ export default Header;
     }
 
     @media (max-width: 480px) {
-        .logo {
-            height: 32px !important;
+        .header-logo-img {
+            height: 44px;
         }
     }
 }
