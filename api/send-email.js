@@ -1,4 +1,4 @@
-import { generateExcelWorkbook } from "./excelHelper.js";
+import { generateExcelWorkbook } from "./_lib/excelHelper.js";
 import nodemailer from "nodemailer";
 import { verifyFirebaseToken } from "./auth.js";
 

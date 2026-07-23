@@ -19346,291 +19346,6 @@ export default async function handler(req, res) {
 
 
 // ==========================================
-// FILE: api/excelHelper.js
-// ==========================================
-
-import ExcelJS from "exceljs";
-import { createRequire } from "module";
-
-const require = createRequire(import.meta.url);
-const legalDictionary = require("./legalDictionary.json");
-
-export async function generateExcelWorkbook({ email, enterpriseName, score, respuestas, country }) {
-  const workbook = new ExcelJS.Workbook();
-  
-  // Normalize country and resolve legal mappings
-  const normalizedCountry = country || "España";
-  let legalMap = legalDictionary[normalizedCountry];
-  if (!legalMap) {
-    const keys = Object.keys(legalDictionary);
-    const matchedKey = keys.find(k => k.toLowerCase() === normalizedCountry.toLowerCase());
-    legalMap = matchedKey ? legalDictionary[matchedKey] : legalDictionary["Otros"];
-  }
-
-  // ==========================================
-  // SHEET 1: Dashboard Ejecutivo
-  // ==========================================
-  const wsDash = workbook.addWorksheet("Dashboard Ejecutivo");
-  wsDash.views = [{ showGridLines: true }];
-  
-  const FONT_NAME = "Arial";
-  
-  // Title block
-  wsDash.mergeCells("A2:D3");
-  const titleCell = wsDash.getCell("A2");
-  titleCell.value = "AGE FRIEND SEAL - DASHBOARD EJECUTIVO";
-  titleCell.font = { name: FONT_NAME, size: 16, bold: true, color: { argb: "FFFFFF" } };
-  titleCell.fill = {
-    type: "pattern",
-    pattern: "solid",
-    fgColor: { argb: "0F172A" } // Dark Slate
-  };
-  titleCell.alignment = { horizontal: "center", vertical: "middle" };
-  
-  // Subtitle
-  wsDash.mergeCells("A4:D4");
-  const subCell = wsDash.getCell("A4");
-  subCell.value = "Reporte Ejecutivo de Autodiagnóstico e Impacto Regulatorio";
-  subCell.font = { name: FONT_NAME, size: 10, italic: true, color: { argb: "64748B" } };
-  subCell.alignment = { horizontal: "center", vertical: "middle" };
-
-  // Metadata block
-  wsDash.getCell("A6").value = "Organización:";
-  wsDash.getCell("B6").value = enterpriseName || "Empresa Evaluada";
-  wsDash.getCell("A7").value = "Email Corporativo:";
-  wsDash.getCell("B7").value = email || "-";
-  wsDash.getCell("A8").value = "Fecha de Emisión:";
-  wsDash.getCell("B8").value = new Date().toLocaleDateString("es-ES");
-  wsDash.getCell("A9").value = "País del Diagnóstico:";
-  wsDash.getCell("B9").value = normalizedCountry;
-  
-  wsDash.getCell("A11").value = "Puntaje Global de Amigabilidad:";
-  const globalScoreCell = wsDash.getCell("B11");
-  globalScoreCell.value = `${score || 0}%`;
-  
-  // Style metadata labels
-  for (const rowNum of [6, 7, 8, 9, 11]) {
-    wsDash.getCell(`A${rowNum}`).font = { name: FONT_NAME, size: 10.5, bold: true, color: { argb: "1E293B" } };
-    wsDash.getCell(`B${rowNum}`).font = { name: FONT_NAME, size: 10.5, color: { argb: "334155" } };
-  }
-  
-  // Global score highlighting
-  globalScoreCell.font = {
-    name: FONT_NAME,
-    size: 12,
-    bold: true,
-    color: { argb: (score || 0) >= 90 ? "15803D" : ((score || 0) >= 65 ? "CA8A04" : "B91C1C") }
-  };
-  
-  // Calculate pillar percents
-  const pillarScores = [0, 0, 0, 0, 0];
-  const pillarCounts = [0, 0, 0, 0, 0];
-  (respuestas || []).forEach((ans) => {
-    let pNum = ans.pilar;
-    if (typeof pNum === 'string') {
-      const match = pNum.match(/\d+/);
-      pNum = match ? parseInt(match[0]) : 1;
-    }
-    const idx = Math.min(4, Math.max(0, pNum - 1));
-    pillarScores[idx] += (ans.puntuacion !== undefined ? ans.puntuacion : 0);
-    pillarCounts[idx]++;
-  });
-  
-  const pillarPercents = pillarScores.map((sVal, idx) => {
-    const count = pillarCounts[idx] || 3;
-    const maxScore = count * 3;
-    return maxScore > 0 ? Math.round((sVal / maxScore) * 100) : 0;
-  });
-  
-  // Pillar Summary Table headers (Row 13)
-  wsDash.getRow(13).height = 25;
-  const colHeaders = ["Pilar Evaluado", "Eje Temático", "Cumplimiento (%)", "Estado de Inclusión"];
-  colHeaders.forEach((h, colIdx) => {
-    const cell = wsDash.getCell(13, colIdx + 1);
-    cell.value = h;
-    cell.font = { name: FONT_NAME, size: 11, bold: true, color: { argb: "FFFFFF" } };
-    cell.fill = {
-      type: "pattern",
-      pattern: "solid",
-      fgColor: { argb: "1E3A8A" } // Dark Blue
-    };
-    cell.alignment = { horizontal: "center", vertical: "middle" };
-  });
-  
-  // Pillar rows
-  const pillarNamesList = [
-    "Pilar 1", "Pilar 2", "Pilar 3", "Pilar 4", "Pilar 5"
-  ];
-  const pillarAxesList = [
-    "Eje Laboral (Talento Interno)",
-    "Eje Conciliación (Soporte al Empleado)",
-    "Eje Consumidor (Inclusión Digital y Canales)",
-    "Eje Salud y Entorno (Marcos OMS)",
-    "Eje Comunitario (Tratados y Alianzas)"
-  ];
-  
-  pillarNamesList.forEach((pName, idx) => {
-    const rowNum = 14 + idx;
-    const pct = pillarPercents[idx];
-    const status = pct >= 90 ? "Sobresaliente (Sello Aprobado)" : (pct >= 65 ? "Medio (Certificación Condicional)" : "Crítico (Acción Requerida)");
-    
-    wsDash.getRow(rowNum).height = 22;
-    wsDash.getCell(`A${rowNum}`).value = pName;
-    wsDash.getCell(`B${rowNum}`).value = pillarAxesList[idx];
-    wsDash.getCell(`C${rowNum}`).value = `${pct}%`;
-    wsDash.getCell(`D${rowNum}`).value = status;
-    
-    for (let c = 1; c <= 4; c++) {
-      const cell = wsDash.getCell(rowNum, c);
-      cell.font = { name: FONT_NAME, size: 10 };
-      cell.border = {
-        top: { style: "thin", color: { argb: "E2E8F0" } },
-        bottom: { style: "thin", color: { argb: "E2E8F0" } },
-        left: { style: "thin", color: { argb: "E2E8F0" } },
-        right: { style: "thin", color: { argb: "E2E8F0" } }
-      };
-      if (c === 1 || c === 3) {
-        cell.alignment = { horizontal: "center", vertical: "middle" };
-      } else {
-        cell.alignment = { horizontal: "left", vertical: "middle" };
-      }
-    }
-    
-    const pctCell = wsDash.getCell(`C${rowNum}`);
-    pctCell.font = {
-      name: FONT_NAME,
-      size: 10,
-      bold: true,
-      color: { argb: pct >= 90 ? "15803D" : (pct >= 65 ? "CA8A04" : "B91C1C") }
-    };
-  });
-  
-  wsDash.getColumn(1).width = 25;
-  wsDash.getColumn(2).width = 45;
-  wsDash.getColumn(3).width = 20;
-  wsDash.getColumn(4).width = 35;
-
-  // ==========================================
-  // SHEET 2: Matriz de Auditoría
-  // ==========================================
-  const wsAudit = workbook.addWorksheet("Matriz de Auditoría");
-  wsAudit.views = [{ state: "frozen", ySplit: 1, showGridLines: true }];
-  
-  wsAudit.columns = [
-    { header: "N°", key: "num", width: 6 },
-    { header: "Pilar", key: "pilar", width: 25 },
-    { header: "Pregunta", key: "pregunta", width: 45 },
-    { header: "Opción Seleccionada", key: "respuesta", width: 45 },
-    { header: "Puntaje", key: "score", width: 12 },
-    { header: "Mejora Recomendada", key: "recomendacion", width: 45 },
-    { header: "Marco Institucional / Legal Sugerido", key: "marcoLegal", width: 45 }
-  ];
-  
-  const headerRow = wsAudit.getRow(1);
-  headerRow.height = 30;
-  headerRow.eachCell((cell) => {
-    cell.font = { name: FONT_NAME, size: 11, bold: true, color: { argb: "FFFFFF" } };
-    cell.fill = {
-      type: "pattern",
-      pattern: "solid",
-      fgColor: { argb: "1E3A8A" } // Corporate Blue
-    };
-    cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
-    cell.border = {
-      top: { style: "thin", color: { argb: "94A3B8" } },
-      left: { style: "thin", color: { argb: "94A3B8" } },
-      bottom: { style: "medium", color: { argb: "0F172A" } },
-      right: { style: "thin", color: { argb: "94A3B8" } }
-    };
-  });
-  
-  (respuestas || []).forEach((ans, idx) => {
-    const rowNum = 2 + idx;
-    
-    let pName = ans.pilar;
-    if (typeof pName === 'number') {
-      const pillarNamesList = [
-        "Eje Laboral", 
-        "Eje Conciliación", 
-        "Eje Consumidor", 
-        "Eje Salud", 
-        "Eje Comunitario"
-      ];
-      pName = pillarNamesList[pName - 1] || `Pilar ${pName}`;
-    }
-    
-    const scoreVal = ans.puntuacion !== undefined ? ans.puntuacion : 0;
-    
-    let pNum = ans.pilar;
-    if (typeof pNum === 'string') {
-      const match = pNum.match(/\d+/);
-      pNum = match ? parseInt(match[0]) : 1;
-    }
-    const pilarIndexStr = String(Math.min(5, Math.max(1, pNum)));
-    const suggestedLaw = legalMap[pilarIndexStr] || "N/A";
-    
-    wsAudit.addRow([
-      idx + 1,
-      pName || "N/A",
-      ans.pregunta || "N/A",
-      ans.opcion_seleccionada || "N/A",
-      scoreVal,
-      ans.recomendacion || "N/A",
-      suggestedLaw
-    ]);
-    
-    const currentRow = wsAudit.getRow(rowNum);
-    currentRow.height = 42;
-    
-    currentRow.eachCell((cell, colIdx) => {
-      cell.font = { name: FONT_NAME, size: 9.5 };
-      cell.border = {
-        top: { style: "thin", color: { argb: "E2E8F0" } },
-        bottom: { style: "thin", color: { argb: "E2E8F0" } },
-        left: { style: "thin", color: { argb: "E2E8F0" } },
-        right: { style: "thin", color: { argb: "E2E8F0" } }
-      };
-      
-      if (colIdx === 1 || colIdx === 5) {
-        cell.alignment = { horizontal: "center", vertical: "top" };
-      } else {
-        cell.alignment = { horizontal: "left", vertical: "top", wrapText: true };
-      }
-      
-      if (colIdx === 5) {
-        if (scoreVal === 3) {
-          cell.fill = {
-            type: "pattern",
-            pattern: "solid",
-            fgColor: { argb: "D1FAE5" } // Soft Green
-          };
-          cell.font = { name: FONT_NAME, size: 9.5, bold: true, color: { argb: "065F46" } };
-        } else if (scoreVal === 2) {
-          cell.fill = {
-            type: "pattern",
-            pattern: "solid",
-            fgColor: { argb: "FEF3C7" } // Soft Yellow
-          };
-          cell.font = { name: FONT_NAME, size: 9.5, bold: true, color: { argb: "92400E" } };
-        } else {
-          cell.fill = {
-            type: "pattern",
-            pattern: "solid",
-            fgColor: { argb: "FEE2E2" } // Soft Red
-          };
-          cell.font = { name: FONT_NAME, size: 9.5, bold: true, color: { argb: "991B1B" } };
-        }
-      }
-    });
-  });
-
-  return workbook;
-}
-
-
-
-
-// ==========================================
 // FILE: api/export-legal-reports.js
 // ==========================================
 
@@ -19961,7 +19676,7 @@ export default async function handler(req, res) {
 // FILE: api/generate-excel.js
 // ==========================================
 
-import { generateExcelWorkbook } from "./excelHelper.js";
+import { generateExcelWorkbook } from "./_lib/excelHelper.js";
 import { verifyFirebaseToken } from "./auth.js";
 
 export default async function handler(req, res) {
@@ -20624,134 +20339,10 @@ function simulateLLMEvaluation(description) {
 
 
 // ==========================================
-// FILE: api/legalDictionary.json
-// ==========================================
-
-{
-  "Argentina": {
-    "1": "Ley de Contrato de Trabajo N° 20.744, Art. 17 (Principio de no discriminación por edad).",
-    "2": "Ley N° 20.744; políticas de flexibilidad laboral y convenios colectivos con cláusulas de adaptabilidad familiar.",
-    "3": "Ley N° 24.240 de Defensa del Consumidor, Art. 4 (Derecho a la información accesible y trato digno para adultos mayores).",
-    "4": "Ley N° 19.587 de Higiene y Seguridad en el Trabajo; directrices de prevención ergonómica de la SRT.",
-    "5": "Convención Interamericana sobre la Protección de los Derechos Humanos de las Personas Mayores (Ley N° 27.360)."
-  },
-  "Chile": {
-    "1": "Código del Trabajo de Chile, Art. 2 (Prohibición de discriminación por edad y ofertas laborales neutras).",
-    "2": "Código del Trabajo, Art. 206 bis (Derecho al teletrabajo y adaptabilidad horaria para cuidadores de dependientes).",
-    "3": "Ley N° 19.496 de Protección de los Derechos de los Consumidores (Principio de trato digno y no discriminación).",
-    "4": "Ley N° 16.744 sobre Accidentes del Trabajo y Enfermedades Profesionales; guías ergonómicas del MINSAL.",
-    "5": "Convención Interamericana sobre la Protección de los Derechos Humanos de las Personas Mayores (SENAMA)."
-  },
-  "Uruguay": {
-    "1": "Ley N° 19.689 de Fomento al Empleo (sección de incentivos para trabajadores de más de 45 años).",
-    "2": "Ley N° 19.121 y normativas de licencias especiales para cuidado de familiares a cargo.",
-    "3": "Ley N° 17.250 de Relaciones de Consumo (accesibilidad y trato equitativo sin discriminación cronológica).",
-    "4": "Ley N° 5.032 de Prevención de Accidentes de Trabajo; directrices de salud ocupacional de la Inspección General del Trabajo.",
-    "5": "Ley N° 19.430 de aprobación de la Convención Interamericana de Protección de los Derechos de las Personas Mayores."
-  },
-  "Brasil": {
-    "1": "Constituição Federal de 1988, Art. 7, XXX; Lei 9.029/1995 (prohibición de discriminación en selección por edad).",
-    "2": "CLT (Consolidação das Leis do Trabalho) y directrices de adaptabilidad de jornada para cuidados familiares.",
-    "3": "Código de Defesa do Consumidor (CDC) y directrices de accesibilidad digital y financiera de la ANPD y BACEN.",
-    "4": "NR-17 de Ergonomía del Ministerio de Trabajo y Empleo (MTE) y directrices de salud ocupacional preventiva.",
-    "5": "Estatuto do Idoso (Lei N° 10.741/2003) y directrices de integración social y empleabilidad activa."
-  },
-  "Colombia": {
-    "1": "Ley N° 2040 de 2020 (Ley de Empleo de Adulto Mayor - deducción tributaria por contratar mayores de edad de pensión).",
-    "2": "Código Sustantivo del Trabajo; Ley N° 2101 de 2021 de reducción de jornada laboral y licencias por calamidad familiar.",
-    "3": "Estatuto del Consumidor (Ley N° 1480 de 2011); lineamientos de la Superindustria (SIC) sobre accesibilidad y protección.",
-    "4": "Ley N° 1562 de 2012 de Sistema de Riesgos Laborales; directrices de medicina preventiva y ergonomía industrial.",
-    "5": "Ley N° 2055 de 2020 que aprueba la Convención Interamericana sobre la Protección de los Derechos de las Personas Mayores."
-  },
-  "Ecuador": {
-    "1": "Código del Trabajo de Ecuador, Art. 79 (Derecho a la no discriminación laboral por edad u otras condiciones).",
-    "2": "Ley Orgánica de Apoyo Humanitario; políticas de reducción y adaptabilidad horaria de la jornada laboral.",
-    "3": "Ley Orgánica de Defensa del Consumidor, Art. 4 (Derechos a trato equitativo, accesibilidad y no discriminación).",
-    "4": "Reglamento de Seguridad y Salud de los Trabajadores; directrices de prevención ergonómica del Ministerio del Trabajo.",
-    "5": "Ley Orgánica de las Personas Adultas Mayores (LOPAM), que promueve la inclusión económica y el envejecimiento activo."
-  },
-  "México": {
-    "1": "Ley Federal del Trabajo (LFT), Art. 2 y 3 (Prohibición de discriminación por edad en la contratación y despidos).",
-    "2": "LFT y normativas sobre flexibilidad de jornada para el cuidado de adultos mayores dependientes.",
-    "3": "Ley Federal de Protección al Consumidor; NOM-151 y directrices de PROFECO sobre trato digno y accesibilidad digital.",
-    "4": "Reglamento Federal de Seguridad y Salud en el Trabajo; NOM-035 (factores de riesgo psicosocial y tecnoestrés).",
-    "5": "Ley de los Derechos de las Personas Adultas Mayores (INAPAM) y convenios de inclusión económica."
-  },
-  "España": {
-    "1": "Ley 15/2022 de Igualdad de Trato y No Discriminación; Estatuto de los Trabajadores, Art. 17 (Nulidad de cláusulas edadistas).",
-    "2": "Real Decreto-ley 6/2019 de medidas urgentes para garantía de igualdad; Directiva (UE) 2019/1158 de conciliación.",
-    "3": "Ley 4/2022 de protección de los consumidores vulnerables; Norma ISO 25556:2025 de accesibilidad en canales.",
-    "4": "Ley 31/1995 de Prevención de Riesgos Laborales; directrices del INSST para la gestión preventiva de edad.",
-    "5": "Estrategia Nacional de Soledad No Deseada; Alianzas B2B bajo la norma de referencia ISO 25550."
-  },
-  "Resto de Europa": {
-    "1": "Directiva 2000/78/CE del Consejo de la Unión Europea relativa al establecimiento de un marco general de igualdad.",
-    "2": "Directiva (UE) 2019/1158 relativa a la conciliación de la vida familiar y profesional de los progenitores y cuidadores.",
-    "3": "Norma ISO 25556:2025 y el Acta Europea de Accesibilidad (European Accessibility Act - Directiva (UE) 2019/882).",
-    "4": "Directrices de la Agencia Europea para la Seguridad y la Salud en el Trabajo (EU-OSHA) sobre envejecimiento activo.",
-    "5": "Marco de referencia de la Norma ISO 25550:2022 sobre organizaciones que envejecen de manera amigable."
-  },
-  "Australia": {
-    "1": "Age Discrimination Act 2004 (Commonwealth); Fair Work Act 2009 (Prohibición de discriminación laboral por edad).",
-    "2": "National Employment Standards (NES) - Derecho a solicitar arreglos de trabajo flexible para cuidadores.",
-    "3": "Competition and Consumer Act 2010; Web Content Accessibility Guidelines (WCAG) aplicables a canales digitales.",
-    "4": "Work Health and Safety (WHS) Act del respectivo estado; directrices de Comcare sobre ergonomía en el envejecimiento.",
-    "5": "Australian Human Rights Commission (AHRC) - Mature Age Workforce Alliance; directrices de Age Management."
-  },
-  "Otros": {
-    "1": "Convenio 111 de la OIT sobre discriminación en el empleo y ocupación.",
-    "2": "Recomendaciones globales de la OIT sobre conciliación familiar y soporte al trabajador con responsabilidades familiares.",
-    "3": "Directrices de Accesibilidad Web (WCAG 2.2) y principios universales de trato equitativo al cliente de la OMS.",
-    "4": "Directrices de la OMS sobre Salud Ocupacional y prevención del desgaste laboral por proceso de envejecimiento.",
-    "5": "Convención Interamericana sobre los Derechos de las Personas Mayores (OEA) / Principios de la ONU para las personas mayores."
-  }
-}
-
-
-
-
-// ==========================================
-// FILE: api/pitch-deck.js
-// ==========================================
-
-// Vercel Serverless Function: /api/pitch-deck
-// Redirects leads/prospects to the Pitch Deck HTML presentation with a unique request token for Brevo automation
-
-export default function handler(req, res) {
-  const query = req.query || {};
-  const email = query.email || query.lead || query.id || '';
-  let token = query.token || query.ref || query.code || '';
-
-  // If no token was provided, generate a unique random 10-character token + timestamp
-  if (!token) {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let randStr = '';
-    for (let i = 0; i < 10; i++) {
-      randStr += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    const timestamp = Date.now().toString(36);
-    token = `${randStr}_${timestamp}`;
-  }
-
-  // Construct target URL with unique query parameter
-  let redirectUrl = `/Pitch_B2B_Age_Friend_Seal_t7Y2pM.html?token=${encodeURIComponent(token)}`;
-  if (email) {
-    redirectUrl += `&ref=${encodeURIComponent(email)}`;
-  }
-
-  // Perform 302 temporary redirect to the pitch deck
-  res.writeHead(302, { Location: redirectUrl });
-  res.end();
-}
-
-
-
-
-// ==========================================
 // FILE: api/send-email.js
 // ==========================================
 
-import { generateExcelWorkbook } from "./excelHelper.js";
+import { generateExcelWorkbook } from "./_lib/excelHelper.js";
 import nodemailer from "nodemailer";
 import { verifyFirebaseToken } from "./auth.js";
 
@@ -21509,6 +21100,378 @@ export default async function handler(req, res) {
       message: "Error al sincronizar con Drive. Reintente.",
       error: driveError.message
     });
+  }
+}
+
+
+
+
+// ==========================================
+// FILE: api/_lib/excelHelper.js
+// ==========================================
+
+import ExcelJS from "exceljs";
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
+const legalDictionary = require("./legalDictionary.json");
+
+export async function generateExcelWorkbook({ email, enterpriseName, score, respuestas, country }) {
+  const workbook = new ExcelJS.Workbook();
+  
+  // Normalize country and resolve legal mappings
+  const normalizedCountry = country || "España";
+  let legalMap = legalDictionary[normalizedCountry];
+  if (!legalMap) {
+    const keys = Object.keys(legalDictionary);
+    const matchedKey = keys.find(k => k.toLowerCase() === normalizedCountry.toLowerCase());
+    legalMap = matchedKey ? legalDictionary[matchedKey] : legalDictionary["Otros"];
+  }
+
+  // ==========================================
+  // SHEET 1: Dashboard Ejecutivo
+  // ==========================================
+  const wsDash = workbook.addWorksheet("Dashboard Ejecutivo");
+  wsDash.views = [{ showGridLines: true }];
+  
+  const FONT_NAME = "Arial";
+  
+  // Title block
+  wsDash.mergeCells("A2:D3");
+  const titleCell = wsDash.getCell("A2");
+  titleCell.value = "AGE FRIEND SEAL - DASHBOARD EJECUTIVO";
+  titleCell.font = { name: FONT_NAME, size: 16, bold: true, color: { argb: "FFFFFF" } };
+  titleCell.fill = {
+    type: "pattern",
+    pattern: "solid",
+    fgColor: { argb: "0F172A" } // Dark Slate
+  };
+  titleCell.alignment = { horizontal: "center", vertical: "middle" };
+  
+  // Subtitle
+  wsDash.mergeCells("A4:D4");
+  const subCell = wsDash.getCell("A4");
+  subCell.value = "Reporte Ejecutivo de Autodiagnóstico e Impacto Regulatorio";
+  subCell.font = { name: FONT_NAME, size: 10, italic: true, color: { argb: "64748B" } };
+  subCell.alignment = { horizontal: "center", vertical: "middle" };
+
+  // Metadata block
+  wsDash.getCell("A6").value = "Organización:";
+  wsDash.getCell("B6").value = enterpriseName || "Empresa Evaluada";
+  wsDash.getCell("A7").value = "Email Corporativo:";
+  wsDash.getCell("B7").value = email || "-";
+  wsDash.getCell("A8").value = "Fecha de Emisión:";
+  wsDash.getCell("B8").value = new Date().toLocaleDateString("es-ES");
+  wsDash.getCell("A9").value = "País del Diagnóstico:";
+  wsDash.getCell("B9").value = normalizedCountry;
+  
+  wsDash.getCell("A11").value = "Puntaje Global de Amigabilidad:";
+  const globalScoreCell = wsDash.getCell("B11");
+  globalScoreCell.value = `${score || 0}%`;
+  
+  // Style metadata labels
+  for (const rowNum of [6, 7, 8, 9, 11]) {
+    wsDash.getCell(`A${rowNum}`).font = { name: FONT_NAME, size: 10.5, bold: true, color: { argb: "1E293B" } };
+    wsDash.getCell(`B${rowNum}`).font = { name: FONT_NAME, size: 10.5, color: { argb: "334155" } };
+  }
+  
+  // Global score highlighting
+  globalScoreCell.font = {
+    name: FONT_NAME,
+    size: 12,
+    bold: true,
+    color: { argb: (score || 0) >= 90 ? "15803D" : ((score || 0) >= 65 ? "CA8A04" : "B91C1C") }
+  };
+  
+  // Calculate pillar percents
+  const pillarScores = [0, 0, 0, 0, 0];
+  const pillarCounts = [0, 0, 0, 0, 0];
+  (respuestas || []).forEach((ans) => {
+    let pNum = ans.pilar;
+    if (typeof pNum === 'string') {
+      const match = pNum.match(/\d+/);
+      pNum = match ? parseInt(match[0]) : 1;
+    }
+    const idx = Math.min(4, Math.max(0, pNum - 1));
+    pillarScores[idx] += (ans.puntuacion !== undefined ? ans.puntuacion : 0);
+    pillarCounts[idx]++;
+  });
+  
+  const pillarPercents = pillarScores.map((sVal, idx) => {
+    const count = pillarCounts[idx] || 3;
+    const maxScore = count * 3;
+    return maxScore > 0 ? Math.round((sVal / maxScore) * 100) : 0;
+  });
+  
+  // Pillar Summary Table headers (Row 13)
+  wsDash.getRow(13).height = 25;
+  const colHeaders = ["Pilar Evaluado", "Eje Temático", "Cumplimiento (%)", "Estado de Inclusión"];
+  colHeaders.forEach((h, colIdx) => {
+    const cell = wsDash.getCell(13, colIdx + 1);
+    cell.value = h;
+    cell.font = { name: FONT_NAME, size: 11, bold: true, color: { argb: "FFFFFF" } };
+    cell.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "1E3A8A" } // Dark Blue
+    };
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+  });
+  
+  // Pillar rows
+  const pillarNamesList = [
+    "Pilar 1", "Pilar 2", "Pilar 3", "Pilar 4", "Pilar 5"
+  ];
+  const pillarAxesList = [
+    "Eje Laboral (Talento Interno)",
+    "Eje Conciliación (Soporte al Empleado)",
+    "Eje Consumidor (Inclusión Digital y Canales)",
+    "Eje Salud y Entorno (Marcos OMS)",
+    "Eje Comunitario (Tratados y Alianzas)"
+  ];
+  
+  pillarNamesList.forEach((pName, idx) => {
+    const rowNum = 14 + idx;
+    const pct = pillarPercents[idx];
+    const status = pct >= 90 ? "Sobresaliente (Sello Aprobado)" : (pct >= 65 ? "Medio (Certificación Condicional)" : "Crítico (Acción Requerida)");
+    
+    wsDash.getRow(rowNum).height = 22;
+    wsDash.getCell(`A${rowNum}`).value = pName;
+    wsDash.getCell(`B${rowNum}`).value = pillarAxesList[idx];
+    wsDash.getCell(`C${rowNum}`).value = `${pct}%`;
+    wsDash.getCell(`D${rowNum}`).value = status;
+    
+    for (let c = 1; c <= 4; c++) {
+      const cell = wsDash.getCell(rowNum, c);
+      cell.font = { name: FONT_NAME, size: 10 };
+      cell.border = {
+        top: { style: "thin", color: { argb: "E2E8F0" } },
+        bottom: { style: "thin", color: { argb: "E2E8F0" } },
+        left: { style: "thin", color: { argb: "E2E8F0" } },
+        right: { style: "thin", color: { argb: "E2E8F0" } }
+      };
+      if (c === 1 || c === 3) {
+        cell.alignment = { horizontal: "center", vertical: "middle" };
+      } else {
+        cell.alignment = { horizontal: "left", vertical: "middle" };
+      }
+    }
+    
+    const pctCell = wsDash.getCell(`C${rowNum}`);
+    pctCell.font = {
+      name: FONT_NAME,
+      size: 10,
+      bold: true,
+      color: { argb: pct >= 90 ? "15803D" : (pct >= 65 ? "CA8A04" : "B91C1C") }
+    };
+  });
+  
+  wsDash.getColumn(1).width = 25;
+  wsDash.getColumn(2).width = 45;
+  wsDash.getColumn(3).width = 20;
+  wsDash.getColumn(4).width = 35;
+
+  // ==========================================
+  // SHEET 2: Matriz de Auditoría
+  // ==========================================
+  const wsAudit = workbook.addWorksheet("Matriz de Auditoría");
+  wsAudit.views = [{ state: "frozen", ySplit: 1, showGridLines: true }];
+  
+  wsAudit.columns = [
+    { header: "N°", key: "num", width: 6 },
+    { header: "Pilar", key: "pilar", width: 25 },
+    { header: "Pregunta", key: "pregunta", width: 45 },
+    { header: "Opción Seleccionada", key: "respuesta", width: 45 },
+    { header: "Puntaje", key: "score", width: 12 },
+    { header: "Mejora Recomendada", key: "recomendacion", width: 45 },
+    { header: "Marco Institucional / Legal Sugerido", key: "marcoLegal", width: 45 }
+  ];
+  
+  const headerRow = wsAudit.getRow(1);
+  headerRow.height = 30;
+  headerRow.eachCell((cell) => {
+    cell.font = { name: FONT_NAME, size: 11, bold: true, color: { argb: "FFFFFF" } };
+    cell.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "1E3A8A" } // Corporate Blue
+    };
+    cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
+    cell.border = {
+      top: { style: "thin", color: { argb: "94A3B8" } },
+      left: { style: "thin", color: { argb: "94A3B8" } },
+      bottom: { style: "medium", color: { argb: "0F172A" } },
+      right: { style: "thin", color: { argb: "94A3B8" } }
+    };
+  });
+  
+  (respuestas || []).forEach((ans, idx) => {
+    const rowNum = 2 + idx;
+    
+    let pName = ans.pilar;
+    if (typeof pName === 'number') {
+      const pillarNamesList = [
+        "Eje Laboral", 
+        "Eje Conciliación", 
+        "Eje Consumidor", 
+        "Eje Salud", 
+        "Eje Comunitario"
+      ];
+      pName = pillarNamesList[pName - 1] || `Pilar ${pName}`;
+    }
+    
+    const scoreVal = ans.puntuacion !== undefined ? ans.puntuacion : 0;
+    
+    let pNum = ans.pilar;
+    if (typeof pNum === 'string') {
+      const match = pNum.match(/\d+/);
+      pNum = match ? parseInt(match[0]) : 1;
+    }
+    const pilarIndexStr = String(Math.min(5, Math.max(1, pNum)));
+    const suggestedLaw = legalMap[pilarIndexStr] || "N/A";
+    
+    wsAudit.addRow([
+      idx + 1,
+      pName || "N/A",
+      ans.pregunta || "N/A",
+      ans.opcion_seleccionada || "N/A",
+      scoreVal,
+      ans.recomendacion || "N/A",
+      suggestedLaw
+    ]);
+    
+    const currentRow = wsAudit.getRow(rowNum);
+    currentRow.height = 42;
+    
+    currentRow.eachCell((cell, colIdx) => {
+      cell.font = { name: FONT_NAME, size: 9.5 };
+      cell.border = {
+        top: { style: "thin", color: { argb: "E2E8F0" } },
+        bottom: { style: "thin", color: { argb: "E2E8F0" } },
+        left: { style: "thin", color: { argb: "E2E8F0" } },
+        right: { style: "thin", color: { argb: "E2E8F0" } }
+      };
+      
+      if (colIdx === 1 || colIdx === 5) {
+        cell.alignment = { horizontal: "center", vertical: "top" };
+      } else {
+        cell.alignment = { horizontal: "left", vertical: "top", wrapText: true };
+      }
+      
+      if (colIdx === 5) {
+        if (scoreVal === 3) {
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "D1FAE5" } // Soft Green
+          };
+          cell.font = { name: FONT_NAME, size: 9.5, bold: true, color: { argb: "065F46" } };
+        } else if (scoreVal === 2) {
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FEF3C7" } // Soft Yellow
+          };
+          cell.font = { name: FONT_NAME, size: 9.5, bold: true, color: { argb: "92400E" } };
+        } else {
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FEE2E2" } // Soft Red
+          };
+          cell.font = { name: FONT_NAME, size: 9.5, bold: true, color: { argb: "991B1B" } };
+        }
+      }
+    });
+  });
+
+  return workbook;
+}
+
+
+
+
+// ==========================================
+// FILE: api/_lib/legalDictionary.json
+// ==========================================
+
+{
+  "Argentina": {
+    "1": "Ley de Contrato de Trabajo N° 20.744, Art. 17 (Principio de no discriminación por edad).",
+    "2": "Ley N° 20.744; políticas de flexibilidad laboral y convenios colectivos con cláusulas de adaptabilidad familiar.",
+    "3": "Ley N° 24.240 de Defensa del Consumidor, Art. 4 (Derecho a la información accesible y trato digno para adultos mayores).",
+    "4": "Ley N° 19.587 de Higiene y Seguridad en el Trabajo; directrices de prevención ergonómica de la SRT.",
+    "5": "Convención Interamericana sobre la Protección de los Derechos Humanos de las Personas Mayores (Ley N° 27.360)."
+  },
+  "Chile": {
+    "1": "Código del Trabajo de Chile, Art. 2 (Prohibición de discriminación por edad y ofertas laborales neutras).",
+    "2": "Código del Trabajo, Art. 206 bis (Derecho al teletrabajo y adaptabilidad horaria para cuidadores de dependientes).",
+    "3": "Ley N° 19.496 de Protección de los Derechos de los Consumidores (Principio de trato digno y no discriminación).",
+    "4": "Ley N° 16.744 sobre Accidentes del Trabajo y Enfermedades Profesionales; guías ergonómicas del MINSAL.",
+    "5": "Convención Interamericana sobre la Protección de los Derechos Humanos de las Personas Mayores (SENAMA)."
+  },
+  "Uruguay": {
+    "1": "Ley N° 19.689 de Fomento al Empleo (sección de incentivos para trabajadores de más de 45 años).",
+    "2": "Ley N° 19.121 y normativas de licencias especiales para cuidado de familiares a cargo.",
+    "3": "Ley N° 17.250 de Relaciones de Consumo (accesibilidad y trato equitativo sin discriminación cronológica).",
+    "4": "Ley N° 5.032 de Prevención de Accidentes de Trabajo; directrices de salud ocupacional de la Inspección General del Trabajo.",
+    "5": "Ley N° 19.430 de aprobación de la Convención Interamericana de Protección de los Derechos de las Personas Mayores."
+  },
+  "Brasil": {
+    "1": "Constituição Federal de 1988, Art. 7, XXX; Lei 9.029/1995 (prohibición de discriminación en selección por edad).",
+    "2": "CLT (Consolidação das Leis do Trabalho) y directrices de adaptabilidad de jornada para cuidados familiares.",
+    "3": "Código de Defesa do Consumidor (CDC) y directrices de accesibilidad digital y financiera de la ANPD y BACEN.",
+    "4": "NR-17 de Ergonomía del Ministerio de Trabajo y Empleo (MTE) y directrices de salud ocupacional preventiva.",
+    "5": "Estatuto do Idoso (Lei N° 10.741/2003) y directrices de integración social y empleabilidad activa."
+  },
+  "Colombia": {
+    "1": "Ley N° 2040 de 2020 (Ley de Empleo de Adulto Mayor - deducción tributaria por contratar mayores de edad de pensión).",
+    "2": "Código Sustantivo del Trabajo; Ley N° 2101 de 2021 de reducción de jornada laboral y licencias por calamidad familiar.",
+    "3": "Estatuto del Consumidor (Ley N° 1480 de 2011); lineamientos de la Superindustria (SIC) sobre accesibilidad y protección.",
+    "4": "Ley N° 1562 de 2012 de Sistema de Riesgos Laborales; directrices de medicina preventiva y ergonomía industrial.",
+    "5": "Ley N° 2055 de 2020 que aprueba la Convención Interamericana sobre la Protección de los Derechos de las Personas Mayores."
+  },
+  "Ecuador": {
+    "1": "Código del Trabajo de Ecuador, Art. 79 (Derecho a la no discriminación laboral por edad u otras condiciones).",
+    "2": "Ley Orgánica de Apoyo Humanitario; políticas de reducción y adaptabilidad horaria de la jornada laboral.",
+    "3": "Ley Orgánica de Defensa del Consumidor, Art. 4 (Derechos a trato equitativo, accesibilidad y no discriminación).",
+    "4": "Reglamento de Seguridad y Salud de los Trabajadores; directrices de prevención ergonómica del Ministerio del Trabajo.",
+    "5": "Ley Orgánica de las Personas Adultas Mayores (LOPAM), que promueve la inclusión económica y el envejecimiento activo."
+  },
+  "México": {
+    "1": "Ley Federal del Trabajo (LFT), Art. 2 y 3 (Prohibición de discriminación por edad en la contratación y despidos).",
+    "2": "LFT y normativas sobre flexibilidad de jornada para el cuidado de adultos mayores dependientes.",
+    "3": "Ley Federal de Protección al Consumidor; NOM-151 y directrices de PROFECO sobre trato digno y accesibilidad digital.",
+    "4": "Reglamento Federal de Seguridad y Salud en el Trabajo; NOM-035 (factores de riesgo psicosocial y tecnoestrés).",
+    "5": "Ley de los Derechos de las Personas Adultas Mayores (INAPAM) y convenios de inclusión económica."
+  },
+  "España": {
+    "1": "Ley 15/2022 de Igualdad de Trato y No Discriminación; Estatuto de los Trabajadores, Art. 17 (Nulidad de cláusulas edadistas).",
+    "2": "Real Decreto-ley 6/2019 de medidas urgentes para garantía de igualdad; Directiva (UE) 2019/1158 de conciliación.",
+    "3": "Ley 4/2022 de protección de los consumidores vulnerables; Norma ISO 25556:2025 de accesibilidad en canales.",
+    "4": "Ley 31/1995 de Prevención de Riesgos Laborales; directrices del INSST para la gestión preventiva de edad.",
+    "5": "Estrategia Nacional de Soledad No Deseada; Alianzas B2B bajo la norma de referencia ISO 25550."
+  },
+  "Resto de Europa": {
+    "1": "Directiva 2000/78/CE del Consejo de la Unión Europea relativa al establecimiento de un marco general de igualdad.",
+    "2": "Directiva (UE) 2019/1158 relativa a la conciliación de la vida familiar y profesional de los progenitores y cuidadores.",
+    "3": "Norma ISO 25556:2025 y el Acta Europea de Accesibilidad (European Accessibility Act - Directiva (UE) 2019/882).",
+    "4": "Directrices de la Agencia Europea para la Seguridad y la Salud en el Trabajo (EU-OSHA) sobre envejecimiento activo.",
+    "5": "Marco de referencia de la Norma ISO 25550:2022 sobre organizaciones que envejecen de manera amigable."
+  },
+  "Australia": {
+    "1": "Age Discrimination Act 2004 (Commonwealth); Fair Work Act 2009 (Prohibición de discriminación laboral por edad).",
+    "2": "National Employment Standards (NES) - Derecho a solicitar arreglos de trabajo flexible para cuidadores.",
+    "3": "Competition and Consumer Act 2010; Web Content Accessibility Guidelines (WCAG) aplicables a canales digitales.",
+    "4": "Work Health and Safety (WHS) Act del respectivo estado; directrices de Comcare sobre ergonomía en el envejecimiento.",
+    "5": "Australian Human Rights Commission (AHRC) - Mature Age Workforce Alliance; directrices de Age Management."
+  },
+  "Otros": {
+    "1": "Convenio 111 de la OIT sobre discriminación en el empleo y ocupación.",
+    "2": "Recomendaciones globales de la OIT sobre conciliación familiar y soporte al trabajador con responsabilidades familiares.",
+    "3": "Directrices de Accesibilidad Web (WCAG 2.2) y principios universales de trato equitativo al cliente de la OMS.",
+    "4": "Directrices de la OMS sobre Salud Ocupacional y prevención del desgaste laboral por proceso de envejecimiento.",
+    "5": "Convención Interamericana sobre los Derechos de las Personas Mayores (OEA) / Principios de la ONU para las personas mayores."
   }
 }
 

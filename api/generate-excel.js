@@ -1,4 +1,4 @@
-import { generateExcelWorkbook } from "./excelHelper.js";
+import { generateExcelWorkbook } from "./_lib/excelHelper.js";
 import { verifyFirebaseToken } from "./auth.js";
 
 export default async function handler(req, res) {
