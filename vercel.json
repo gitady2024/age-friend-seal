@@ -1,5 +1,30 @@
 {
+  "cleanUrls": false,
   "rewrites": [
+    {
+      "source": "/Pitch_B2B_Age_Friend_Seal_t7Y2pM.html",
+      "destination": "/Pitch_B2B_Age_Friend_Seal_t7Y2pM.html"
+    },
+    {
+      "source": "/Pitch_B2B_Age_Friend_Seal_t7Y2pM",
+      "destination": "/Pitch_B2B_Age_Friend_Seal_t7Y2pM.html"
+    },
+    {
+      "source": "/Pitch_B2B_Age_Friend_Seal.html",
+      "destination": "/Pitch_B2B_Age_Friend_Seal.html"
+    },
+    {
+      "source": "/Pitch_B2B_Age_Friend_Seal",
+      "destination": "/Pitch_B2B_Age_Friend_Seal.html"
+    },
+    {
+      "source": "/pitch",
+      "destination": "/Pitch_B2B_Age_Friend_Seal_t7Y2pM.html"
+    },
+    {
+      "source": "/pitch-deck",
+      "destination": "/Pitch_B2B_Age_Friend_Seal_t7Y2pM.html"
+    },
     {
       "source": "/((?!.*\\.[a-zA-Z0-9]+$|api/).*)",
       "destination": "/index.html"
