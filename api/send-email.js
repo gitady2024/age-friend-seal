@@ -138,8 +138,7 @@ export default async function handler(req, res) {
             updateEnabled: true,
             listIds: [Number(process.env.BREVO_LIST_ID || 3)],
             attributes: {
-              NOMBRE: targetName || firstName,
-              FIRSTNAME: firstName,
+              NOMBRE: firstName,
               APELLIDOS: lastName,
               COMPANY: targetCompany,
               PILAR_CRITICO: calculatedCriticalPillar,

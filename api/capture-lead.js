@@ -73,7 +73,7 @@ export default async function handler(req, res) {
       const firstName = nameParts[0] || "";
       const lastName = nameParts.slice(1).join(" ") || "";
 
-      console.log(`Sincronizando lead B2B en Brevo: ${finalEmail}`);
+      console.log(`Sincronizando lead B2B en Brevo: ${finalEmail} (NOMBRE: ${firstName}, APELLIDOS: ${lastName})`);
 
       const brevoResponse = await fetch("https://api.brevo.com/v3/contacts", {
         method: "POST",
@@ -87,8 +87,7 @@ export default async function handler(req, res) {
           updateEnabled: true,
           listIds: [Number(process.env.BREVO_LIST_ID || 3)],
           attributes: {
-            NOMBRE: finalName,
-            FIRSTNAME: firstName,
+            NOMBRE: firstName,
             APELLIDOS: lastName,
             COMPANY: finalCompany || ""
           }
