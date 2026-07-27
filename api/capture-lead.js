@@ -21,12 +21,15 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: "Method Not Allowed" });
   }
 
-  const { name, nombre, email, company, empresa, userType, tipoUsuario } = req.body || {};
+  const { name, nombre, email, company, empresa, userType, tipoUsuario, language, lang, idioma, IDIOMA_PREFERIDO } = req.body || {};
 
   const finalName = String(name || nombre || "").trim();
   const finalEmail = String(email || "").trim();
   const finalCompany = String(company || empresa || "").trim();
   const finalUserType = String(userType || tipoUsuario || "Anónimo").trim();
+
+  const rawLang = String(language || lang || idioma || IDIOMA_PREFERIDO || "ES").trim().toUpperCase();
+  const finalLang = rawLang.startsWith("EN") ? "EN" : (rawLang.startsWith("PT") ? "PT" : "ES");
 
   if (!finalEmail) {
     return res.status(400).json({ success: false, error: "Email parameter is required" });
@@ -53,6 +56,7 @@ export default async function handler(req, res) {
         empresa: finalCompany || "No especificado",
         userType: finalUserType,
         tipoUsuario: finalUserType,
+        idioma: finalLang,
         fecha: new Date().toISOString()
       })
     });
@@ -73,7 +77,7 @@ export default async function handler(req, res) {
       const firstName = nameParts[0] || "";
       const lastName = nameParts.slice(1).join(" ") || "";
 
-      console.log(`Sincronizando lead B2B en Brevo: ${finalEmail} (NOMBRE: ${firstName}, APELLIDOS: ${lastName})`);
+      console.log(`Sincronizando lead B2B en Brevo: ${finalEmail} (NOMBRE: ${firstName}, APELLIDOS: ${lastName}, IDIOMA: ${finalLang})`);
 
       const brevoResponse = await fetch("https://api.brevo.com/v3/contacts", {
         method: "POST",
@@ -89,7 +93,8 @@ export default async function handler(req, res) {
           attributes: {
             NOMBRE: firstName,
             APELLIDOS: lastName,
-            COMPANY: finalCompany || ""
+            COMPANY: finalCompany || "",
+            IDIOMA_PREFERIDO: finalLang
           }
         })
       });

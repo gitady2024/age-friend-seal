@@ -248,6 +248,7 @@ function App() {
       const userCompany = (currentUser.companyName || currentUser.name || "Empresa Registrada").trim();
       const userEmail = (currentUser.email || "").trim();
 
+      const currentLang = String(language || localStorage.getItem('language') || 'ES').toUpperCase();
       const leadData = {
         name: userName,
         nombre: userName,
@@ -255,7 +256,11 @@ function App() {
         company: userCompany,
         empresa: userCompany,
         userType: userTypeStr,
-        tipoUsuario: userTypeStr
+        tipoUsuario: userTypeStr,
+        language: currentLang,
+        lang: currentLang,
+        idioma: currentLang,
+        IDIOMA_PREFERIDO: currentLang
       };
       
       fetch("/api/capture-lead", {

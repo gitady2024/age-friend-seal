@@ -422,6 +422,7 @@ function App() {
       const userCompany = (currentUser.companyName || currentUser.name || "Empresa Registrada").trim();
       const userEmail = (currentUser.email || "").trim();
 
+      const currentLang = String(language || localStorage.getItem('language') || 'ES').toUpperCase();
       const leadData = {
         name: userName,
         nombre: userName,
@@ -429,7 +430,11 @@ function App() {
         company: userCompany,
         empresa: userCompany,
         userType: userTypeStr,
-        tipoUsuario: userTypeStr
+        tipoUsuario: userTypeStr,
+        language: currentLang,
+        lang: currentLang,
+        idioma: currentLang,
+        IDIOMA_PREFERIDO: currentLang
       };
       
       fetch("/api/capture-lead", {
@@ -3345,6 +3350,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     const finalCompany = formCompany || (currentUser ? (currentUser.companyName || currentUser.name) : '') || 'Empresa Prospecto';
     const finalEmail = formEmail || (currentUser ? currentUser.email : '') || '';
 
+    const currentLang = String(localStorage.getItem('language') || localStorage.getItem('lang') || 'ES').toUpperCase();
     // Call backend API to capture the guest lead and sync with Brevo API v3
     fetch("/api/capture-lead", {
       method: "POST",
@@ -3358,7 +3364,11 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
         company: finalCompany,
         empresa: finalCompany,
         userType: userTypeStr,
-        tipoUsuario: userTypeStr
+        tipoUsuario: userTypeStr,
+        language: currentLang,
+        lang: currentLang,
+        idioma: currentLang,
+        IDIOMA_PREFERIDO: currentLang
       })
     }).catch(err => console.error("Error capturing B2B lead via form:", err));
 
@@ -19248,12 +19258,15 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: "Method Not Allowed" });
   }
 
-  const { name, nombre, email, company, empresa, userType, tipoUsuario } = req.body || {};
+  const { name, nombre, email, company, empresa, userType, tipoUsuario, language, lang, idioma, IDIOMA_PREFERIDO } = req.body || {};
 
   const finalName = String(name || nombre || "").trim();
   const finalEmail = String(email || "").trim();
   const finalCompany = String(company || empresa || "").trim();
   const finalUserType = String(userType || tipoUsuario || "Anónimo").trim();
+
+  const rawLang = String(language || lang || idioma || IDIOMA_PREFERIDO || "ES").trim().toUpperCase();
+  const finalLang = rawLang.startsWith("EN") ? "EN" : (rawLang.startsWith("PT") ? "PT" : "ES");
 
   if (!finalEmail) {
     return res.status(400).json({ success: false, error: "Email parameter is required" });
@@ -19280,6 +19293,7 @@ export default async function handler(req, res) {
         empresa: finalCompany || "No especificado",
         userType: finalUserType,
         tipoUsuario: finalUserType,
+        idioma: finalLang,
         fecha: new Date().toISOString()
       })
     });
@@ -19300,7 +19314,7 @@ export default async function handler(req, res) {
       const firstName = nameParts[0] || "";
       const lastName = nameParts.slice(1).join(" ") || "";
 
-      console.log(`Sincronizando lead B2B en Brevo: ${finalEmail} (NOMBRE: ${firstName}, APELLIDOS: ${lastName})`);
+      console.log(`Sincronizando lead B2B en Brevo: ${finalEmail} (NOMBRE: ${firstName}, APELLIDOS: ${lastName}, IDIOMA: ${finalLang})`);
 
       const brevoResponse = await fetch("https://api.brevo.com/v3/contacts", {
         method: "POST",
@@ -19316,7 +19330,8 @@ export default async function handler(req, res) {
           attributes: {
             NOMBRE: firstName,
             APELLIDOS: lastName,
-            COMPANY: finalCompany || ""
+            COMPANY: finalCompany || "",
+            IDIOMA_PREFERIDO: finalLang
           }
         })
       });
@@ -20485,6 +20500,7 @@ export default async function handler(req, res) {
               NOMBRE: firstName,
               APELLIDOS: lastName,
               COMPANY: targetCompany,
+              IDIOMA_PREFERIDO: String(req.body.language || req.body.lang || req.body.idioma || "ES").trim().toUpperCase().startsWith("EN") ? "EN" : (String(req.body.language || req.body.lang || req.body.idioma || "ES").trim().toUpperCase().startsWith("PT") ? "PT" : "ES"),
               PILAR_CRITICO: calculatedCriticalPillar,
               COUNTRY: country || "España",
               SCORE_GLOBAL: Number(score || 0),

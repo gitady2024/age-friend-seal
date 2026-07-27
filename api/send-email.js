@@ -141,6 +141,7 @@ export default async function handler(req, res) {
               NOMBRE: firstName,
               APELLIDOS: lastName,
               COMPANY: targetCompany,
+              IDIOMA_PREFERIDO: String(req.body.language || req.body.lang || req.body.idioma || "ES").trim().toUpperCase().startsWith("EN") ? "EN" : (String(req.body.language || req.body.lang || req.body.idioma || "ES").trim().toUpperCase().startsWith("PT") ? "PT" : "ES"),
               PILAR_CRITICO: calculatedCriticalPillar,
               COUNTRY: country || "España",
               SCORE_GLOBAL: Number(score || 0),

@@ -568,6 +568,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     const finalCompany = formCompany || (currentUser ? (currentUser.companyName || currentUser.name) : '') || 'Empresa Prospecto';
     const finalEmail = formEmail || (currentUser ? currentUser.email : '') || '';
 
+    const currentLang = String(localStorage.getItem('language') || localStorage.getItem('lang') || 'ES').toUpperCase();
     // Call backend API to capture the guest lead and sync with Brevo API v3
     fetch("/api/capture-lead", {
       method: "POST",
@@ -581,7 +582,11 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
         company: finalCompany,
         empresa: finalCompany,
         userType: userTypeStr,
-        tipoUsuario: userTypeStr
+        tipoUsuario: userTypeStr,
+        language: currentLang,
+        lang: currentLang,
+        idioma: currentLang,
+        IDIOMA_PREFERIDO: currentLang
       })
     }).catch(err => console.error("Error capturing B2B lead via form:", err));
 
