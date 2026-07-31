@@ -89,7 +89,7 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           email: finalEmail,
           updateEnabled: true,
-          listIds: [Number(process.env.BREVO_LIST_ID || 3)],
+          listIds: [Number(process.env.BREVO_NURTURING_LIST_ID || 6)],
           attributes: {
             NOMBRE: firstName,
             APELLIDOS: lastName,

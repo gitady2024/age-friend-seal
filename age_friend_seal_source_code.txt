@@ -3320,6 +3320,35 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   // Hook for pitch request when logged-in B2B/Personal user clicks download
   useEffect(() => {
     if (directPitchDownload) {
+      // Sync lead to Brevo for logged-in users (all languages)
+      if (currentUser && currentUser.email) {
+        let userTypeStr = "Anónimo";
+        if (currentUser.userType === 'empresa' || currentUser.companyName || currentUser.economicSector || currentUser.sector) {
+          userTypeStr = "Empresa";
+        } else if (currentUser.type !== 'anonymous') {
+          userTypeStr = "Personal";
+        }
+        const userName = (currentUser.name || [currentUser.firstName, currentUser.lastName].filter(Boolean).join(" ") || currentUser.companyName || "Usuario Registrado").trim();
+        const userCompany = (currentUser.companyName || currentUser.name || "Empresa Registrada").trim();
+        const currentLang = String(language || 'ES').toUpperCase();
+        fetch("/api/capture-lead", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: userName,
+            nombre: userName,
+            email: currentUser.email,
+            company: userCompany,
+            empresa: userCompany,
+            userType: userTypeStr,
+            tipoUsuario: userTypeStr,
+            language: currentLang,
+            lang: currentLang,
+            idioma: currentLang,
+            IDIOMA_PREFERIDO: currentLang
+          })
+        }).catch(err => console.error("Error capturing B2B lead (directPitch):", err));
+      }
       if (onOpenPitchSuccess) {
         onOpenPitchSuccess();
       }
@@ -3327,7 +3356,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
         onClearDirectPitch();
       }
     }
-  }, [directPitchDownload, language, onClearDirectPitch, onOpenPitchSuccess]);
+  }, [directPitchDownload, language, currentUser, onClearDirectPitch, onOpenPitchSuccess]);
 
   const handlePitchSubmit = async (event) => {
     event.preventDefault();
@@ -3350,7 +3379,7 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     const finalCompany = formCompany || (currentUser ? (currentUser.companyName || currentUser.name) : '') || 'Empresa Prospecto';
     const finalEmail = formEmail || (currentUser ? currentUser.email : '') || '';
 
-    const currentLang = String(localStorage.getItem('language') || localStorage.getItem('lang') || 'ES').toUpperCase();
+    const currentLang = String(language || localStorage.getItem('language') || 'ES').toUpperCase();
     // Call backend API to capture the guest lead and sync with Brevo API v3
     fetch("/api/capture-lead", {
       method: "POST",
@@ -19326,7 +19355,7 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           email: finalEmail,
           updateEnabled: true,
-          listIds: [Number(process.env.BREVO_LIST_ID || 3)],
+          listIds: [Number(process.env.BREVO_NURTURING_LIST_ID || 6)],
           attributes: {
             NOMBRE: firstName,
             APELLIDOS: lastName,
