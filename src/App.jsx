@@ -283,6 +283,7 @@ function App() {
         currentUser={currentUser}
         onOpenAuth={() => setActiveModal('auth')}
         onOpenAccount={() => setActiveModal('account')}
+        onOpenHelp={() => setActiveModal('help')}
       />
       <Hero language={language} />
       <DemographicsSection language={language} />

@@ -138,6 +138,76 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const [adminSectorFilter, setAdminSectorFilter] = useState('private');
   const [adminVerticalFilter, setAdminVerticalFilter] = useState('Finanzas y Seguro');
 
+  // Support / Help Center States
+  const [helpCategory, setHelpCategory] = useState('Pagos y Facturación');
+  const [helpName, setHelpName] = useState('');
+  const [helpEmail, setHelpEmail] = useState('');
+  const [helpMessage, setHelpMessage] = useState('');
+  const [helpSubmitting, setHelpSubmitting] = useState(false);
+  const [helpSuccess, setHelpSuccess] = useState(false);
+  const [helpError, setHelpError] = useState('');
+
+  useEffect(() => {
+    if (activeModal === 'help') {
+      setHelpSuccess(false);
+      setHelpError('');
+      if (currentUser) {
+        setHelpName(currentUser.name || [currentUser.firstName, currentUser.lastName].filter(Boolean).join(" ") || '');
+        setHelpEmail(currentUser.email || '');
+      }
+    }
+  }, [activeModal, currentUser]);
+
+  const handleHelpSubmit = async (e) => {
+    e.preventDefault();
+    setHelpSubmitting(true);
+    setHelpError('');
+    setHelpSuccess(false);
+
+    try {
+      if (isFirebaseEnabled() && db) {
+        try {
+          await addDoc(collection(db, "support_tickets"), {
+            category: helpCategory,
+            name: helpName,
+            email: helpEmail,
+            message: helpMessage,
+            language: language || 'es',
+            createdAt: new Date().toISOString(),
+            status: 'open'
+          });
+        } catch (dbErr) {
+          console.warn("Could not save ticket to Firestore:", dbErr);
+        }
+      }
+
+      const response = await fetch("/api/support-ticket", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: helpCategory,
+          name: helpName,
+          email: helpEmail,
+          message: helpMessage,
+          language: language || 'es'
+        })
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Server error');
+      }
+
+      setHelpSuccess(true);
+      setHelpMessage('');
+    } catch (err) {
+      console.error("Error submitting support ticket:", err);
+      setHelpError(intl.formatMessage({ id: "help.error" }));
+    } finally {
+      setHelpSubmitting(false);
+    }
+  };
+
   // Load legal alerts and admin config
   useEffect(() => {
     if (activeTab === 'admin') {
@@ -1460,6 +1530,131 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                   : (language === 'es' ? '🔄 Reenviar código' : '🔄 Resend code')}
             </button>
           </form>
+        </div>
+      </div>
+
+      {/* Modal del Centro de Ayuda / Soporte */}
+      <div className={`modal-overlay ${isOpen('help') ? '' : 'hidden'}`} id="help-modal">
+        <div className="glass-card modal-content" style={{ maxWidth: 520 }}>
+          <button className="modal-close" id="btn-help-modal-close" onClick={onClose}>
+            <FormattedMessage id="Modals.015" />
+          </button>
+          <div className="modal-header text-center" style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: 8 }}>❓</div>
+            <h3><FormattedMessage id="help.title" /></h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: 4 }}>
+              <FormattedMessage id="help.subtitle" />
+            </p>
+          </div>
+
+          {helpSuccess ? (
+            <div className="text-center" style={{ padding: '20px 10px' }}>
+              <div style={{ fontSize: '3rem', marginBottom: 12 }}>✅</div>
+              <h4 style={{ color: '#10b981', marginBottom: 8, fontSize: '1.2rem' }}>
+                <FormattedMessage id="help.success" />
+              </h4>
+              <button
+                type="button"
+                className="btn btn-primary"
+                style={{ marginTop: 16 }}
+                onClick={onClose}
+              >
+                {language === 'es' ? 'Cerrar' : (language === 'pt' ? 'Fechar' : 'Close')}
+              </button>
+            </div>
+          ) : (
+            <form id="help-form" className="modal-form" onSubmit={handleHelpSubmit}>
+              {helpError && (
+                <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.4)', color: '#fca5a5', fontSize: '0.85rem' }}>
+                  {helpError}
+                </div>
+              )}
+
+              <div className="form-group">
+                <label htmlFor="help-category" style={{ fontWeight: 600, fontSize: '0.9rem' }}>
+                  <FormattedMessage id="help.category" /> *
+                </label>
+                <select
+                  id="help-category"
+                  value={helpCategory}
+                  onChange={(e) => setHelpCategory(e.target.value)}
+                  style={selectStyle}
+                  required
+                >
+                  <option value="Pagos y Facturación">{intl.formatMessage({ id: "help.cat.payments" })}</option>
+                  <option value="Descarga de Sello">{intl.formatMessage({ id: "help.cat.seal" })}</option>
+                  <option value="Mi Cuenta / Acceso">{intl.formatMessage({ id: "help.cat.account" })}</option>
+                  <option value="Autodiagnóstico">{intl.formatMessage({ id: "help.cat.diagnostic" })}</option>
+                  <option value="Certificación">{intl.formatMessage({ id: "help.cat.certification" })}</option>
+                  <option value="Problema Técnico">{intl.formatMessage({ id: "help.cat.technical" })}</option>
+                  <option value="Otro">{intl.formatMessage({ id: "help.cat.other" })}</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="help-name" style={{ fontWeight: 600, fontSize: '0.9rem' }}>
+                  <FormattedMessage id="help.name" />
+                </label>
+                <input
+                  type="text"
+                  id="help-name"
+                  value={helpName}
+                  onChange={(e) => setHelpName(e.target.value)}
+                  placeholder={intl.formatMessage({ id: "help.namePlaceholder" })}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="help-email" style={{ fontWeight: 600, fontSize: '0.9rem' }}>
+                  <FormattedMessage id="help.email" /> *
+                </label>
+                <input
+                  type="email"
+                  id="help-email"
+                  required
+                  value={helpEmail}
+                  onChange={(e) => setHelpEmail(e.target.value)}
+                  placeholder={intl.formatMessage({ id: "help.emailPlaceholder" })}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="help-message" style={{ fontWeight: 600, fontSize: '0.9rem' }}>
+                  <FormattedMessage id="help.message" /> *
+                </label>
+                <textarea
+                  id="help-message"
+                  required
+                  rows={4}
+                  value={helpMessage}
+                  onChange={(e) => setHelpMessage(e.target.value)}
+                  placeholder={intl.formatMessage({ id: "help.messagePlaceholder" })}
+                  style={{
+                    width: '100%',
+                    padding: 10,
+                    borderRadius: 8,
+                    background: 'rgba(15, 23, 42, 0.8)',
+                    color: 'var(--text-primary)',
+                    border: '1px solid var(--border-color)',
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '0.95rem',
+                    resize: 'vertical'
+                  }}
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="btn btn-primary btn-block"
+                disabled={helpSubmitting}
+                style={{ marginTop: 8 }}
+              >
+                {helpSubmitting
+                  ? intl.formatMessage({ id: "help.sending" })
+                  : intl.formatMessage({ id: "help.submit" })}
+              </button>
+            </form>
+          )}
         </div>
       </div>
 
