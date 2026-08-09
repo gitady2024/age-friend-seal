@@ -73,7 +73,7 @@ export const localizeAgeInText = (textStr, country) => {
     .replace(/\bfifty\b/gi, age === 40 ? "forty" : age === 60 ? "sixty" : "fifty"); // English
 };
 
-function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPayment, onDiagnosticComplete }) {
+function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPayment, onDiagnosticComplete, onOpenAuth, onOpenAccount }) {
   const intl = useIntl();
   const sectionRef = useRef(null);
   
@@ -81,6 +81,7 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState(Array(defaultQuestions.length).fill(null));
   const [showResults, setShowResults] = useState(false);
+  const [showRestriction, setShowRestriction] = useState(null); // null | 'unauthenticated' | 'personal'
   const [registrationType, setRegistrationType] = useState('personal');
   const [sectorType, setSectorType] = useState('');
   const [registrationForm, setRegistrationForm] = useState({
@@ -188,6 +189,19 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
   }, [showResults, answers, results.globalPercent, results.pillarPercents, results.criticalPillar, currentQuestions, language]);
 
   const selectOption = (option) => {
+    // Interception: check user authorization before allowing selection
+    const isAuth = currentUser && currentUser.type !== 'anonymous';
+    const isB2B = isAuth && currentUser.type === 'empresa';
+
+    if (!isAuth) {
+      setShowRestriction('unauthenticated');
+      return;
+    }
+    if (!isB2B) {
+      setShowRestriction('personal');
+      return;
+    }
+
     setAnswers((current) => {
       const next = [...current];
       next[step] = option;
@@ -290,6 +304,105 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                 <span style={{color: 'var(--accent-color)'}}>{language === 'es' ? 'Sector de la Economía:' : language === 'pt' ? 'Setor da Economia:' : 'Economic Sector:'}</span> {currentUser.sector === 'privado' ? (language === 'es' || language === 'pt' ? 'Privado' : 'Private') : (language === 'es' || language === 'pt' ? 'Público' : 'Public')} <span style={{margin: '0 10px', color: 'var(--border-color)'}}>|</span> <span style={{color: 'var(--accent-color)'}}>{language === 'es' ? 'Vertical de negocio:' : language === 'pt' ? 'Vertical de negócios:' : 'Business Vertical:'}</span> {currentUser.subsector || 'N/A'}
               </div>
             )}
+
+            {/* Restriction Card: shown when an unauthorized user tries to interact */}
+            {showRestriction === 'unauthenticated' && (
+              <div style={{
+                textAlign: 'center',
+                padding: '40px 30px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '16px'
+              }}>
+                <div style={{ fontSize: '4.5rem', filter: 'drop-shadow(0 10px 20px rgba(251, 191, 36, 0.2))' }}>🔒</div>
+                <h2 style={{
+                  fontSize: '2rem',
+                  fontWeight: '700',
+                  fontFamily: 'var(--font-heading)',
+                  background: 'linear-gradient(135deg, #94a3b8 0%, #fbbf24 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  margin: 0
+                }}>
+                  {language === 'es' ? 'Acceso Restringido' : language === 'pt' ? 'Acesso Restrito' : 'Restricted Access'}
+                </h2>
+                <p style={{
+                  fontSize: '1.1rem',
+                  color: 'var(--text-secondary)',
+                  lineHeight: '1.6',
+                  maxWidth: '480px',
+                  margin: '10px 0 20px 0'
+                }}>
+                  {language === 'es'
+                    ? 'El acceso a la herramienta de Autodiagnóstico está reservado exclusivamente para empresas y usuarios registrados. Regístrese o inicie sesión para comenzar.'
+                    : language === 'pt'
+                      ? 'O acesso à ferramenta de Autodiagnóstico é reservado exclusivamente para empresas e usuários registrados. Registre-se ou faça login para começar.'
+                      : 'Access to the Self-Diagnostic tool is reserved exclusively for registered companies and users. Please register or log in to begin.'}
+                </p>
+                <button
+                  type="button"
+                  className="btn btn-gradient btn-lg"
+                  onClick={() => {
+                    setShowRestriction(null);
+                    if (onOpenAuth) onOpenAuth();
+                  }}
+                  style={{ padding: '14px 40px', fontSize: '1.1rem', fontWeight: '600' }}
+                >
+                  {language === 'es' ? 'Iniciar Sesión / Registrarse' : language === 'pt' ? 'Iniciar Sessão / Registrar-se' : 'Log In / Register'}
+                </button>
+              </div>
+            )}
+
+            {showRestriction === 'personal' && (
+              <div style={{
+                textAlign: 'center',
+                padding: '40px 30px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '16px'
+              }}>
+                <div style={{ fontSize: '4.5rem', filter: 'drop-shadow(0 10px 20px rgba(59, 130, 246, 0.2))' }}>🏢</div>
+                <h2 style={{
+                  fontSize: '2rem',
+                  fontWeight: '700',
+                  fontFamily: 'var(--font-heading)',
+                  background: 'linear-gradient(135deg, #94a3b8 0%, #fbbf24 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  margin: 0
+                }}>
+                  {language === 'es' ? 'Cuenta Personal Detectada' : language === 'pt' ? 'Conta Pessoal Detectada' : 'Personal Account Detected'}
+                </h2>
+                <p style={{
+                  fontSize: '1.1rem',
+                  color: 'var(--text-secondary)',
+                  lineHeight: '1.6',
+                  maxWidth: '480px',
+                  margin: '10px 0 20px 0'
+                }}>
+                  {language === 'es'
+                    ? 'El Autodiagnóstico requiere una cuenta de tipo Empresa. Convierta su cuenta ahora para completar el cuestionario y descargar el sello de su organización.'
+                    : language === 'pt'
+                      ? 'O Autodiagnóstico requer uma conta de tipo Empresa. Converta sua conta agora para completar o questionário e baixar o selo de sua organização.'
+                      : 'The Self-Diagnostic requires a Company account. Convert your account now to complete the questionnaire and download your organization\'s seal.'}
+                </p>
+                <button
+                  type="button"
+                  className="btn btn-gradient btn-lg"
+                  onClick={() => {
+                    setShowRestriction(null);
+                    if (onOpenAccount) onOpenAccount();
+                  }}
+                  style={{ padding: '14px 40px', fontSize: '1.1rem', fontWeight: '600' }}
+                >
+                  {language === 'es' ? 'Convertir en Cuenta de Empresa' : language === 'pt' ? 'Converter para Conta de Empresa' : 'Convert to Company Account'}
+                </button>
+              </div>
+            )}
+
+            {!showRestriction && (<>
             <div className="stepper-header-title">
               <FormattedMessage id="SelfDiagnosticSection.pillars" defaultMessage="PILARES" />
             </div>
@@ -595,6 +708,7 @@ function SelfDiagnosticSection({ language, currentUser, onUserChange, onOpenPaym
                   : <FormattedMessage id="SelfDiagnosticSection.046" />}
               </button>
             </div>
+            </>)}
           </div>
         )}
 

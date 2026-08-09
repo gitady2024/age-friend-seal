@@ -155,53 +155,8 @@ function App() {
     }
   }, [currentUser]);
 
-  // Intercept navigation/clicks to #autodiagnostico for unauthenticated or personal users
-  useEffect(() => {
-    if (loadingUser) return;
-
-    const isAuth = currentUser && currentUser.type !== 'anonymous';
-    const isB2B = isAuth && currentUser.type === 'empresa';
-
-    const handleHashChange = () => {
-      if (window.location.hash === '#autodiagnostico') {
-        if (!isAuth) {
-          // Remove hash to prevent scrolling
-          window.history.pushState("", document.title, window.location.pathname + window.location.search);
-          window.sessionStorage.setItem('redirectAfterAuth', '#autodiagnostico');
-          setActiveModal('auth');
-        } else if (!isB2B) {
-          // Remove hash to prevent scrolling
-          window.history.pushState("", document.title, window.location.pathname + window.location.search);
-          setActiveModal('account');
-        }
-      }
-    };
-
-    const handleGlobalClick = (e) => {
-      const target = e.target.closest('a');
-      if (target && target.getAttribute('href') === '#autodiagnostico') {
-        if (!isAuth) {
-          e.preventDefault();
-          window.sessionStorage.setItem('redirectAfterAuth', '#autodiagnostico');
-          setActiveModal('auth');
-        } else if (!isB2B) {
-          e.preventDefault();
-          setActiveModal('account');
-        }
-      }
-    };
-
-    // Check on load/mount
-    handleHashChange();
-
-    window.addEventListener('hashchange', handleHashChange);
-    document.addEventListener('click', handleGlobalClick, true); // Use capture phase
-
-    return () => {
-      window.removeEventListener('hashchange', handleHashChange);
-      document.removeEventListener('click', handleGlobalClick, true);
-    };
-  }, [currentUser, loadingUser]);
+  // NOTE: Hash interception for #autodiagnostico removed.
+  // Restriction is now handled inside SelfDiagnosticSection itself.
 
   // Handle redirection/auto-scroll to #autodiagnostico after login/registration
   useEffect(() => {
@@ -292,21 +247,15 @@ function App() {
       <NormativasSection language={language} />
       <ComparisonSection language={language} />
       <NewsRadarSection language={language} />
-      <ProtectedRoute
-        currentUser={currentUser}
-        loadingUser={loadingUser}
-        onRedirect={() => setActiveModal('auth')}
-        onUpgrade={() => setActiveModal('account')}
+      <SelfDiagnosticSection
         language={language}
-      >
-        <SelfDiagnosticSection
-          language={language}
-          currentUser={currentUser}
-          onUserChange={setCurrentUser}
-          onOpenPayment={() => setActiveModal('payment')}
-          onDiagnosticComplete={setLatestDiagnostic}
-        />
-      </ProtectedRoute>
+        currentUser={currentUser}
+        onUserChange={setCurrentUser}
+        onOpenPayment={() => setActiveModal('payment')}
+        onDiagnosticComplete={setLatestDiagnostic}
+        onOpenAuth={() => setActiveModal('auth')}
+        onOpenAccount={() => setActiveModal('account')}
+      />
       <AlliancesSection onOpenPitch={handleOpenPitch} />
       <Modals
         language={language}
