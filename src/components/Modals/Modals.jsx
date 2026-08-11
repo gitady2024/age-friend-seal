@@ -345,9 +345,13 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
     }
   };
 
+  const [exportingSources, setExportingSources] = useState(false);
+  const [exportingQuestions, setExportingQuestions] = useState(false);
+
   const downloadLegalExcel = async () => {
+    setExportingSources(true);
     try {
-      const res = await fetch(`/api/export-legal-reports?lang=${language}`, {
+      const res = await fetch(`/api/export-sources-excel?lang=${language}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -359,16 +363,48 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = language === 'en' ? 'regulatory_history.xlsx' : language === 'pt' ? 'historico_regulatorio.xlsx' : 'historial_normativo.xlsx';
+        a.download = 'fuentes_y_normativas_age_friendly.xlsx';
         document.body.appendChild(a);
         a.click();
         a.remove();
       } else {
-        alert("Error exporting Excel report");
+        alert(language === 'es' ? "Error al exportar reporte de fuentes" : "Error exporting sources report");
       }
     } catch (e) {
       console.error(e);
-      alert("Error exporting report.");
+      alert(language === 'es' ? "Error al exportar reporte de fuentes" : "Error exporting report.");
+    } finally {
+      setExportingSources(false);
+    }
+  };
+
+  const downloadQuestionsExcel = async () => {
+    setExportingQuestions(true);
+    try {
+      const res = await fetch(`/api/export-questions-excel?lang=${language}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ questions: adminQuestions, lang: language })
+      });
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'banco_preguntas_age_friendly_verticales.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      } else {
+        alert(language === 'es' ? "Error al exportar banco de preguntas" : "Error exporting questions bank");
+      }
+    } catch (e) {
+      console.error(e);
+      alert(language === 'es' ? "Error al exportar banco de preguntas" : "Error exporting questions bank.");
+    } finally {
+      setExportingQuestions(false);
     }
   };
 
@@ -2550,10 +2586,11 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
                     </button>
                     <button 
                       className="btn btn-outline" 
+                      disabled={exportingSources}
                       onClick={downloadLegalExcel}
                       style={{ padding: '8px 14px', fontSize: '0.85rem' }}
                     >
-                      📊 {language === 'es' ? 'Exportar Excel' : 'Export Excel'}
+                      📊 {exportingSources ? (language === 'es' ? 'Exportando...' : 'Exporting...') : (language === 'es' ? 'Exportar Fuentes y Alertas (.xlsx)' : 'Export Sources & Alerts (.xlsx)')}
                     </button>
                     <button 
                       className="btn btn-outline" 
@@ -2667,8 +2704,21 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
 
                 {/* Audit Checklist for 15 Questions */}
                 <div style={{ marginTop: '20px', background: 'rgba(15, 23, 42, 0.2)', padding: '15px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                  <h5 style={{ margin: '0 0 15px 0', fontSize: '0.95rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h5 style={{ margin: '0 0 15px 0', fontSize: '0.95rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
                     <span>⚙️ {language === 'es' ? 'Status del Cuestionario de Autodiagnóstico' : 'Self-Diagnostic Questionnaire Status'}</span>
+                    <button 
+                      type="button" 
+                      className="btn btn-outline" 
+                      disabled={exportingQuestions}
+                      onClick={downloadQuestionsExcel}
+                      style={{ padding: '6px 12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'none' }}
+                    >
+                      {exportingQuestions ? (
+                        <span>{language === 'es' ? 'Exportando...' : 'Exporting...'}</span>
+                      ) : (
+                        <>📊 {language === 'es' ? 'Exportar Preguntas por Vertical (.xlsx)' : 'Export Questions by Vertical (.xlsx)'}</>
+                      )}
+                    </button>
                   </h5>
 
                   {/* Tabs Selector for Sector */}
