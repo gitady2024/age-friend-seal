@@ -5520,40 +5520,56 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
 
                 {/* Audit Checklist for 15 Questions */}
                 <div style={{ marginTop: '20px', background: 'rgba(15, 23, 42, 0.2)', padding: '15px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                  <h5 style={{ margin: '0 0 15px 0', fontSize: '0.95rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-                    <span>⚙️ {language === 'es' ? 'Status del Cuestionario de Autodiagnóstico' : 'Self-Diagnostic Questionnaire Status'}</span>
-                    <button 
-                      type="button" 
-                      className="btn btn-outline" 
-                      disabled={exportingQuestions}
-                      onClick={downloadQuestionsExcel}
-                      style={{ padding: '6px 12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'none' }}
-                    >
-                      {exportingQuestions ? (
-                        <span>{language === 'es' ? 'Exportando...' : 'Exporting...'}</span>
-                      ) : (
-                        <>📊 {language === 'es' ? 'Exportar Preguntas por Vertical (.xlsx)' : 'Export Questions by Vertical (.xlsx)'}</>
-                      )}
-                    </button>
+                  <h5 style={{ margin: '0 0 15px 0', fontSize: '0.95rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    ⚙️ {language === 'es' ? 'Status del Cuestionario de Autodiagnóstico' : 'Self-Diagnostic Questionnaire Status'}
                   </h5>
 
-                  {/* Tabs Selector for Sector */}
-                  <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>
+                  {/* Tabs Selector for Sector & Prominent Export Button */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginBottom: '15px', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <button 
+                        type="button" 
+                        onClick={() => setAdminSectorFilter('private')}
+                        className={`btn ${adminSectorFilter === 'private' ? 'btn-gradient' : 'btn-outline'}`}
+                        style={{ padding: '6px 12px', fontSize: '0.8rem', margin: 0 }}
+                      >
+                        🏢 {language === 'es' ? 'Sector Privado' : 'Private Sector'}
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => setAdminSectorFilter('public')}
+                        className={`btn ${adminSectorFilter === 'public' ? 'btn-gradient' : 'btn-outline'}`}
+                        style={{ padding: '6px 12px', fontSize: '0.8rem', margin: 0 }}
+                      >
+                        🏛️ {language === 'es' ? 'Sector Público' : 'Public Sector'}
+                      </button>
+                    </div>
+
                     <button 
                       type="button" 
-                      onClick={() => setAdminSectorFilter('private')}
-                      className={`btn ${adminSectorFilter === 'private' ? 'btn-gradient' : 'btn-outline'}`}
-                      style={{ padding: '6px 12px', fontSize: '0.8rem', margin: 0 }}
+                      className="btn btn-primary" 
+                      disabled={exportingQuestions}
+                      onClick={downloadQuestionsExcel}
+                      style={{ 
+                        padding: '8px 16px', 
+                        fontSize: '0.85rem', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '8px', 
+                        background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', 
+                        color: '#ffffff', 
+                        border: 'none', 
+                        fontWeight: '600', 
+                        borderRadius: '6px', 
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
+                      }}
                     >
-                      🏢 {language === 'es' ? 'Sector Privado' : 'Private Sector'}
-                    </button>
-                    <button 
-                      type="button" 
-                      onClick={() => setAdminSectorFilter('public')}
-                      className={`btn ${adminSectorFilter === 'public' ? 'btn-gradient' : 'btn-outline'}`}
-                      style={{ padding: '6px 12px', fontSize: '0.8rem', margin: 0 }}
-                    >
-                      🏛️ {language === 'es' ? 'Sector Público' : 'Public Sector'}
+                      {exportingQuestions ? (
+                        <span>{language === 'es' ? 'Exportando Excel...' : 'Exporting Excel...'}</span>
+                      ) : (
+                        <>📊 {language === 'es' ? 'Exportar Banco de Preguntas (.xlsx)' : 'Export Questions Bank (.xlsx)'}</>
+                      )}
                     </button>
                   </div>
 
