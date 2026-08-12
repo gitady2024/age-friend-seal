@@ -1,18 +1,6 @@
 import ExcelJS from "exceljs";
 
-export default async function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Credentials", true);
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
-  );
-
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-
+export async function handleExportQuestions(req, res) {
   const { questions = [], lang = "es" } = { ...req.query, ...req.body };
 
   const FONT_NAME = "Arial";
@@ -134,21 +122,21 @@ export default async function handler(req, res) {
       sheet1.getCell(`O${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
     });
 
-    sheet1.getColumn(1).width = 22; // ID
-    sheet1.getColumn(2).width = 10; // Pilar
-    sheet1.getColumn(3).width = 32; // Nombre pilar
-    sheet1.getColumn(4).width = 16; // Sector
-    sheet1.getColumn(5).width = 35; // Verticales
-    sheet1.getColumn(6).width = 45; // Pregunta ES
-    sheet1.getColumn(7).width = 45; // Pregunta EN
-    sheet1.getColumn(8).width = 45; // Pregunta PT
-    sheet1.getColumn(9).width = 35; // Opcion 1
-    sheet1.getColumn(10).width = 35; // Opcion 2
-    sheet1.getColumn(11).width = 35; // Opcion 3
-    sheet1.getColumn(12).width = 40; // Recomendacion ES
-    sheet1.getColumn(13).width = 40; // Recomendacion EN
-    sheet1.getColumn(14).width = 40; // Recomendacion PT
-    sheet1.getColumn(15).width = 18; // Estado
+    sheet1.getColumn(1).width = 22;
+    sheet1.getColumn(2).width = 10;
+    sheet1.getColumn(3).width = 32;
+    sheet1.getColumn(4).width = 16;
+    sheet1.getColumn(5).width = 35;
+    sheet1.getColumn(6).width = 45;
+    sheet1.getColumn(7).width = 45;
+    sheet1.getColumn(8).width = 45;
+    sheet1.getColumn(9).width = 35;
+    sheet1.getColumn(10).width = 35;
+    sheet1.getColumn(11).width = 35;
+    sheet1.getColumn(12).width = 40;
+    sheet1.getColumn(13).width = 40;
+    sheet1.getColumn(14).width = 40;
+    sheet1.getColumn(15).width = 18;
 
     // -------------------------------------------------------------
     // PESTAÑA 2: MATRIZ DE ASIGNACIÓN POR VERTICAL (10 VERTICALES)
