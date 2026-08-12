@@ -3167,12 +3167,12 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const downloadLegalExcel = async () => {
     setExportingSources(true);
     try {
-      const res = await fetch(`/api/export-sources-excel?lang=${language}`, {
+      const res = await fetch(`/api/export?type=sources&lang=${language}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ alerts: legalAlerts, lang: language })
+        body: JSON.stringify({ alerts: legalAlerts, lang: language, type: 'sources' })
       });
       if (res.ok) {
         const blob = await res.blob();
@@ -3197,12 +3197,12 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const downloadQuestionsExcel = async () => {
     setExportingQuestions(true);
     try {
-      const res = await fetch(`/api/export-questions-excel?lang=${language}`, {
+      const res = await fetch(`/api/export?type=questions&lang=${language}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ questions: adminQuestions, lang: language })
+        body: JSON.stringify({ questions: adminQuestions, lang: language, type: 'questions' })
       });
       if (res.ok) {
         const blob = await res.blob();
@@ -3269,12 +3269,12 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const downloadUsersExcel = async () => {
     setExportingUsers(true);
     try {
-      const res = await fetch(`/api/export-users-excel?lang=${language}`, {
+      const res = await fetch(`/api/export?type=users&lang=${language}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ users: adminUsers, lang: language })
+        body: JSON.stringify({ users: adminUsers, lang: language, type: 'users' })
       });
       if (res.ok) {
         const blob = await res.blob();
@@ -19865,179 +19865,13 @@ export default async function handler(req, res) {
 
 
 // ==========================================
-// FILE: api/export-legal-reports.js
+// FILE: api/export.js
 // ==========================================
 
-import ExcelJS from "exceljs";
-
-export default async function handler(req, res) {
-  // CORS Headers
-  res.setHeader("Access-Control-Allow-Credentials", true);
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
-  );
-
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-
-  // Esperar listado de alertas en req.body (POST) o generar vacías si no hay datos
-  const { alerts = [], lang = "es" } = { ...req.query, ...req.body };
-
-  // Dicionarios de traducción para el reporte Excel
-  const textDict = {
-    es: {
-      sheetName: "Historial Normativo",
-      title: "AGE FRIEND SEAL - HISTORIAL DE ALERTAS NORMATIVAS",
-      headers: ["ID Alerta", "Jurisdicción", "Título de la Normativa", "Resumen Legal (LLM)", "Pilar Impactado", "Relevancia (Score)", "Recomendación de Ajuste"],
-      pillars: {
-        1: "Pilar 1: Accesibilidad física",
-        2: "Pilar 2: Trato respetuoso / Atención",
-        3: "Pilar 3: Inclusión digital / Accesibilidad web",
-        4: "Pilar 4: Salud laboral / Prevención desgaste",
-        5: "Pilar 5: Empleabilidad / Transición retiro"
-      }
-    },
-    en: {
-      sheetName: "Regulatory History",
-      title: "AGE FRIEND SEAL - REGULATORY ALERTS HISTORY",
-      headers: ["Alert ID", "Jurisdiction", "Regulation Title", "Legal Summary (LLM)", "Pillar Impacted", "Relevance Score", "Adjust Recommendation"],
-      pillars: {
-        1: "Pillar 1: Physical accessibility",
-        2: "Pillar 2: Respectful treatment / Service",
-        3: "Pillar 3: Digital inclusion / Web accessibility",
-        4: "Pillar 4: Occupational health / Wear prevention",
-        5: "Pillar 5: Employability / Retirement transition"
-      }
-    },
-    pt: {
-      sheetName: "Histórico Regulatório",
-      title: "AGE FRIEND SEAL - HISTÓRICO DE ALERTAS NORMATIVAS",
-      headers: ["ID Alerta", "Jurisdição", "Título da Norma", "Resumo Legal (LLM)", "Pilar Impactado", "Relevância (Score)", "Recomendação de Ajuste"],
-      pillars: {
-        1: "Pilar 1: Acessibilidade física",
-        2: "Pilar 2: Trato respeitoso / Atendimento",
-        3: "Pilar 3: Inclusão digital / Acessibilidade web",
-        4: "Pilar 4: Saúde ocupacional / Prevenção de desgaste",
-        5: "Pilar 5: Empregabilidade / Transição aposentadoria"
-      }
-    }
-  };
-
-  const activeDict = textDict[lang] || textDict.es;
-
-  try {
-    const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet(activeDict.sheetName);
-    sheet.views = [{ showGridLines: true }];
-
-    const FONT_NAME = "Arial";
-
-    // Bloque del Título Principal
-    sheet.mergeCells("A2:G3");
-    const titleCell = sheet.getCell("A2");
-    titleCell.value = activeDict.title;
-    titleCell.font = { name: FONT_NAME, size: 16, bold: true, color: { argb: "FFFFFF" } };
-    titleCell.fill = {
-      type: "pattern",
-      pattern: "solid",
-      fgColor: { argb: "0F172A" } // Dark Slate
-    };
-    titleCell.alignment = { horizontal: "center", vertical: "middle" };
-
-    // Fila de Encabezados (Fila 5)
-    sheet.getRow(5).height = 25;
-    const colHeaders = activeDict.headers;
-
-    colHeaders.forEach((h, colIdx) => {
-      const cell = sheet.getCell(5, colIdx + 1);
-      cell.value = h;
-      cell.font = { name: FONT_NAME, size: 11, bold: true, color: { argb: "FFFFFF" } };
-      cell.fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "1E293B" } // Medium Slate
-      };
-      cell.alignment = { horizontal: "center", vertical: "middle" };
-      cell.border = {
-        top: { style: "thin", color: { argb: "94A3B8" } },
-        bottom: { style: "medium", color: { argb: "94A3B8" } }
-      };
-    });
-
-    // Cargar datos de alertas
-    let currentRow = 6;
-    alerts.forEach((alert) => {
-      sheet.getRow(currentRow).height = 22;
-
-      sheet.getCell(`A${currentRow}`).value = alert.id || "";
-      sheet.getCell(`B${currentRow}`).value = alert.source || "";
-      sheet.getCell(`C${currentRow}`).value = alert.title || "";
-      sheet.getCell(`D${currentRow}`).value = alert.summary || alert.description || "";
-      sheet.getCell(`E${currentRow}`).value = activeDict.pillars[alert.pilarImpacted] || `Pilar ${alert.pilarImpacted}`;
-      
-      const scoreCell = sheet.getCell(`F${currentRow}`);
-      scoreCell.value = alert.relevanceScore !== undefined ? parseFloat(alert.relevanceScore.toFixed(2)) : 0.0;
-      scoreCell.numFmt = "0.00";
-
-      sheet.getCell(`G${currentRow}`).value = alert.recommendedChange || "";
-
-      // Alineaciones y formato de celdas
-      sheet.getCell(`A${currentRow}`).alignment = { horizontal: "center", vertical: "middle" };
-      sheet.getCell(`B${currentRow}`).alignment = { horizontal: "center", vertical: "middle" };
-      sheet.getCell(`C${currentRow}`).alignment = { wrapText: true, vertical: "middle" };
-      sheet.getCell(`D${currentRow}`).alignment = { wrapText: true, vertical: "middle" };
-      sheet.getCell(`E${currentRow}`).alignment = { horizontal: "left", vertical: "middle" };
-      sheet.getCell(`F${currentRow}`).alignment = { horizontal: "right", vertical: "middle" };
-      sheet.getCell(`G${currentRow}`).alignment = { wrapText: true, vertical: "middle" };
-      
-      for (let col = 1; col <= 7; col++) {
-        const cell = sheet.getCell(currentRow, col);
-        cell.font = { name: FONT_NAME, size: 10 };
-        cell.border = {
-          bottom: { style: "thin", color: { argb: "E2E8F0" } }
-        };
-      }
-      currentRow++;
-    });
-
-    // Ajustar anchos de columnas
-    sheet.getColumn(1).width = 15; // ID
-    sheet.getColumn(2).width = 15; // Jurisdiccion
-    sheet.getColumn(3).width = 30; // Title
-    sheet.getColumn(4).width = 45; // Summary
-    sheet.getColumn(5).width = 25; // Pilar
-    sheet.getColumn(6).width = 18; // Score
-    sheet.getColumn(7).width = 45; // Recommendation
-
-    // Configurar respuesta HTTP para forzar descarga directa de archivo Excel
-    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    res.setHeader("Content-Disposition", "attachment; filename=historial_normativo.xlsx");
-
-    const buffer = await workbook.xlsx.writeBuffer();
-    return res.send(buffer);
-
-  } catch (error) {
-    console.error("Error generating Excel report:", error);
-    return res.status(500).json({
-      status: "error",
-      message: "Could not generate Excel report",
-      error: error.message
-    });
-  }
-}
-
-
-
-
-// ==========================================
-// FILE: api/export-questions-excel.js
-// ==========================================
-
-import ExcelJS from "exceljs";
+import { handleExportSources } from "./_lib/exportSources.js";
+import { handleExportQuestions } from "./_lib/exportQuestions.js";
+import { handleExportUsers } from "./_lib/exportUsers.js";
+import { handleExportReports } from "./_lib/exportReports.js";
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Credentials", true);
@@ -20052,648 +19886,18 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  const { questions = [], lang = "es" } = { ...req.query, ...req.body };
-
-  const FONT_NAME = "Arial";
-  const HEADER_FILL = { type: "pattern", pattern: "solid", fgColor: { argb: "0F172A" } };
-  const SUBHEADER_FILL = { type: "pattern", pattern: "solid", fgColor: { argb: "1E293B" } };
-  const HEADER_FONT = { name: FONT_NAME, size: 11, bold: true, color: { argb: "FFFFFF" } };
-
-  const pillarNamesMap = {
-    1: "Pilar 1: Eje Laboral (Talento y Selección)",
-    2: "Pilar 2: Eje Conciliación y Atención al Cliente",
-    3: "Pilar 3: Eje Consumidor e Inclusión Digital",
-    4: "Pilar 4: Eje Salud y Bienestar Ergonómico",
-    5: "Pilar 5: Eje Comunitario e Impacto Social"
-  };
-
-  const officialVerticals = [
-    { key: "Finanzas y Seguro", name: "Finanzas y Seguros" },
-    { key: "Salud y Farmacia", name: "Salud, Farmacia y Sociosanitario" },
-    { key: "Tecnologia e Software", name: "Tecnología y Software (AgeTech)" },
-    { key: "Comercio y Distribución", name: "Comercio y Distribución (Retail)" },
-    { key: "Manufactura e Industria", name: "Manufactura e Industria" },
-    { key: "Educación", name: "Educación y Formación Continua" },
-    { key: "Energía y Recursos Naturales", name: "Energía, Agua y Servicios Básicos" },
-    { key: "Entretenimiento, Medios y Turismo", name: "Ocio, Entretenimiento, Medios y Turismo Silver" },
-    { key: "Bienes Raíces, Urbanismo y Vivienda (Senior Living)", name: "Bienes Raíces, Urbanismo y Vivienda (Senior Living)" },
-    { key: "PÚBLICO", name: "Sector Público" }
-  ];
-
-  try {
-    const workbook = new ExcelJS.Workbook();
-    workbook.creator = "Age Friend Seal";
-    workbook.created = new Date();
-
-    // -------------------------------------------------------------
-    // PESTAÑA 1: BANCO MAESTRO DE PREGUNTAS (TODOS LOS IDIOMAS Y OPCIONES)
-    // -------------------------------------------------------------
-    const sheet1 = workbook.addWorksheet(lang === "en" ? "Master Questions Bank" : lang === "pt" ? "Banco Mestre de Perguntas" : "Banco Maestro de Preguntas");
-    sheet1.views = [{ showGridLines: true }];
-
-    sheet1.mergeCells("A2:O3");
-    const t1 = sheet1.getCell("A2");
-    t1.value = "AGE FRIEND SEAL - BANCO MAESTRO DE PREGUNTAS Y AUDITORÍAS CORPORATIVAS";
-    t1.font = { name: FONT_NAME, size: 14, bold: true, color: { argb: "FFFFFF" } };
-    t1.fill = HEADER_FILL;
-    t1.alignment = { horizontal: "center", vertical: "middle" };
-
-    const headers1 = [
-      "ID Pregunta",
-      "Pilar",
-      "Nombre del Pilar",
-      "Sector",
-      "Verticales de Industria Afectadas",
-      "Pregunta (Español)",
-      "Pregunta (Inglés)",
-      "Pregunta (Portugués)",
-      "Opción 1: Nivel Básico (Score 1 / 0%)",
-      "Opción 2: Nivel Medio (Score 2 / 50%)",
-      "Opción 3: Excelencia (Score 3 / 100%)",
-      "Recomendación (Español)",
-      "Recomendación (Inglés)",
-      "Recomendación (Portugués)",
-      "Estado"
-    ];
-
-    sheet1.getRow(5).height = 25;
-    headers1.forEach((h, colIdx) => {
-      const cell = sheet1.getCell(5, colIdx + 1);
-      cell.value = h;
-      cell.font = HEADER_FONT;
-      cell.fill = SUBHEADER_FILL;
-      cell.alignment = { horizontal: "center", vertical: "middle" };
-      cell.border = { top: { style: "thin", color: { argb: "94A3B8" } }, bottom: { style: "medium", color: { argb: "94A3B8" } } };
-    });
-
-    questions.forEach((q, idx) => {
-      const rowIdx = 6 + idx;
-      sheet1.getRow(rowIdx).height = 28;
-
-      const opts = q.options || [];
-      const opt1 = opts.find(o => o.score === 1 || o.points === 1 || o.score === 0) || opts[0] || {};
-      const opt2 = opts.find(o => o.score === 2 || o.points === 2 || o.score === 50) || opts[1] || {};
-      const opt3 = opts.find(o => o.score === 3 || o.points === 3 || o.score === 100) || opts[2] || {};
-
-      const getText = (obj, l) => {
-        if (!obj) return "";
-        if (typeof obj === "string") return obj;
-        return obj[l] || obj.es || obj.en || obj.pt || "";
-      };
-
-      sheet1.getCell(`A${rowIdx}`).value = q.id || `q_${idx + 1}`;
-      sheet1.getCell(`B${rowIdx}`).value = q.pilar || (Math.floor(idx / 3) + 1);
-      sheet1.getCell(`C${rowIdx}`).value = pillarNamesMap[q.pilar || (Math.floor(idx / 3) + 1)] || `Pilar ${q.pilar}`;
-      sheet1.getCell(`D${rowIdx}`).value = (q.applicable_verticals || []).includes("PÚBLICO") ? "Público / Mixto" : "Privado";
-      sheet1.getCell(`E${rowIdx}`).value = Array.isArray(q.applicable_verticals) ? q.applicable_verticals.join(", ") : (q.applicable_verticals || "Todas");
-      
-      sheet1.getCell(`F${rowIdx}`).value = q.text_es || q.question || getText(q.text, "es");
-      sheet1.getCell(`G${rowIdx}`).value = q.text_en || getText(q.text, "en");
-      sheet1.getCell(`H${rowIdx}`).value = q.text_pt || getText(q.text, "pt");
-
-      sheet1.getCell(`I${rowIdx}`).value = getText(opt1.text, "es") || opt1.text_es || "";
-      sheet1.getCell(`J${rowIdx}`).value = getText(opt2.text, "es") || opt2.text_es || "";
-      sheet1.getCell(`K${rowIdx}`).value = getText(opt3.text, "es") || opt3.text_es || "";
-
-      sheet1.getCell(`L${rowIdx}`).value = q.recommendation_es || getText(q.recommendation, "es");
-      sheet1.getCell(`M${rowIdx}`).value = q.recommendation_en || getText(q.recommendation, "en");
-      sheet1.getCell(`N${rowIdx}`).value = q.recommendation_pt || getText(q.recommendation, "pt");
-
-      sheet1.getCell(`O${rowIdx}`).value = q.status === "under_review" ? "En Revisión" : "Activa y Vigente";
-
-      for (let c = 1; c <= 15; c++) {
-        const cell = sheet1.getCell(rowIdx, c);
-        cell.font = { name: FONT_NAME, size: 9.5 };
-        cell.alignment = { vertical: "middle", wrapText: true };
-        cell.border = { bottom: { style: "thin", color: { argb: "E2E8F0" } } };
-      }
-      sheet1.getCell(`A${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
-      sheet1.getCell(`B${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
-      sheet1.getCell(`D${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
-      sheet1.getCell(`O${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
-    });
-
-    sheet1.getColumn(1).width = 22; // ID
-    sheet1.getColumn(2).width = 10; // Pilar
-    sheet1.getColumn(3).width = 32; // Nombre pilar
-    sheet1.getColumn(4).width = 16; // Sector
-    sheet1.getColumn(5).width = 35; // Verticales
-    sheet1.getColumn(6).width = 45; // Pregunta ES
-    sheet1.getColumn(7).width = 45; // Pregunta EN
-    sheet1.getColumn(8).width = 45; // Pregunta PT
-    sheet1.getColumn(9).width = 35; // Opcion 1
-    sheet1.getColumn(10).width = 35; // Opcion 2
-    sheet1.getColumn(11).width = 35; // Opcion 3
-    sheet1.getColumn(12).width = 40; // Recomendacion ES
-    sheet1.getColumn(13).width = 40; // Recomendacion EN
-    sheet1.getColumn(14).width = 40; // Recomendacion PT
-    sheet1.getColumn(15).width = 18; // Estado
-
-    // -------------------------------------------------------------
-    // PESTAÑA 2: MATRIZ DE ASIGNACIÓN POR VERTICAL (10 VERTICALES)
-    // -------------------------------------------------------------
-    const sheet2 = workbook.addWorksheet(lang === "en" ? "Verticals Assignment Matrix" : lang === "pt" ? "Matriz por Vertical" : "Matriz por Vertical de Negocio");
-    sheet2.views = [{ showGridLines: true }];
-
-    sheet2.mergeCells("A2:E3");
-    const t2 = sheet2.getCell("A2");
-    t2.value = "AGE FRIEND SEAL - MATRIZ DE ASIGNACIÓN DE PREGUNTAS POR VERTICAL DE INDUSTRIA";
-    t2.font = { name: FONT_NAME, size: 14, bold: true, color: { argb: "FFFFFF" } };
-    t2.fill = HEADER_FILL;
-    t2.alignment = { horizontal: "center", vertical: "middle" };
-
-    const headers2 = ["Vertical de Industria", "Sector", "Nº Preguntas Asignadas", "Pilares Cubiertos", "Enfoque Metodológico de la Vertical"];
-    sheet2.getRow(5).height = 25;
-    headers2.forEach((h, colIdx) => {
-      const cell = sheet2.getCell(5, colIdx + 1);
-      cell.value = h;
-      cell.font = HEADER_FONT;
-      cell.fill = SUBHEADER_FILL;
-      cell.alignment = { horizontal: "center", vertical: "middle" };
-      cell.border = { top: { style: "thin", color: { argb: "94A3B8" } }, bottom: { style: "medium", color: { argb: "94A3B8" } } };
-    });
-
-    const verticalMethodologies = {
-      "Finanzas y Seguro": "Mentoría inversa, jubilación gradual, reskilling tecnológico y seguridad en bancamóvil.",
-      "Salud y Farmacia": "Atención priorizada, etiquetado legible en medicamentos y trato digno sin infantilización.",
-      "Tecnologia e Software": "Accesibilidad web WCAG 2.1 / ISO 25551, interfaces simplificadas e inclusión en desarrollo.",
-      "Comercio y Distribución": "Accesibilidad en salas de venta, zonas de descanso en tienda y compras asistidas.",
-      "Manufactura e Industria": "Ergonomía intensiva (elevadores, exoesqueletos) y rotación de turnos adaptada.",
-      "Educación": "Programas de formación a lo largo de la vida y plataformas educativas virtuales accesibles.",
-      "Energía y Recursos Naturales": "Canales de atención presencial/telefónica para trámites clave y facturación clara.",
-      "Entretenimiento, Medios y Turismo": "Turismo y eventos con ritmo adaptado, y representación positiva sin estereotipos.",
-      "Bienes Raíces, Urbanismo y Vivienda (Senior Living)": "Diseño universal residenciales, accesibilidad física y espacios comunitarios amigables.",
-      "PÚBLICO": "Ciudades amigables (protocolo OMS), trámites presenciales garantizados y atención prioritaria."
-    };
-
-    officialVerticals.forEach((v, idx) => {
-      const rowIdx = 6 + idx;
-      sheet2.getRow(rowIdx).height = 24;
-
-      const qCount = questions.filter(q => (q.applicable_verticals || []).includes(v.key) || (v.key === "PÚBLICO" && (q.applicable_verticals || []).includes("PÚBLICO"))).length || 15;
-
-      sheet2.getCell(`A${rowIdx}`).value = v.name;
-      sheet2.getCell(`B${rowIdx}`).value = v.key === "PÚBLICO" ? "Público" : "Privado";
-      sheet2.getCell(`C${rowIdx}`).value = qCount;
-      sheet2.getCell(`D${rowIdx}`).value = "Pilares 1, 2, 3, 4, 5 (15 Preguntas)";
-      sheet2.getCell(`E${rowIdx}`).value = verticalMethodologies[v.key] || "Cuestionario adaptado al sector.";
-
-      for (let c = 1; c <= 5; c++) {
-        const cell = sheet2.getCell(rowIdx, c);
-        cell.font = { name: FONT_NAME, size: 10 };
-        cell.alignment = { vertical: "middle", wrapText: true };
-        cell.border = { bottom: { style: "thin", color: { argb: "E2E8F0" } } };
-      }
-      sheet2.getCell(`B${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
-      sheet2.getCell(`C${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
-    });
-
-    sheet2.getColumn(1).width = 38;
-    sheet2.getColumn(2).width = 16;
-    sheet2.getColumn(3).width = 24;
-    sheet2.getColumn(4).width = 32;
-    sheet2.getColumn(5).width = 65;
-
-    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    res.setHeader("Content-Disposition", "attachment; filename=banco_preguntas_age_friendly_verticales.xlsx");
-
-    const buffer = await workbook.xlsx.writeBuffer();
-    return res.send(buffer);
-
-  } catch (error) {
-    console.error("Error generating Questions Excel report:", error);
-    return res.status(500).json({
-      status: "error",
-      message: "Could not generate Questions Excel report",
-      error: error.message
-    });
-  }
-}
-
-
-
-
-// ==========================================
-// FILE: api/export-sources-excel.js
-// ==========================================
-
-import ExcelJS from "exceljs";
-
-export default async function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Credentials", true);
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
-  );
-
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-
-  const { alerts = [], lang = "es" } = { ...req.query, ...req.body };
-
-  const FONT_NAME = "Arial";
-  const HEADER_FILL = { type: "pattern", pattern: "solid", fgColor: { argb: "0F172A" } };
-  const SUBHEADER_FILL = { type: "pattern", pattern: "solid", fgColor: { argb: "1E293B" } };
-  const HEADER_FONT = { name: FONT_NAME, size: 11, bold: true, color: { argb: "FFFFFF" } };
-
-  try {
-    const workbook = new ExcelJS.Workbook();
-    workbook.creator = "Age Friend Seal";
-    workbook.created = new Date();
-
-    // -------------------------------------------------------------
-    // PESTAÑA 1: FUENTES NORMATIVAS Y REGULACIONES OFICIALES (4 JURISDICCIONES)
-    // -------------------------------------------------------------
-    const sheet1 = workbook.addWorksheet(lang === "en" ? "Official Regulatory Sources" : lang === "pt" ? "Fontes Regulatórias Oficiais" : "Fuentes Normativas Oficiales");
-    sheet1.views = [{ showGridLines: true }];
-
-    sheet1.mergeCells("A2:G3");
-    const t1 = sheet1.getCell("A2");
-    t1.value = "AGE FRIEND SEAL - FUENTES NORMATIVAS Y MONITOREO REGULATORIO OFICIAL";
-    t1.font = { name: FONT_NAME, size: 14, bold: true, color: { argb: "FFFFFF" } };
-    t1.fill = HEADER_FILL;
-    t1.alignment = { horizontal: "center", vertical: "middle" };
-
-    const headers1 = ["Jurisdicción", "Entidad / Organismo Oficial", "Dominio Canónico", "Endpoint RSS / REST API", "Pilares Afectados", "Marco Legal / Normas", "Estado"];
-    sheet1.getRow(5).height = 25;
-    headers1.forEach((h, colIdx) => {
-      const cell = sheet1.getCell(5, colIdx + 1);
-      cell.value = h;
-      cell.font = HEADER_FONT;
-      cell.fill = SUBHEADER_FILL;
-      cell.alignment = { horizontal: "center", vertical: "middle" };
-      cell.border = { top: { style: "thin", color: { argb: "94A3B8" } }, bottom: { style: "medium", color: { argb: "94A3B8" } } };
-    });
-
-    const officialSources = [
-      {
-        jurisdiction: "Unión Europea (EU)",
-        entity: "Parlamento Europeo & EUR-Lex",
-        domain: "europarl.europa.eu / eur-lex.europa.eu",
-        endpoint: "https://www.europarl.europa.eu/rss/doc/top-stories/es.xml",
-        pillars: "Pilar 1, Pilar 3, Pilar 4, Pilar 5",
-        framework: "Directiva Europea de Accesibilidad (EAA), ISO 25550, WCAG 2.1",
-        status: "Activa y Vigente"
-      },
-      {
-        jurisdiction: "Estados Unidos (USA)",
-        entity: "GovInfo & Congressional Bills / LegiScan",
-        domain: "govinfo.gov / congress.gov / legiscan.com",
-        endpoint: "https://www.govinfo.gov/rss/bills.xml",
-        pillars: "Pilar 1, Pilar 5",
-        framework: "ADEA (Age Discrimination in Employment Act +40), ADA Title III",
-        status: "Activa y Vigente"
-      },
-      {
-        jurisdiction: "Australia",
-        entity: "Federal Register of Legislation",
-        domain: "legislation.gov.au",
-        endpoint: "https://www.legislation.gov.au/rss/inforce",
-        pillars: "Pilar 1, Pilar 4, Pilar 5",
-        framework: "Age Discrimination Act 2004, Standards for Workplace Inclusion",
-        status: "Activa y Vigente"
-      },
-      {
-        jurisdiction: "América Latina (LatAm)",
-        entity: "CEPAL (Naciones Unidas) & OIT",
-        domain: "repositorio.cepal.org / ilo.org",
-        endpoint: "https://repositorio.cepal.org/server/api/discover/search/objects",
-        pillars: "Pilar 1, Pilar 2, Pilar 4, Pilar 5",
-        framework: "Convención Interamericana sobre los Derechos Humanos de las Personas Mayores (+60)",
-        status: "Activa y Vigente"
-      }
-    ];
-
-    officialSources.forEach((src, idx) => {
-      const rowIdx = 6 + idx;
-      sheet1.getRow(rowIdx).height = 24;
-      sheet1.getCell(`A${rowIdx}`).value = src.jurisdiction;
-      sheet1.getCell(`B${rowIdx}`).value = src.entity;
-      sheet1.getCell(`C${rowIdx}`).value = src.domain;
-      sheet1.getCell(`D${rowIdx}`).value = src.endpoint;
-      sheet1.getCell(`E${rowIdx}`).value = src.pillars;
-      sheet1.getCell(`F${rowIdx}`).value = src.framework;
-      sheet1.getCell(`G${rowIdx}`).value = src.status;
-
-      for (let c = 1; c <= 7; c++) {
-        const cell = sheet1.getCell(rowIdx, c);
-        cell.font = { name: FONT_NAME, size: 10 };
-        cell.alignment = { vertical: "middle", wrapText: true };
-        cell.border = { bottom: { style: "thin", color: { argb: "E2E8F0" } } };
-      }
-      sheet1.getCell(`A${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
-      sheet1.getCell(`G${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
-    });
-
-    sheet1.getColumn(1).width = 22;
-    sheet1.getColumn(2).width = 30;
-    sheet1.getColumn(3).width = 32;
-    sheet1.getColumn(4).width = 50;
-    sheet1.getColumn(5).width = 25;
-    sheet1.getColumn(6).width = 45;
-    sheet1.getColumn(7).width = 18;
-
-    // -------------------------------------------------------------
-    // PESTAÑA 2: FEEDS DE NOTICIAS Y NOVEDADES POR IDIOMA (8 FUENTES)
-    // -------------------------------------------------------------
-    const sheet2 = workbook.addWorksheet(lang === "en" ? "Live News Feeds" : lang === "pt" ? "Feeds de Notícias" : "Feeds de Noticias en Vivo");
-    sheet2.views = [{ showGridLines: true }];
-
-    sheet2.mergeCells("A2:E3");
-    const t2 = sheet2.getCell("A2");
-    t2.value = "AGE FRIEND SEAL - RADAR DE NOTICIAS Y FEEDS RSS EN VIVO";
-    t2.font = { name: FONT_NAME, size: 14, bold: true, color: { argb: "FFFFFF" } };
-    t2.fill = HEADER_FILL;
-    t2.alignment = { horizontal: "center", vertical: "middle" };
-
-    const headers2 = ["Idioma", "Medio / Fuente", "Categoría", "URL del Feed RSS / API", "Términos de Búsqueda / Ámbito"];
-    sheet2.getRow(5).height = 25;
-    headers2.forEach((h, colIdx) => {
-      const cell = sheet2.getCell(5, colIdx + 1);
-      cell.value = h;
-      cell.font = HEADER_FONT;
-      cell.fill = SUBHEADER_FILL;
-      cell.alignment = { horizontal: "center", vertical: "middle" };
-      cell.border = { top: { style: "thin", color: { argb: "94A3B8" } }, bottom: { style: "medium", color: { argb: "94A3B8" } } };
-    });
-
-    const newsFeeds = [
-      { lang: "Español (ES)", name: "Google News ES", category: "Mercado", url: "https://news.google.com/rss/search?q=%22economia+plateada%22+OR+edadismo", query: "Economía Plateada, Edadismo, Longevidad" },
-      { lang: "Español (ES)", name: "Geriatricarea", category: "Mercado", url: "https://geriatricarea.com/feed/", query: "Sector sociosanitario, longevidad corporativa" },
-      { lang: "Español (ES)", name: "Qmayor", category: "Innovación", url: "https://www.qmayor.com/feed/", query: "Cultura, innovación social, Silver Economy" },
-      { lang: "Español (ES)", name: "SilverEco ES", category: "Innovación", url: "https://www.silvereco.org/en/feed/", query: "Silver Economy global, productos y servicios" },
-      { lang: "Inglés (EN)", name: "Google News EN", category: "Market", url: "https://news.google.com/rss/search?q=%22silver+economy%22+OR+ageism", query: "Silver Economy, Ageism, Senior Workforce" },
-      { lang: "Inglés (EN)", name: "Next Avenue", category: "Society", url: "https://www.nextavenue.org/feed/", query: "Aging, work & purpose for 50+" },
-      { lang: "Portugués (PT)", name: "Google News PT", category: "Mercado", url: "https://news.google.com/rss/search?q=%22economia+prateada%22+OR+idadismo", query: "Economia Prateada, Idadismo, Envelhecimento" },
-      { lang: "Portugués (PT)", name: "Portal do Envelhecimento", category: "Sociedade", url: "https://www.portaldoenvelhecimento.com.br/feed/", query: "Gerontologia, impacto social e diversidade" }
-    ];
-
-    newsFeeds.forEach((f, idx) => {
-      const rowIdx = 6 + idx;
-      sheet2.getRow(rowIdx).height = 22;
-      sheet2.getCell(`A${rowIdx}`).value = f.lang;
-      sheet2.getCell(`B${rowIdx}`).value = f.name;
-      sheet2.getCell(`C${rowIdx}`).value = f.category;
-      sheet2.getCell(`D${rowIdx}`).value = f.url;
-      sheet2.getCell(`E${rowIdx}`).value = f.query;
-
-      for (let c = 1; c <= 5; c++) {
-        const cell = sheet2.getCell(rowIdx, c);
-        cell.font = { name: FONT_NAME, size: 10 };
-        cell.alignment = { vertical: "middle", wrapText: true };
-        cell.border = { bottom: { style: "thin", color: { argb: "E2E8F0" } } };
-      }
-      sheet2.getCell(`A${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
-      sheet2.getCell(`C${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
-    });
-
-    sheet2.getColumn(1).width = 18;
-    sheet2.getColumn(2).width = 25;
-    sheet2.getColumn(3).width = 18;
-    sheet2.getColumn(4).width = 55;
-    sheet2.getColumn(5).width = 45;
-
-    // -------------------------------------------------------------
-    // PESTAÑA 3: HISTORIAL DE ALERTAS LEGALES EVALUADAS
-    // -------------------------------------------------------------
-    const sheet3 = workbook.addWorksheet(lang === "en" ? "Evaluated Legal Alerts" : lang === "pt" ? "Alertas Legais Avaliados" : "Alertas Legales Evaluadas");
-    sheet3.views = [{ showGridLines: true }];
-
-    sheet3.mergeCells("A2:G3");
-    const t3 = sheet3.getCell("A2");
-    t3.value = "AGE FRIEND SEAL - ALERTAS LEGALES EVALUADAS POR IA (SHADOW MODE)";
-    t3.font = { name: FONT_NAME, size: 14, bold: true, color: { argb: "FFFFFF" } };
-    t3.fill = HEADER_FILL;
-    t3.alignment = { horizontal: "center", vertical: "middle" };
-
-    const headers3 = ["ID Alerta", "Jurisdicción", "Título de la Norma", "Resumen Legal (LLM)", "Pilar Impactado", "Score Relevancia", "Recomendación de Ajuste"];
-    sheet3.getRow(5).height = 25;
-    headers3.forEach((h, colIdx) => {
-      const cell = sheet3.getCell(5, colIdx + 1);
-      cell.value = h;
-      cell.font = HEADER_FONT;
-      cell.fill = SUBHEADER_FILL;
-      cell.alignment = { horizontal: "center", vertical: "middle" };
-      cell.border = { top: { style: "thin", color: { argb: "94A3B8" } }, bottom: { style: "medium", color: { argb: "94A3B8" } } };
-    });
-
-    const pillarsMap = {
-      1: "Pilar 1: Accesibilidad física",
-      2: "Pilar 2: Trato respetuoso / Atención",
-      3: "Pilar 3: Inclusión digital / Accesibilidad web",
-      4: "Pilar 4: Salud laboral / Prevención desgaste",
-      5: "Pilar 5: Empleabilidad / Transición retiro"
-    };
-
-    let r3 = 6;
-    alerts.forEach((alert) => {
-      sheet3.getRow(r3).height = 22;
-      sheet3.getCell(`A${r3}`).value = alert.id || "";
-      sheet3.getCell(`B${r3}`).value = alert.source || "";
-      sheet3.getCell(`C${r3}`).value = alert.title || "";
-      sheet3.getCell(`D${r3}`).value = alert.summary || alert.description || "";
-      sheet3.getCell(`E${r3}`).value = pillarsMap[alert.pilarImpacted] || `Pilar ${alert.pilarImpacted}`;
-
-      const scoreCell = sheet3.getCell(`F${r3}`);
-      scoreCell.value = alert.relevanceScore !== undefined ? parseFloat((alert.relevanceScore * 100).toFixed(1)) : 0;
-      scoreCell.numFmt = '0.0"%"';
-
-      sheet3.getCell(`G${r3}`).value = alert.recommendedChange || "";
-
-      for (let c = 1; c <= 7; c++) {
-        const cell = sheet3.getCell(r3, c);
-        cell.font = { name: FONT_NAME, size: 10 };
-        cell.alignment = { vertical: "middle", wrapText: true };
-        cell.border = { bottom: { style: "thin", color: { argb: "E2E8F0" } } };
-      }
-      sheet3.getCell(`A${r3}`).alignment = { horizontal: "center", vertical: "middle" };
-      sheet3.getCell(`B${r3}`).alignment = { horizontal: "center", vertical: "middle" };
-      sheet3.getCell(`F${r3}`).alignment = { horizontal: "right", vertical: "middle" };
-      r3++;
-    });
-
-    sheet3.getColumn(1).width = 18;
-    sheet3.getColumn(2).width = 16;
-    sheet3.getColumn(3).width = 30;
-    sheet3.getColumn(4).width = 45;
-    sheet3.getColumn(5).width = 28;
-    sheet3.getColumn(6).width = 16;
-    sheet3.getColumn(7).width = 45;
-
-    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    res.setHeader("Content-Disposition", "attachment; filename=fuentes_y_normativas_age_friendly.xlsx");
-
-    const buffer = await workbook.xlsx.writeBuffer();
-    return res.send(buffer);
-
-  } catch (error) {
-    console.error("Error generating Sources Excel report:", error);
-    return res.status(500).json({
-      status: "error",
-      message: "Could not generate Sources Excel report",
-      error: error.message
-    });
-  }
-}
-
-
-
-
-// ==========================================
-// FILE: api/export-users-excel.js
-// ==========================================
-
-import ExcelJS from "exceljs";
-
-export default async function handler(req, res) {
-  // CORS Headers
-  res.setHeader("Access-Control-Allow-Credentials", true);
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
-  );
-
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-
-  const { users = [], lang = "es" } = { ...req.query, ...req.body };
-
-  const textDict = {
-    es: {
-      sheetName: "Usuarios Registrados",
-      title: "AGE FRIEND SEAL - USUARIOS Y MENTORES REGISTRADOS",
-      headers: ["Nombre Completo / Empresa", "Correo Electrónico", "Sector", "Vertical de Industria", "Etapa de Certificación", "Fecha de Registro"]
-    },
-    en: {
-      sheetName: "Registered Users",
-      title: "AGE FRIEND SEAL - REGISTERED USERS & MENTORS",
-      headers: ["Full Name / Company", "Email Address", "Sector", "Industry Vertical", "Certification Stage", "Registration Date"]
-    },
-    pt: {
-      sheetName: "Usuários Registrados",
-      title: "AGE FRIEND SEAL - USUÁRIOS E MENTORES REGISTRADOS",
-      headers: ["Nome Completo / Empresa", "E-mail", "Setor", "Vertical de Indústria", "Etapa de Certificação", "Data de Registro"]
-    }
-  };
-
-  const activeDict = textDict[lang] || textDict.es;
-
-  try {
-    const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet(activeDict.sheetName);
-    sheet.views = [{ showGridLines: true }];
-
-    const FONT_NAME = "Arial";
-
-    // Bloque del Título Principal
-    sheet.mergeCells("A2:F3");
-    const titleCell = sheet.getCell("A2");
-    titleCell.value = activeDict.title;
-    titleCell.font = { name: FONT_NAME, size: 16, bold: true, color: { argb: "FFFFFF" } };
-    titleCell.fill = {
-      type: "pattern",
-      pattern: "solid",
-      fgColor: { argb: "0F172A" } // Dark Slate
-    };
-    titleCell.alignment = { horizontal: "center", vertical: "middle" };
-
-    // Fila de Encabezados (Fila 5)
-    sheet.getRow(5).height = 25;
-    const colHeaders = activeDict.headers;
-
-    colHeaders.forEach((h, colIdx) => {
-      const cell = sheet.getCell(5, colIdx + 1);
-      cell.value = h;
-      cell.font = { name: FONT_NAME, size: 11, bold: true, color: { argb: "FFFFFF" } };
-      cell.fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "1E293B" } // Medium Slate
-      };
-      cell.alignment = { horizontal: "center", vertical: "middle" };
-      cell.border = {
-        top: { style: "thin", color: { argb: "94A3B8" } },
-        bottom: { style: "medium", color: { argb: "94A3B8" } }
-      };
-    });
-
-    // Cargar datos de usuarios (con fondo blanco claro por defecto)
-    let currentRow = 6;
-    users.forEach((user) => {
-      sheet.getRow(currentRow).height = 22;
-
-      // Nombre Completo
-      const fullName = user.companyName || user.name || [user.firstName, user.lastName].filter(Boolean).join(" ") || "Usuario Personal";
-      sheet.getCell(`A${currentRow}`).value = fullName;
-      
-      // Correo
-      sheet.getCell(`B${currentRow}`).value = user.email || "";
-      
-      // Sector
-      sheet.getCell(`C${currentRow}`).value = user.economicSector || user.sector || "N/A";
-      
-      // Vertical
-      sheet.getCell(`D${currentRow}`).value = user.verticalBusiness || user.subsector || "N/A";
-      
-      // Etapa
-      sheet.getCell(`E${currentRow}`).value = user.certificationStage || "Compromiso Inicial";
-
-      // Fecha
-      let regDate = "";
-      if (user.createdAt) {
-        try {
-          regDate = user.createdAt.split("T")[0]; // YYYY-MM-DD
-        } catch (e) {
-          regDate = user.createdAt;
-        }
-      }
-      sheet.getCell(`F${currentRow}`).value = regDate;
-
-      // Alineaciones (Fondo blanco por defecto, color de texto negro clásico)
-      sheet.getCell(`A${currentRow}`).alignment = { horizontal: "left", vertical: "middle" };
-      sheet.getCell(`B${currentRow}`).alignment = { horizontal: "left", vertical: "middle" };
-      sheet.getCell(`C${currentRow}`).alignment = { horizontal: "center", vertical: "middle" };
-      sheet.getCell(`D${currentRow}`).alignment = { horizontal: "left", vertical: "middle" };
-      sheet.getCell(`E${currentRow}`).alignment = { horizontal: "left", vertical: "middle" };
-      sheet.getCell(`F${currentRow}`).alignment = { horizontal: "center", vertical: "middle" };
-      
-      for (let col = 1; col <= 6; col++) {
-        const cell = sheet.getCell(currentRow, col);
-        cell.font = { name: FONT_NAME, size: 10, color: { argb: "000000" } }; // Texto oscuro tradicional
-        cell.border = {
-          bottom: { style: "thin", color: { argb: "E2E8F0" } }
-        };
-      }
-      currentRow++;
-    });
-
-    // Ajustar anchos de columnas
-    sheet.getColumn(1).width = 35; // Nombre
-    sheet.getColumn(2).width = 30; // Correo
-    sheet.getColumn(3).width = 18; // Sector
-    sheet.getColumn(4).width = 30; // Vertical
-    sheet.getColumn(5).width = 25; // Etapa
-    sheet.getColumn(6).width = 18; // Fecha
-
-    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    res.setHeader("Content-Disposition", "attachment; filename=usuarios_registrados.xlsx");
-
-    const buffer = await workbook.xlsx.writeBuffer();
-    return res.send(buffer);
-
-  } catch (error) {
-    console.error("Error exporting users report:", error);
-    return res.status(500).json({
-      status: "error",
-      message: "Could not generate users Excel report",
-      error: error.message
-    });
+  const exportType = req.query.type || req.body?.type || "users";
+
+  switch (exportType) {
+    case "sources":
+      return handleExportSources(req, res);
+    case "questions":
+      return handleExportQuestions(req, res);
+    case "reports":
+      return handleExportReports(req, res);
+    case "users":
+    default:
+      return handleExportUsers(req, res);
   }
 }
 
@@ -22535,6 +21739,769 @@ export async function generateExcelWorkbook({ email, enterpriseName, score, resp
   });
 
   return workbook;
+}
+
+
+
+
+// ==========================================
+// FILE: api/_lib/exportQuestions.js
+// ==========================================
+
+import ExcelJS from "exceljs";
+
+export async function handleExportQuestions(req, res) {
+  const { questions = [], lang = "es" } = { ...req.query, ...req.body };
+
+  const FONT_NAME = "Arial";
+  const HEADER_FILL = { type: "pattern", pattern: "solid", fgColor: { argb: "0F172A" } };
+  const SUBHEADER_FILL = { type: "pattern", pattern: "solid", fgColor: { argb: "1E293B" } };
+  const HEADER_FONT = { name: FONT_NAME, size: 11, bold: true, color: { argb: "FFFFFF" } };
+
+  const pillarNamesMap = {
+    1: "Pilar 1: Eje Laboral (Talento y Selección)",
+    2: "Pilar 2: Eje Conciliación y Atención al Cliente",
+    3: "Pilar 3: Eje Consumidor e Inclusión Digital",
+    4: "Pilar 4: Eje Salud y Bienestar Ergonómico",
+    5: "Pilar 5: Eje Comunitario e Impacto Social"
+  };
+
+  const officialVerticals = [
+    { key: "Finanzas y Seguro", name: "Finanzas y Seguros" },
+    { key: "Salud y Farmacia", name: "Salud, Farmacia y Sociosanitario" },
+    { key: "Tecnologia e Software", name: "Tecnología y Software (AgeTech)" },
+    { key: "Comercio y Distribución", name: "Comercio y Distribución (Retail)" },
+    { key: "Manufactura e Industria", name: "Manufactura e Industria" },
+    { key: "Educación", name: "Educación y Formación Continua" },
+    { key: "Energía y Recursos Naturales", name: "Energía, Agua y Servicios Básicos" },
+    { key: "Entretenimiento, Medios y Turismo", name: "Ocio, Entretenimiento, Medios y Turismo Silver" },
+    { key: "Bienes Raíces, Urbanismo y Vivienda (Senior Living)", name: "Bienes Raíces, Urbanismo y Vivienda (Senior Living)" },
+    { key: "PÚBLICO", name: "Sector Público" }
+  ];
+
+  try {
+    const workbook = new ExcelJS.Workbook();
+    workbook.creator = "Age Friend Seal";
+    workbook.created = new Date();
+
+    // -------------------------------------------------------------
+    // PESTAÑA 1: BANCO MAESTRO DE PREGUNTAS (TODOS LOS IDIOMAS Y OPCIONES)
+    // -------------------------------------------------------------
+    const sheet1 = workbook.addWorksheet(lang === "en" ? "Master Questions Bank" : lang === "pt" ? "Banco Mestre de Perguntas" : "Banco Maestro de Preguntas");
+    sheet1.views = [{ showGridLines: true }];
+
+    sheet1.mergeCells("A2:O3");
+    const t1 = sheet1.getCell("A2");
+    t1.value = "AGE FRIEND SEAL - BANCO MAESTRO DE PREGUNTAS Y AUDITORÍAS CORPORATIVAS";
+    t1.font = { name: FONT_NAME, size: 14, bold: true, color: { argb: "FFFFFF" } };
+    t1.fill = HEADER_FILL;
+    t1.alignment = { horizontal: "center", vertical: "middle" };
+
+    const headers1 = [
+      "ID Pregunta",
+      "Pilar",
+      "Nombre del Pilar",
+      "Sector",
+      "Verticales de Industria Afectadas",
+      "Pregunta (Español)",
+      "Pregunta (Inglés)",
+      "Pregunta (Portugués)",
+      "Opción 1: Nivel Básico (Score 1 / 0%)",
+      "Opción 2: Nivel Medio (Score 2 / 50%)",
+      "Opción 3: Excelencia (Score 3 / 100%)",
+      "Recomendación (Español)",
+      "Recomendación (Inglés)",
+      "Recomendación (Portugués)",
+      "Estado"
+    ];
+
+    sheet1.getRow(5).height = 25;
+    headers1.forEach((h, colIdx) => {
+      const cell = sheet1.getCell(5, colIdx + 1);
+      cell.value = h;
+      cell.font = HEADER_FONT;
+      cell.fill = SUBHEADER_FILL;
+      cell.alignment = { horizontal: "center", vertical: "middle" };
+      cell.border = { top: { style: "thin", color: { argb: "94A3B8" } }, bottom: { style: "medium", color: { argb: "94A3B8" } } };
+    });
+
+    questions.forEach((q, idx) => {
+      const rowIdx = 6 + idx;
+      sheet1.getRow(rowIdx).height = 28;
+
+      const opts = q.options || [];
+      const opt1 = opts.find(o => o.score === 1 || o.points === 1 || o.score === 0) || opts[0] || {};
+      const opt2 = opts.find(o => o.score === 2 || o.points === 2 || o.score === 50) || opts[1] || {};
+      const opt3 = opts.find(o => o.score === 3 || o.points === 3 || o.score === 100) || opts[2] || {};
+
+      const getText = (obj, l) => {
+        if (!obj) return "";
+        if (typeof obj === "string") return obj;
+        return obj[l] || obj.es || obj.en || obj.pt || "";
+      };
+
+      sheet1.getCell(`A${rowIdx}`).value = q.id || `q_${idx + 1}`;
+      sheet1.getCell(`B${rowIdx}`).value = q.pilar || (Math.floor(idx / 3) + 1);
+      sheet1.getCell(`C${rowIdx}`).value = pillarNamesMap[q.pilar || (Math.floor(idx / 3) + 1)] || `Pilar ${q.pilar}`;
+      sheet1.getCell(`D${rowIdx}`).value = (q.applicable_verticals || []).includes("PÚBLICO") ? "Público / Mixto" : "Privado";
+      sheet1.getCell(`E${rowIdx}`).value = Array.isArray(q.applicable_verticals) ? q.applicable_verticals.join(", ") : (q.applicable_verticals || "Todas");
+      
+      sheet1.getCell(`F${rowIdx}`).value = q.text_es || q.question || getText(q.text, "es");
+      sheet1.getCell(`G${rowIdx}`).value = q.text_en || getText(q.text, "en");
+      sheet1.getCell(`H${rowIdx}`).value = q.text_pt || getText(q.text, "pt");
+
+      sheet1.getCell(`I${rowIdx}`).value = getText(opt1.text, "es") || opt1.text_es || "";
+      sheet1.getCell(`J${rowIdx}`).value = getText(opt2.text, "es") || opt2.text_es || "";
+      sheet1.getCell(`K${rowIdx}`).value = getText(opt3.text, "es") || opt3.text_es || "";
+
+      sheet1.getCell(`L${rowIdx}`).value = q.recommendation_es || getText(q.recommendation, "es");
+      sheet1.getCell(`M${rowIdx}`).value = q.recommendation_en || getText(q.recommendation, "en");
+      sheet1.getCell(`N${rowIdx}`).value = q.recommendation_pt || getText(q.recommendation, "pt");
+
+      sheet1.getCell(`O${rowIdx}`).value = q.status === "under_review" ? "En Revisión" : "Activa y Vigente";
+
+      for (let c = 1; c <= 15; c++) {
+        const cell = sheet1.getCell(rowIdx, c);
+        cell.font = { name: FONT_NAME, size: 9.5 };
+        cell.alignment = { vertical: "middle", wrapText: true };
+        cell.border = { bottom: { style: "thin", color: { argb: "E2E8F0" } } };
+      }
+      sheet1.getCell(`A${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
+      sheet1.getCell(`B${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
+      sheet1.getCell(`D${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
+      sheet1.getCell(`O${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
+    });
+
+    sheet1.getColumn(1).width = 22;
+    sheet1.getColumn(2).width = 10;
+    sheet1.getColumn(3).width = 32;
+    sheet1.getColumn(4).width = 16;
+    sheet1.getColumn(5).width = 35;
+    sheet1.getColumn(6).width = 45;
+    sheet1.getColumn(7).width = 45;
+    sheet1.getColumn(8).width = 45;
+    sheet1.getColumn(9).width = 35;
+    sheet1.getColumn(10).width = 35;
+    sheet1.getColumn(11).width = 35;
+    sheet1.getColumn(12).width = 40;
+    sheet1.getColumn(13).width = 40;
+    sheet1.getColumn(14).width = 40;
+    sheet1.getColumn(15).width = 18;
+
+    // -------------------------------------------------------------
+    // PESTAÑA 2: MATRIZ DE ASIGNACIÓN POR VERTICAL (10 VERTICALES)
+    // -------------------------------------------------------------
+    const sheet2 = workbook.addWorksheet(lang === "en" ? "Verticals Assignment Matrix" : lang === "pt" ? "Matriz por Vertical" : "Matriz por Vertical de Negocio");
+    sheet2.views = [{ showGridLines: true }];
+
+    sheet2.mergeCells("A2:E3");
+    const t2 = sheet2.getCell("A2");
+    t2.value = "AGE FRIEND SEAL - MATRIZ DE ASIGNACIÓN DE PREGUNTAS POR VERTICAL DE INDUSTRIA";
+    t2.font = { name: FONT_NAME, size: 14, bold: true, color: { argb: "FFFFFF" } };
+    t2.fill = HEADER_FILL;
+    t2.alignment = { horizontal: "center", vertical: "middle" };
+
+    const headers2 = ["Vertical de Industria", "Sector", "Nº Preguntas Asignadas", "Pilares Cubiertos", "Enfoque Metodológico de la Vertical"];
+    sheet2.getRow(5).height = 25;
+    headers2.forEach((h, colIdx) => {
+      const cell = sheet2.getCell(5, colIdx + 1);
+      cell.value = h;
+      cell.font = HEADER_FONT;
+      cell.fill = SUBHEADER_FILL;
+      cell.alignment = { horizontal: "center", vertical: "middle" };
+      cell.border = { top: { style: "thin", color: { argb: "94A3B8" } }, bottom: { style: "medium", color: { argb: "94A3B8" } } };
+    });
+
+    const verticalMethodologies = {
+      "Finanzas y Seguro": "Mentoría inversa, jubilación gradual, reskilling tecnológico y seguridad en bancamóvil.",
+      "Salud y Farmacia": "Atención priorizada, etiquetado legible en medicamentos y trato digno sin infantilización.",
+      "Tecnologia e Software": "Accesibilidad web WCAG 2.1 / ISO 25551, interfaces simplificadas e inclusión en desarrollo.",
+      "Comercio y Distribución": "Accesibilidad en salas de venta, zonas de descanso en tienda y compras asistidas.",
+      "Manufactura e Industria": "Ergonomía intensiva (elevadores, exoesqueletos) y rotación de turnos adaptada.",
+      "Educación": "Programas de formación a lo largo de la vida y plataformas educativas virtuales accesibles.",
+      "Energía y Recursos Naturales": "Canales de atención presencial/telefónica para trámites clave y facturación clara.",
+      "Entretenimiento, Medios y Turismo": "Turismo y eventos con ritmo adaptado, y representación positiva sin estereotipos.",
+      "Bienes Raíces, Urbanismo y Vivienda (Senior Living)": "Diseño universal residenciales, accesibilidad física y espacios comunitarios amigables.",
+      "PÚBLICO": "Ciudades amigables (protocolo OMS), trámites presenciales garantizados y atención prioritaria."
+    };
+
+    officialVerticals.forEach((v, idx) => {
+      const rowIdx = 6 + idx;
+      sheet2.getRow(rowIdx).height = 24;
+
+      const qCount = questions.filter(q => (q.applicable_verticals || []).includes(v.key) || (v.key === "PÚBLICO" && (q.applicable_verticals || []).includes("PÚBLICO"))).length || 15;
+
+      sheet2.getCell(`A${rowIdx}`).value = v.name;
+      sheet2.getCell(`B${rowIdx}`).value = v.key === "PÚBLICO" ? "Público" : "Privado";
+      sheet2.getCell(`C${rowIdx}`).value = qCount;
+      sheet2.getCell(`D${rowIdx}`).value = "Pilares 1, 2, 3, 4, 5 (15 Preguntas)";
+      sheet2.getCell(`E${rowIdx}`).value = verticalMethodologies[v.key] || "Cuestionario adaptado al sector.";
+
+      for (let c = 1; c <= 5; c++) {
+        const cell = sheet2.getCell(rowIdx, c);
+        cell.font = { name: FONT_NAME, size: 10 };
+        cell.alignment = { vertical: "middle", wrapText: true };
+        cell.border = { bottom: { style: "thin", color: { argb: "E2E8F0" } } };
+      }
+      sheet2.getCell(`B${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
+      sheet2.getCell(`C${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
+    });
+
+    sheet2.getColumn(1).width = 38;
+    sheet2.getColumn(2).width = 16;
+    sheet2.getColumn(3).width = 24;
+    sheet2.getColumn(4).width = 32;
+    sheet2.getColumn(5).width = 65;
+
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", "attachment; filename=banco_preguntas_age_friendly_verticales.xlsx");
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    return res.send(buffer);
+
+  } catch (error) {
+    console.error("Error generating Questions Excel report:", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Could not generate Questions Excel report",
+      error: error.message
+    });
+  }
+}
+
+
+
+
+// ==========================================
+// FILE: api/_lib/exportReports.js
+// ==========================================
+
+import ExcelJS from "exceljs";
+
+export async function handleExportReports(req, res) {
+  const { alerts = [], lang = "es" } = { ...req.query, ...req.body };
+
+  const textDict = {
+    es: {
+      sheetName: "Historial Normativo",
+      title: "AGE FRIEND SEAL - HISTORIAL DE ALERTAS NORMATIVAS",
+      headers: ["ID Alerta", "Jurisdicción", "Título de la Normativa", "Resumen Legal (LLM)", "Pilar Impactado", "Relevancia (Score)", "Recomendación de Ajuste"],
+      pillars: {
+        1: "Pilar 1: Accesibilidad física",
+        2: "Pilar 2: Trato respetuoso / Atención",
+        3: "Pilar 3: Inclusión digital / Accesibilidad web",
+        4: "Pilar 4: Salud laboral / Prevención desgaste",
+        5: "Pilar 5: Empleabilidad / Transición retiro"
+      }
+    },
+    en: {
+      sheetName: "Regulatory History",
+      title: "AGE FRIEND SEAL - REGULATORY ALERTS HISTORY",
+      headers: ["Alert ID", "Jurisdiction", "Regulation Title", "Legal Summary (LLM)", "Pillar Impacted", "Relevance Score", "Adjust Recommendation"],
+      pillars: {
+        1: "Pillar 1: Physical accessibility",
+        2: "Pillar 2: Respectful treatment / Service",
+        3: "Pillar 3: Digital inclusion / Web accessibility",
+        4: "Pillar 4: Occupational health / Wear prevention",
+        5: "Pillar 5: Employability / Retirement transition"
+      }
+    },
+    pt: {
+      sheetName: "Histórico Regulatório",
+      title: "AGE FRIEND SEAL - HISTÓRICO DE ALERTAS NORMATIVAS",
+      headers: ["ID Alerta", "Jurisdição", "Título da Norma", "Resumo Legal (LLM)", "Pilar Impactado", "Relevância (Score)", "Recomendação de Ajuste"],
+      pillars: {
+        1: "Pilar 1: Acessibilidade física",
+        2: "Pilar 2: Trato respeitoso / Atendimento",
+        3: "Pilar 3: Inclusão digital / Acessibilidade web",
+        4: "Pilar 4: Saúde ocupacional / Prevenção de desgaste",
+        5: "Pilar 5: Empregabilidade / Transição aposentadoria"
+      }
+    }
+  };
+
+  const activeDict = textDict[lang] || textDict.es;
+
+  try {
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet(activeDict.sheetName);
+    sheet.views = [{ showGridLines: true }];
+
+    const FONT_NAME = "Arial";
+
+    sheet.mergeCells("A2:G3");
+    const titleCell = sheet.getCell("A2");
+    titleCell.value = activeDict.title;
+    titleCell.font = { name: FONT_NAME, size: 16, bold: true, color: { argb: "FFFFFF" } };
+    titleCell.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "0F172A" }
+    };
+    titleCell.alignment = { horizontal: "center", vertical: "middle" };
+
+    sheet.getRow(5).height = 25;
+    const colHeaders = activeDict.headers;
+
+    colHeaders.forEach((h, colIdx) => {
+      const cell = sheet.getCell(5, colIdx + 1);
+      cell.value = h;
+      cell.font = { name: FONT_NAME, size: 11, bold: true, color: { argb: "FFFFFF" } };
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "1E293B" }
+      };
+      cell.alignment = { horizontal: "center", vertical: "middle" };
+      cell.border = {
+        top: { style: "thin", color: { argb: "94A3B8" } },
+        bottom: { style: "medium", color: { argb: "94A3B8" } }
+      };
+    });
+
+    let currentRow = 6;
+    alerts.forEach((alert) => {
+      sheet.getRow(currentRow).height = 22;
+
+      sheet.getCell(`A${currentRow}`).value = alert.id || "";
+      sheet.getCell(`B${currentRow}`).value = alert.source || "";
+      sheet.getCell(`C${currentRow}`).value = alert.title || "";
+      sheet.getCell(`D${currentRow}`).value = alert.summary || alert.description || "";
+      sheet.getCell(`E${currentRow}`).value = activeDict.pillars[alert.pilarImpacted] || `Pilar ${alert.pilarImpacted}`;
+      
+      const scoreCell = sheet.getCell(`F${currentRow}`);
+      scoreCell.value = alert.relevanceScore !== undefined ? parseFloat(alert.relevanceScore.toFixed(2)) : 0.0;
+      scoreCell.numFmt = "0.00";
+
+      sheet.getCell(`G${currentRow}`).value = alert.recommendedChange || "";
+
+      sheet.getCell(`A${currentRow}`).alignment = { horizontal: "center", vertical: "middle" };
+      sheet.getCell(`B${currentRow}`).alignment = { horizontal: "center", vertical: "middle" };
+      sheet.getCell(`C${currentRow}`).alignment = { wrapText: true, vertical: "middle" };
+      sheet.getCell(`D${currentRow}`).alignment = { wrapText: true, vertical: "middle" };
+      sheet.getCell(`E${currentRow}`).alignment = { horizontal: "left", vertical: "middle" };
+      sheet.getCell(`F${currentRow}`).alignment = { horizontal: "right", vertical: "middle" };
+      sheet.getCell(`G${currentRow}`).alignment = { wrapText: true, vertical: "middle" };
+      
+      for (let col = 1; col <= 7; col++) {
+        const cell = sheet.getCell(currentRow, col);
+        cell.font = { name: FONT_NAME, size: 10 };
+        cell.border = {
+          bottom: { style: "thin", color: { argb: "E2E8F0" } }
+        };
+      }
+      currentRow++;
+    });
+
+    sheet.getColumn(1).width = 15;
+    sheet.getColumn(2).width = 15;
+    sheet.getColumn(3).width = 30;
+    sheet.getColumn(4).width = 45;
+    sheet.getColumn(5).width = 25;
+    sheet.getColumn(6).width = 18;
+    sheet.getColumn(7).width = 45;
+
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", "attachment; filename=historial_normativo.xlsx");
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    return res.send(buffer);
+
+  } catch (error) {
+    console.error("Error generating Excel report:", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Could not generate Excel report",
+      error: error.message
+    });
+  }
+}
+
+
+
+
+// ==========================================
+// FILE: api/_lib/exportSources.js
+// ==========================================
+
+import ExcelJS from "exceljs";
+
+export async function handleExportSources(req, res) {
+  const { alerts = [], lang = "es" } = { ...req.query, ...req.body };
+
+  const FONT_NAME = "Arial";
+  const HEADER_FILL = { type: "pattern", pattern: "solid", fgColor: { argb: "0F172A" } };
+  const SUBHEADER_FILL = { type: "pattern", pattern: "solid", fgColor: { argb: "1E293B" } };
+  const HEADER_FONT = { name: FONT_NAME, size: 11, bold: true, color: { argb: "FFFFFF" } };
+
+  try {
+    const workbook = new ExcelJS.Workbook();
+    workbook.creator = "Age Friend Seal";
+    workbook.created = new Date();
+
+    // -------------------------------------------------------------
+    // PESTAÑA 1: FUENTES NORMATIVAS Y REGULACIONES OFICIALES (4 JURISDICCIONES)
+    // -------------------------------------------------------------
+    const sheet1 = workbook.addWorksheet(lang === "en" ? "Official Regulatory Sources" : lang === "pt" ? "Fontes Regulatórias Oficiais" : "Fuentes Normativas Oficiales");
+    sheet1.views = [{ showGridLines: true }];
+
+    sheet1.mergeCells("A2:G3");
+    const t1 = sheet1.getCell("A2");
+    t1.value = "AGE FRIEND SEAL - FUENTES NORMATIVAS Y MONITOREO REGULATORIO OFICIAL";
+    t1.font = { name: FONT_NAME, size: 14, bold: true, color: { argb: "FFFFFF" } };
+    t1.fill = HEADER_FILL;
+    t1.alignment = { horizontal: "center", vertical: "middle" };
+
+    const headers1 = ["Jurisdicción", "Entidad / Organismo Oficial", "Dominio Canónico", "Endpoint RSS / REST API", "Pilares Afectados", "Marco Legal / Normas", "Estado"];
+    sheet1.getRow(5).height = 25;
+    headers1.forEach((h, colIdx) => {
+      const cell = sheet1.getCell(5, colIdx + 1);
+      cell.value = h;
+      cell.font = HEADER_FONT;
+      cell.fill = SUBHEADER_FILL;
+      cell.alignment = { horizontal: "center", vertical: "middle" };
+      cell.border = { top: { style: "thin", color: { argb: "94A3B8" } }, bottom: { style: "medium", color: { argb: "94A3B8" } } };
+    });
+
+    const officialSources = [
+      {
+        jurisdiction: "Unión Europea (EU)",
+        entity: "Parlamento Europeo & EUR-Lex",
+        domain: "europarl.europa.eu / eur-lex.europa.eu",
+        endpoint: "https://www.europarl.europa.eu/rss/doc/top-stories/es.xml",
+        pillars: "Pilar 1, Pilar 3, Pilar 4, Pilar 5",
+        framework: "Directiva Europea de Accesibilidad (EAA), ISO 25550, WCAG 2.1",
+        status: "Activa y Vigente"
+      },
+      {
+        jurisdiction: "Estados Unidos (USA)",
+        entity: "GovInfo & Congressional Bills / LegiScan",
+        domain: "govinfo.gov / congress.gov / legiscan.com",
+        endpoint: "https://www.govinfo.gov/rss/bills.xml",
+        pillars: "Pilar 1, Pilar 5",
+        framework: "ADEA (Age Discrimination in Employment Act +40), ADA Title III",
+        status: "Activa y Vigente"
+      },
+      {
+        jurisdiction: "Australia",
+        entity: "Federal Register of Legislation",
+        domain: "legislation.gov.au",
+        endpoint: "https://www.legislation.gov.au/rss/inforce",
+        pillars: "Pilar 1, Pilar 4, Pilar 5",
+        framework: "Age Discrimination Act 2004, Standards for Workplace Inclusion",
+        status: "Activa y Vigente"
+      },
+      {
+        jurisdiction: "América Latina (LatAm)",
+        entity: "CEPAL (Naciones Unidas) & OIT",
+        domain: "repositorio.cepal.org / ilo.org",
+        endpoint: "https://repositorio.cepal.org/server/api/discover/search/objects",
+        pillars: "Pilar 1, Pilar 2, Pilar 4, Pilar 5",
+        framework: "Convención Interamericana sobre los Derechos Humanos de las Personas Mayores (+60)",
+        status: "Activa y Vigente"
+      }
+    ];
+
+    officialSources.forEach((src, idx) => {
+      const rowIdx = 6 + idx;
+      sheet1.getRow(rowIdx).height = 24;
+      sheet1.getCell(`A${rowIdx}`).value = src.jurisdiction;
+      sheet1.getCell(`B${rowIdx}`).value = src.entity;
+      sheet1.getCell(`C${rowIdx}`).value = src.domain;
+      sheet1.getCell(`D${rowIdx}`).value = src.endpoint;
+      sheet1.getCell(`E${rowIdx}`).value = src.pillars;
+      sheet1.getCell(`F${rowIdx}`).value = src.framework;
+      sheet1.getCell(`G${rowIdx}`).value = src.status;
+
+      for (let c = 1; c <= 7; c++) {
+        const cell = sheet1.getCell(rowIdx, c);
+        cell.font = { name: FONT_NAME, size: 10 };
+        cell.alignment = { vertical: "middle", wrapText: true };
+        cell.border = { bottom: { style: "thin", color: { argb: "E2E8F0" } } };
+      }
+      sheet1.getCell(`A${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
+      sheet1.getCell(`G${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
+    });
+
+    sheet1.getColumn(1).width = 22;
+    sheet1.getColumn(2).width = 30;
+    sheet1.getColumn(3).width = 32;
+    sheet1.getColumn(4).width = 50;
+    sheet1.getColumn(5).width = 25;
+    sheet1.getColumn(6).width = 45;
+    sheet1.getColumn(7).width = 18;
+
+    // -------------------------------------------------------------
+    // PESTAÑA 2: FEEDS DE NOTICIAS Y NOVEDADES POR IDIOMA (8 FUENTES)
+    // -------------------------------------------------------------
+    const sheet2 = workbook.addWorksheet(lang === "en" ? "Live News Feeds" : lang === "pt" ? "Feeds de Notícias" : "Feeds de Noticias en Vivo");
+    sheet2.views = [{ showGridLines: true }];
+
+    sheet2.mergeCells("A2:E3");
+    const t2 = sheet2.getCell("A2");
+    t2.value = "AGE FRIEND SEAL - RADAR DE NOTICIAS Y FEEDS RSS EN VIVO";
+    t2.font = { name: FONT_NAME, size: 14, bold: true, color: { argb: "FFFFFF" } };
+    t2.fill = HEADER_FILL;
+    t2.alignment = { horizontal: "center", vertical: "middle" };
+
+    const headers2 = ["Idioma", "Medio / Fuente", "Categoría", "URL del Feed RSS / API", "Términos de Búsqueda / Ámbito"];
+    sheet2.getRow(5).height = 25;
+    headers2.forEach((h, colIdx) => {
+      const cell = sheet2.getCell(5, colIdx + 1);
+      cell.value = h;
+      cell.font = HEADER_FONT;
+      cell.fill = SUBHEADER_FILL;
+      cell.alignment = { horizontal: "center", vertical: "middle" };
+      cell.border = { top: { style: "thin", color: { argb: "94A3B8" } }, bottom: { style: "medium", color: { argb: "94A3B8" } } };
+    });
+
+    const newsFeeds = [
+      { lang: "Español (ES)", name: "Google News ES", category: "Mercado", url: "https://news.google.com/rss/search?q=%22economia+plateada%22+OR+edadismo", query: "Economía Plateada, Edadismo, Longevidad" },
+      { lang: "Español (ES)", name: "Geriatricarea", category: "Mercado", url: "https://geriatricarea.com/feed/", query: "Sector sociosanitario, longevidad corporativa" },
+      { lang: "Español (ES)", name: "Qmayor", category: "Innovación", url: "https://www.qmayor.com/feed/", query: "Cultura, innovación social, Silver Economy" },
+      { lang: "Español (ES)", name: "SilverEco ES", category: "Innovación", url: "https://www.silvereco.org/en/feed/", query: "Silver Economy global, productos y servicios" },
+      { lang: "Inglés (EN)", name: "Google News EN", category: "Market", url: "https://news.google.com/rss/search?q=%22silver+economy%22+OR+ageism", query: "Silver Economy, Ageism, Senior Workforce" },
+      { lang: "Inglés (EN)", name: "Next Avenue", category: "Society", url: "https://www.nextavenue.org/feed/", query: "Aging, work & purpose for 50+" },
+      { lang: "Portugués (PT)", name: "Google News PT", category: "Mercado", url: "https://news.google.com/rss/search?q=%22economia+prateada%22+OR+idadismo", query: "Economia Prateada, Idadismo, Envelhecimento" },
+      { lang: "Portugués (PT)", name: "Portal do Envelhecimento", category: "Sociedade", url: "https://www.portaldoenvelhecimento.com.br/feed/", query: "Gerontologia, impacto social e diversidade" }
+    ];
+
+    newsFeeds.forEach((f, idx) => {
+      const rowIdx = 6 + idx;
+      sheet2.getRow(rowIdx).height = 22;
+      sheet2.getCell(`A${rowIdx}`).value = f.lang;
+      sheet2.getCell(`B${rowIdx}`).value = f.name;
+      sheet2.getCell(`C${rowIdx}`).value = f.category;
+      sheet2.getCell(`D${rowIdx}`).value = f.url;
+      sheet2.getCell(`E${rowIdx}`).value = f.query;
+
+      for (let c = 1; c <= 5; c++) {
+        const cell = sheet2.getCell(rowIdx, c);
+        cell.font = { name: FONT_NAME, size: 10 };
+        cell.alignment = { vertical: "middle", wrapText: true };
+        cell.border = { bottom: { style: "thin", color: { argb: "E2E8F0" } } };
+      }
+      sheet2.getCell(`A${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
+      sheet2.getCell(`C${rowIdx}`).alignment = { horizontal: "center", vertical: "middle" };
+    });
+
+    sheet2.getColumn(1).width = 18;
+    sheet2.getColumn(2).width = 25;
+    sheet2.getColumn(3).width = 18;
+    sheet2.getColumn(4).width = 55;
+    sheet2.getColumn(5).width = 45;
+
+    // -------------------------------------------------------------
+    // PESTAÑA 3: HISTORIAL DE ALERTAS LEGALES EVALUADAS
+    // -------------------------------------------------------------
+    const sheet3 = workbook.addWorksheet(lang === "en" ? "Evaluated Legal Alerts" : lang === "pt" ? "Alertas Legais Avaliados" : "Alertas Legales Evaluadas");
+    sheet3.views = [{ showGridLines: true }];
+
+    sheet3.mergeCells("A2:G3");
+    const t3 = sheet3.getCell("A2");
+    t3.value = "AGE FRIEND SEAL - ALERTAS LEGALES EVALUADAS POR IA (SHADOW MODE)";
+    t3.font = { name: FONT_NAME, size: 14, bold: true, color: { argb: "FFFFFF" } };
+    t3.fill = HEADER_FILL;
+    t3.alignment = { horizontal: "center", vertical: "middle" };
+
+    const headers3 = ["ID Alerta", "Jurisdicción", "Título de la Norma", "Resumen Legal (LLM)", "Pilar Impactado", "Score Relevancia", "Recomendación de Ajuste"];
+    sheet3.getRow(5).height = 25;
+    headers3.forEach((h, colIdx) => {
+      const cell = sheet3.getCell(5, colIdx + 1);
+      cell.value = h;
+      cell.font = HEADER_FONT;
+      cell.fill = SUBHEADER_FILL;
+      cell.alignment = { horizontal: "center", vertical: "middle" };
+      cell.border = { top: { style: "thin", color: { argb: "94A3B8" } }, bottom: { style: "medium", color: { argb: "94A3B8" } } };
+    });
+
+    const pillarsMap = {
+      1: "Pilar 1: Accesibilidad física",
+      2: "Pilar 2: Trato respetuoso / Atención",
+      3: "Pilar 3: Inclusión digital / Accesibilidad web",
+      4: "Pilar 4: Salud laboral / Prevención desgaste",
+      5: "Pilar 5: Empleabilidad / Transición retiro"
+    };
+
+    let r3 = 6;
+    alerts.forEach((alert) => {
+      sheet3.getRow(r3).height = 22;
+      sheet3.getCell(`A${r3}`).value = alert.id || "";
+      sheet3.getCell(`B${r3}`).value = alert.source || "";
+      sheet3.getCell(`C${r3}`).value = alert.title || "";
+      sheet3.getCell(`D${r3}`).value = alert.summary || alert.description || "";
+      sheet3.getCell(`E${r3}`).value = pillarsMap[alert.pilarImpacted] || `Pilar ${alert.pilarImpacted}`;
+
+      const scoreCell = sheet3.getCell(`F${r3}`);
+      scoreCell.value = alert.relevanceScore !== undefined ? parseFloat((alert.relevanceScore * 100).toFixed(1)) : 0;
+      scoreCell.numFmt = '0.0"%"';
+
+      sheet3.getCell(`G${r3}`).value = alert.recommendedChange || "";
+
+      for (let c = 1; c <= 7; c++) {
+        const cell = sheet3.getCell(r3, c);
+        cell.font = { name: FONT_NAME, size: 10 };
+        cell.alignment = { vertical: "middle", wrapText: true };
+        cell.border = { bottom: { style: "thin", color: { argb: "E2E8F0" } } };
+      }
+      sheet3.getCell(`A${r3}`).alignment = { horizontal: "center", vertical: "middle" };
+      sheet3.getCell(`B${r3}`).alignment = { horizontal: "center", vertical: "middle" };
+      sheet3.getCell(`F${r3}`).alignment = { horizontal: "right", vertical: "middle" };
+      r3++;
+    });
+
+    sheet3.getColumn(1).width = 18;
+    sheet3.getColumn(2).width = 16;
+    sheet3.getColumn(3).width = 30;
+    sheet3.getColumn(4).width = 45;
+    sheet3.getColumn(5).width = 28;
+    sheet3.getColumn(6).width = 16;
+    sheet3.getColumn(7).width = 45;
+
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", "attachment; filename=fuentes_y_normativas_age_friendly.xlsx");
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    return res.send(buffer);
+
+  } catch (error) {
+    console.error("Error generating Sources Excel report:", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Could not generate Sources Excel report",
+      error: error.message
+    });
+  }
+}
+
+
+
+
+// ==========================================
+// FILE: api/_lib/exportUsers.js
+// ==========================================
+
+import ExcelJS from "exceljs";
+
+export async function handleExportUsers(req, res) {
+  const { users = [], lang = "es" } = { ...req.query, ...req.body };
+
+  const textDict = {
+    es: {
+      sheetName: "Usuarios Registrados",
+      title: "AGE FRIEND SEAL - USUARIOS Y MENTORES REGISTRADOS",
+      headers: ["Nombre Completo / Empresa", "Correo Electrónico", "Sector", "Vertical de Industria", "Etapa de Certificación", "Fecha de Registro"]
+    },
+    en: {
+      sheetName: "Registered Users",
+      title: "AGE FRIEND SEAL - REGISTERED USERS & MENTORS",
+      headers: ["Full Name / Company", "Email Address", "Sector", "Industry Vertical", "Certification Stage", "Registration Date"]
+    },
+    pt: {
+      sheetName: "Usuários Registrados",
+      title: "AGE FRIEND SEAL - USUÁRIOS E MENTORES REGISTRADOS",
+      headers: ["Nome Completo / Empresa", "E-mail", "Setor", "Vertical de Indústria", "Etapa de Certificação", "Data de Registro"]
+    }
+  };
+
+  const activeDict = textDict[lang] || textDict.es;
+
+  try {
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet(activeDict.sheetName);
+    sheet.views = [{ showGridLines: true }];
+
+    const FONT_NAME = "Arial";
+
+    sheet.mergeCells("A2:F3");
+    const titleCell = sheet.getCell("A2");
+    titleCell.value = activeDict.title;
+    titleCell.font = { name: FONT_NAME, size: 16, bold: true, color: { argb: "FFFFFF" } };
+    titleCell.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "0F172A" }
+    };
+    titleCell.alignment = { horizontal: "center", vertical: "middle" };
+
+    sheet.getRow(5).height = 25;
+    const colHeaders = activeDict.headers;
+
+    colHeaders.forEach((h, colIdx) => {
+      const cell = sheet.getCell(5, colIdx + 1);
+      cell.value = h;
+      cell.font = { name: FONT_NAME, size: 11, bold: true, color: { argb: "FFFFFF" } };
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "1E293B" }
+      };
+      cell.alignment = { horizontal: "center", vertical: "middle" };
+      cell.border = {
+        top: { style: "thin", color: { argb: "94A3B8" } },
+        bottom: { style: "medium", color: { argb: "94A3B8" } }
+      };
+    });
+
+    let currentRow = 6;
+    users.forEach((user) => {
+      sheet.getRow(currentRow).height = 22;
+
+      const fullName = user.companyName || user.name || [user.firstName, user.lastName].filter(Boolean).join(" ") || "Usuario Personal";
+      sheet.getCell(`A${currentRow}`).value = fullName;
+      sheet.getCell(`B${currentRow}`).value = user.email || "";
+      sheet.getCell(`C${currentRow}`).value = user.economicSector || user.sector || "N/A";
+      sheet.getCell(`D${currentRow}`).value = user.verticalBusiness || user.subsector || "N/A";
+      sheet.getCell(`E${currentRow}`).value = user.certificationStage || "Compromiso Inicial";
+
+      let regDate = "";
+      if (user.createdAt) {
+        try {
+          regDate = user.createdAt.split("T")[0];
+        } catch (e) {
+          regDate = user.createdAt;
+        }
+      }
+      sheet.getCell(`F${currentRow}`).value = regDate;
+
+      sheet.getCell(`A${currentRow}`).alignment = { horizontal: "left", vertical: "middle" };
+      sheet.getCell(`B${currentRow}`).alignment = { horizontal: "left", vertical: "middle" };
+      sheet.getCell(`C${currentRow}`).alignment = { horizontal: "center", vertical: "middle" };
+      sheet.getCell(`D${currentRow}`).alignment = { horizontal: "left", vertical: "middle" };
+      sheet.getCell(`E${currentRow}`).alignment = { horizontal: "left", vertical: "middle" };
+      sheet.getCell(`F${currentRow}`).alignment = { horizontal: "center", vertical: "middle" };
+      
+      for (let col = 1; col <= 6; col++) {
+        const cell = sheet.getCell(currentRow, col);
+        cell.font = { name: FONT_NAME, size: 10, color: { argb: "000000" } };
+        cell.border = {
+          bottom: { style: "thin", color: { argb: "E2E8F0" } }
+        };
+      }
+      currentRow++;
+    });
+
+    sheet.getColumn(1).width = 35;
+    sheet.getColumn(2).width = 30;
+    sheet.getColumn(3).width = 18;
+    sheet.getColumn(4).width = 30;
+    sheet.getColumn(5).width = 25;
+    sheet.getColumn(6).width = 18;
+
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", "attachment; filename=usuarios_registrados.xlsx");
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    return res.send(buffer);
+
+  } catch (error) {
+    console.error("Error exporting users report:", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Could not generate users Excel report",
+      error: error.message
+    });
+  }
 }
 
 

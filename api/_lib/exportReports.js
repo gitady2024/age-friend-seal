@@ -1,23 +1,8 @@
 import ExcelJS from "exceljs";
 
-export default async function handler(req, res) {
-  // CORS Headers
-  res.setHeader("Access-Control-Allow-Credentials", true);
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
-  );
-
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-
-  // Esperar listado de alertas en req.body (POST) o generar vacías si no hay datos
+export async function handleExportReports(req, res) {
   const { alerts = [], lang = "es" } = { ...req.query, ...req.body };
 
-  // Dicionarios de traducción para el reporte Excel
   const textDict = {
     es: {
       sheetName: "Historial Normativo",
@@ -66,7 +51,6 @@ export default async function handler(req, res) {
 
     const FONT_NAME = "Arial";
 
-    // Bloque del Título Principal
     sheet.mergeCells("A2:G3");
     const titleCell = sheet.getCell("A2");
     titleCell.value = activeDict.title;
@@ -74,11 +58,10 @@ export default async function handler(req, res) {
     titleCell.fill = {
       type: "pattern",
       pattern: "solid",
-      fgColor: { argb: "0F172A" } // Dark Slate
+      fgColor: { argb: "0F172A" }
     };
     titleCell.alignment = { horizontal: "center", vertical: "middle" };
 
-    // Fila de Encabezados (Fila 5)
     sheet.getRow(5).height = 25;
     const colHeaders = activeDict.headers;
 
@@ -89,7 +72,7 @@ export default async function handler(req, res) {
       cell.fill = {
         type: "pattern",
         pattern: "solid",
-        fgColor: { argb: "1E293B" } // Medium Slate
+        fgColor: { argb: "1E293B" }
       };
       cell.alignment = { horizontal: "center", vertical: "middle" };
       cell.border = {
@@ -98,7 +81,6 @@ export default async function handler(req, res) {
       };
     });
 
-    // Cargar datos de alertas
     let currentRow = 6;
     alerts.forEach((alert) => {
       sheet.getRow(currentRow).height = 22;
@@ -115,7 +97,6 @@ export default async function handler(req, res) {
 
       sheet.getCell(`G${currentRow}`).value = alert.recommendedChange || "";
 
-      // Alineaciones y formato de celdas
       sheet.getCell(`A${currentRow}`).alignment = { horizontal: "center", vertical: "middle" };
       sheet.getCell(`B${currentRow}`).alignment = { horizontal: "center", vertical: "middle" };
       sheet.getCell(`C${currentRow}`).alignment = { wrapText: true, vertical: "middle" };
@@ -134,16 +115,14 @@ export default async function handler(req, res) {
       currentRow++;
     });
 
-    // Ajustar anchos de columnas
-    sheet.getColumn(1).width = 15; // ID
-    sheet.getColumn(2).width = 15; // Jurisdiccion
-    sheet.getColumn(3).width = 30; // Title
-    sheet.getColumn(4).width = 45; // Summary
-    sheet.getColumn(5).width = 25; // Pilar
-    sheet.getColumn(6).width = 18; // Score
-    sheet.getColumn(7).width = 45; // Recommendation
+    sheet.getColumn(1).width = 15;
+    sheet.getColumn(2).width = 15;
+    sheet.getColumn(3).width = 30;
+    sheet.getColumn(4).width = 45;
+    sheet.getColumn(5).width = 25;
+    sheet.getColumn(6).width = 18;
+    sheet.getColumn(7).width = 45;
 
-    // Configurar respuesta HTTP para forzar descarga directa de archivo Excel
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     res.setHeader("Content-Disposition", "attachment; filename=historial_normativo.xlsx");
 

@@ -351,12 +351,12 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const downloadLegalExcel = async () => {
     setExportingSources(true);
     try {
-      const res = await fetch(`/api/export-sources-excel?lang=${language}`, {
+      const res = await fetch(`/api/export?type=sources&lang=${language}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ alerts: legalAlerts, lang: language })
+        body: JSON.stringify({ alerts: legalAlerts, lang: language, type: 'sources' })
       });
       if (res.ok) {
         const blob = await res.blob();
@@ -381,12 +381,12 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const downloadQuestionsExcel = async () => {
     setExportingQuestions(true);
     try {
-      const res = await fetch(`/api/export-questions-excel?lang=${language}`, {
+      const res = await fetch(`/api/export?type=questions&lang=${language}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ questions: adminQuestions, lang: language })
+        body: JSON.stringify({ questions: adminQuestions, lang: language, type: 'questions' })
       });
       if (res.ok) {
         const blob = await res.blob();
@@ -453,12 +453,12 @@ function Modals({ language, activeModal, contactLevel, currentUser, latestDiagno
   const downloadUsersExcel = async () => {
     setExportingUsers(true);
     try {
-      const res = await fetch(`/api/export-users-excel?lang=${language}`, {
+      const res = await fetch(`/api/export?type=users&lang=${language}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ users: adminUsers, lang: language })
+        body: JSON.stringify({ users: adminUsers, lang: language, type: 'users' })
       });
       if (res.ok) {
         const blob = await res.blob();
